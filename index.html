@@ -591,11 +591,17 @@
                 document.getElementById('btn-menu-multi').classList.remove('hidden');
                 listenToMyData();
                 nextScreenAfterIntro = 'screen-main-menu';
-                if(introSeen && document.getElementById('screen-login').classList.contains('hidden') === false) window.showScreen('screen-main-menu');
+                
+                if(introSeen && (!document.getElementById('screen-login').classList.contains('hidden') || !document.getElementById('screen-loading').classList.contains('hidden'))) {
+                    window.showScreen('screen-main-menu');
+                }
             } else {
                 currentUser = null; userData = null;
                 nextScreenAfterIntro = 'screen-login';
-                if(introSeen && document.getElementById('screen-loading').classList.contains('hidden') === false) window.showScreen('screen-login');
+                
+                if(introSeen && (!document.getElementById('screen-main-menu').classList.contains('hidden') || !document.getElementById('screen-loading').classList.contains('hidden'))) {
+                    window.showScreen('screen-login');
+                }
             }
         });
 
@@ -1002,7 +1008,8 @@
 
         function loadSPQuestion() {
             if(lives <= 0 || currentQIndex >= localRoomData.questions.length) return finishLocalGame();
-            renderQuestionUI(localRoomData.questions[currentQIndex], currentQIndex, localRoomData.questions.length, (idx, btn, corr) => handleSPAnswer(idx, btn, corr));
+            const q = localRoomData.questions[currentQIndex];
+            renderQuestionUI(q, currentQIndex, localRoomData.questions.length, (idx, btn) => handleSPAnswer(idx, btn, q.correct));
             startSPTimer();
         }
 
