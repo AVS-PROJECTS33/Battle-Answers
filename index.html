@@ -4,6 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Battle Answers</title>
+    
+    <!-- PWA / Agregar a Pantalla de Inicio -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Battle Answers">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Gemini_Generated_Image_qie8rbqie8rbqie8.png">
+    
+    <script>
+        (function() {
+            const iconUrl = 'https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Gemini_Generated_Image_qie8rbqie8rbqie8.png';
+            
+            // 1. Inyectar Apple Touch Icon con Anti-Caché para forzar la lectura en iOS (Truco invisible)
+            const appleIcon = document.createElement('link');
+            appleIcon.rel = 'apple-touch-icon';
+            appleIcon.href = iconUrl + '?v=' + new Date().getTime();
+            document.head.appendChild(appleIcon);
+
+            // 2. Generar manifest.json dinámicamente para Android (sin necesidad de archivos extra)
+            const manifest = {
+                name: "Battle Answers",
+                short_name: "Battle",
+                start_url: window.location.href.split('?')[0],
+                display: "standalone",
+                background_color: "#0f172a",
+                theme_color: "#0f172a",
+                icons: [
+                    { src: iconUrl, sizes: "192x192", type: "image/png", purpose: "any maskable" },
+                    { src: iconUrl, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+                ]
+            };
+            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = URL.createObjectURL(blob);
+            document.head.appendChild(manifestLink);
+        })();
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
