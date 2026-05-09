@@ -293,7 +293,7 @@
             </div>
 
             <div class="flex-1 bg-slate-800/50 rounded-3xl border border-slate-700 p-4 overflow-y-auto mb-6">
-                <h3 class="font-black text-[10px] tracking-widest text-slate-400 mb-4 text-center">JUGADORES (<span id="player-count">1</span>/4)</h3>
+                <h3 class="font-black text-[10px] tracking-widest text-slate-400 mb-4 text-center">JUGADORES (<span id="player-count">1</span>/6)</h3>
                 <div id="room-players-list" class="space-y-2">
                     <!-- Jugadores -->
                 </div>
@@ -480,7 +480,8 @@
                 await signInWithPopup(auth, provider);
                 showToast("¡Conectado con Google!");
             } catch (error) {
-                showToast("Error con Google", true);
+                console.error("Error Google Auth:", error);
+                showToast("Error: " + error.message, true);
             }
         };
 
@@ -629,6 +630,9 @@
                 const snap = await getDoc(roomRef);
                 if (!snap.exists()) return showToast("Sala no encontrada", true);
                 if (snap.data().status !== 'waiting') return showToast("La partida ya empezó", true);
+                
+                // Límite de 6 jugadores
+                if (Object.keys(snap.data().players).length >= 6) return showToast("La sala está llena (Máx 6)", true);
 
                 await updateDoc(roomRef, {
                     [`players.${currentUser.uid}`]: { name: currentUser.displayName || currentUser.email.split('@')[0], score: 0, isDone: false }
