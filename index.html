@@ -306,9 +306,15 @@
 
         <!-- 4. SETUP (Niveles y Categorías) -->
         <div id="screen-setup" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 overflow-y-auto pb-24">
-            <button onclick="window.backFromSetup()" class="self-start glass-panel px-4 py-1.5 rounded-full text-slate-200 hover:text-white mb-4 mt-0 flex items-center gap-1.5 font-black text-[10px] tracking-wider active:scale-95 transition-all shadow-lg border-white/10 shrink-0">
-                <i class="fas fa-arrow-left text-[10px]"></i> ATRÁS
-            </button>
+            <div class="flex justify-between items-center mb-4 mt-0 shrink-0">
+                <button onclick="window.backFromSetup()" class="glass-panel px-4 py-1.5 rounded-full text-slate-200 hover:text-white flex items-center gap-1.5 font-black text-[10px] tracking-wider active:scale-95 transition-all shadow-lg border-white/10">
+                    <i class="fas fa-arrow-left text-[10px]"></i> ATRÁS
+                </button>
+                <div class="glass-panel px-3 py-1.5 rounded-full border border-blue-500/30 flex items-center gap-2 shadow-md">
+                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <span id="db-question-count" class="text-[10px] text-blue-400 font-black tracking-widest">CARGANDO DB...</span>
+                </div>
+            </div>
 
             <!-- Panel de Niveles (Sólo visible en 1 Jugador) -->
             <div id="sp-level-section" class="glass-panel p-5 rounded-3xl mb-6 shrink-0 shadow-xl hidden">
@@ -378,7 +384,7 @@
 
         <!-- 6. PANTALLA DE PREGUNTA -->
         <div id="screen-question" class="hidden flex-1 flex flex-col p-4 z-10 relative pb-6 overflow-hidden">
-            <div class="glass-panel rounded-3xl p-5 flex-1 flex flex-col shadow-2xl overflow-y-auto border-white/10 relative">
+            <div class="glass-panel rounded-3xl p-5 flex-1 flex flex-col justify-center shadow-2xl overflow-y-auto border-white/10 relative">
                 
                 <!-- Overlay MP Waiting -->
                 <div id="mp-waiting-overlay" class="hidden absolute inset-0 z-20 bg-slate-900/90 backdrop-blur-md flex flex-col items-center justify-center rounded-3xl">
@@ -399,7 +405,7 @@
                     <img id="q-image" src="" alt="Imagen" class="w-full h-full object-contain p-1 drop-shadow-lg">
                 </div>
 
-                <div id="options-container" class="flex flex-col gap-3 mt-auto w-full shrink-0">
+                <div id="options-container" class="flex flex-col gap-3 mt-4 w-full shrink-0">
                     <!-- Respuestas -->
                 </div>
             </div>
@@ -475,7 +481,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA7arwP5sS31SrEt1NoRsYqrwQp149IMg8",
@@ -515,12 +521,18 @@
         let isFXOn = false;
 
         const CATS = {
+            'aleatorio': { id: 'aleatorio', name: 'Aleatorio', icon: 'fa-dice', color: 'bg-pink-500', border: 'border-pink-400' },
             'deportes': { id: 'deportes', name: 'Deportes', icon: 'fa-futbol', color: 'bg-orange-500', border: 'border-orange-400' },
             'geografia': { id: 'geografia', name: 'Geografía', icon: 'fa-globe-americas', color: 'bg-blue-500', border: 'border-blue-400' },
             'banderas': { id: 'banderas', name: 'Banderas', icon: 'fa-flag', color: 'bg-red-500', border: 'border-red-400' },
             'capitales': { id: 'capitales', name: 'Capitales', icon: 'fa-city', color: 'bg-cyan-500', border: 'border-cyan-400' },
             'ciencia': { id: 'ciencia', name: 'Ciencia', icon: 'fa-flask', color: 'bg-emerald-500', border: 'border-emerald-400' },
-            'musica': { id: 'musica', name: 'Música', icon: 'fa-music', color: 'bg-purple-500', border: 'border-purple-400' }
+            'musica': { id: 'musica', name: 'Música', icon: 'fa-music', color: 'bg-purple-500', border: 'border-purple-400' },
+            'historia': { id: 'historia', name: 'Historia', icon: 'fa-landmark', color: 'bg-amber-600', border: 'border-amber-500' },
+            'tecnologia': { id: 'tecnologia', name: 'Tecnología', icon: 'fa-microchip', color: 'bg-indigo-500', border: 'border-indigo-400' },
+            'cine': { id: 'cine', name: 'Cine', icon: 'fa-film', color: 'bg-rose-500', border: 'border-rose-400' },
+            'literatura': { id: 'literatura', name: 'Literatura', icon: 'fa-book', color: 'bg-teal-500', border: 'border-teal-400' },
+            'arte': { id: 'arte', name: 'Arte', icon: 'fa-palette', color: 'bg-fuchsia-500', border: 'border-fuchsia-400' }
         };
 
         const backupQuestions = [
@@ -941,7 +953,7 @@
             }
         };
 
-        window.goToSetup = (isMulti) => {
+        window.goToSetup = async (isMulti) => {
             isMultiplayerSetup = isMulti;
             document.getElementById('sp-level-section').classList.toggle('hidden', isMulti);
             document.getElementById('mp-info-section').classList.toggle('hidden', !isMulti);
@@ -956,6 +968,18 @@
                     </button>`;
             });
             selectedCategories = []; document.getElementById('setup-btn-text').innerText = isMulti ? 'GUARDAR Y EMPEZAR' : 'JUGAR AHORA'; window.showScreen('screen-setup');
+
+            const countEl = document.getElementById('db-question-count');
+            if(countEl) {
+                countEl.innerText = "CARGANDO DB...";
+                try {
+                    const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle");
+                    const snapshot = await getCountFromServer(qRef);
+                    countEl.innerText = `${snapshot.data().count} PREGUNTAS`;
+                } catch(e) {
+                    countEl.innerText = "ERROR DB";
+                }
+            }
         };
 
         window.backFromSetup = () => { window.showScreen(isMultiplayerSetup ? 'screen-room' : 'screen-main-menu'); };
@@ -996,7 +1020,7 @@
                     let normalizedCat = normalizarCategoria(rawCat);
 
                     // Si la pregunta pertenece a las categorías que elegiste...
-                    if (selectedCategories.includes(normalizedCat)) {
+                    if (selectedCategories.includes(normalizedCat) || selectedCategories.includes('aleatorio')) {
                         
                         let formattedQ = {
                             cat: normalizedCat,
@@ -1038,7 +1062,7 @@
                 
                 // Si faltan preguntas para rellenar el cupo
                 if(activeQuestions.length < limitNum) {
-                     let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat));
+                     let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio'));
                      let extras = fall.sort(() => 0.5 - Math.random()).slice(0, limitNum - activeQuestions.length);
                      activeQuestions = [...activeQuestions, ...extras];
                      if(extras.length > 0) showToast("Faltaban preguntas. Rellenando...", false);
@@ -1046,7 +1070,7 @@
 
             } catch(e) {
                 console.error("Error cargando de Firebase:", e);
-                let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat));
+                let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio'));
                 activeQuestions = (fall.length > 0 ? fall : backupQuestions).sort(() => 0.5 - Math.random()).slice(0, limitNum);
                 showToast("Modo Offline / Respaldo activo");
             }
