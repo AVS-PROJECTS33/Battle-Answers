@@ -4,346 +4,341 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Battle Answers</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Script dinámico para icono de PWA en iOS y Android -->
+    <!-- PWA / Agregar a Pantalla de Inicio -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Battle Answers">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Gemini_Generated_Image_qie8rbqie8rbqie8.png">
+    
     <script>
-        const iconUrl = 'https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Gemini_Generated_Image_qie8rbqie8rbqie8.png?v=' + new Date().getTime();
-        
-        // Android Manifest
-        const manifest = {
-            name: "Battle Answers", short_name: "Battle Answers",
-            start_url: ".", display: "standalone", background_color: "#0f172a", theme_color: "#0f172a",
-            icons: [{ src: iconUrl, sizes: "512x512", type: "image/png", purpose: "any maskable" }]
-        };
-        const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-        const manifestUrl = URL.createObjectURL(blob);
-        document.write(`<link rel="manifest" href="${manifestUrl}">`);
-        
-        // iOS Apple Touch Icon
-        document.write(`<link rel="apple-touch-icon" href="${iconUrl}">`);
+        (function() {
+            const iconUrl = 'https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Gemini_Generated_Image_qie8rbqie8rbqie8.png';
+            
+            // 1. Inyectar Apple Touch Icon con Anti-Caché para iOS
+            const appleIcon = document.createElement('link');
+            appleIcon.rel = 'apple-touch-icon';
+            appleIcon.href = iconUrl + '?v=' + new Date().getTime();
+            document.head.appendChild(appleIcon);
+
+            // 2. Generar manifest.json dinámicamente para Android
+            const manifest = {
+                name: "Battle Answers",
+                short_name: "Battle",
+                start_url: window.location.href.split('?')[0],
+                display: "standalone",
+                background_color: "#0f172a",
+                theme_color: "#0f172a",
+                icons: [
+                    { src: iconUrl, sizes: "192x192", type: "image/png", purpose: "any maskable" },
+                    { src: iconUrl, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+                ]
+            };
+            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = URL.createObjectURL(blob);
+            document.head.appendChild(manifestLink);
+        })();
     </script>
 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap');
         
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #020617;
+            background-color: #0f172a;
             color: white;
             overflow: hidden; 
-            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+            touch-action: manipulation;
+        }
+
+        .bg-app-image {
+            background-image: url('https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Gemini_Generated_Image_4vljw74vljw74vlj.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .bg-menu-image {
+            background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.1), rgba(15, 23, 42, 0.5)), url('https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Gemini_Generated_Image_l2qhczl2qhczl2qh.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         /* Animaciones */
+        .shake { animation: shake 0.5s; }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
         .toast-enter { animation: slideInDown 0.3s forwards; }
         @keyframes slideInDown {
             from { transform: translateY(-100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
 
-        .slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes slideUp {a
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        .modal-enter { animation: slideUp 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-leave { animation: slideDown 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        @keyframes slideDown {
+            from { transform: translateY(0); }
+            to { transform: translateY(100%); }
         }
 
-        .shake { animation: shake 0.5s; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25%, 75% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-        }
-
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-        
-        /* Imágenes de fondo globales */
-        .bg-login {
-            background-image: url('https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Gemini_Generated_Image_4vljw74vljw74vlj.png');
-            background-size: cover;
-            background-position: center;
-        }
-        .bg-game {
-            background-image: url('https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Gemini_Generated_Image_l2qhczl2qhczl2qh.png');
-            background-size: cover;
-            background-position: center;
-        }
     </style>
 </head>
-<body class="h-[100dvh] w-screen flex flex-col items-center justify-center relative">
+<body class="flex items-center justify-center h-[100dvh] w-full bg-slate-900">
 
-    <!-- Notificaciones y Modales Globales -->
-    <div id="toast-container" class="fixed top-4 left-0 right-0 z-[100] flex flex-col items-center gap-2 pointer-events-none px-4"></div>
-    <div id="invite-popup-container" class="fixed top-20 left-0 right-0 z-[90] flex flex-col items-center gap-2 px-4 pointer-events-none"></div>
-
-    <!-- Pantalla de Carga Inicial -->
-    <div id="screen-loading" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-login">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-        <div class="z-10 flex flex-col items-center">
-            <i class="fas fa-circle-notch fa-spin text-5xl text-blue-500 mb-4"></i>
-            <h2 class="text-xl font-black tracking-widest text-white animate-pulse">CARGANDO...</h2>
-        </div>
-    </div>
-
-    <!-- Contenedor Principal (Simula App) -->
-    <div id="app-container" class="w-full h-full max-w-md relative overflow-hidden flex flex-col bg-slate-900 shadow-2xl transition-all duration-500">
+    <div class="relative w-full h-[100dvh] max-w-md mx-auto bg-slate-900 overflow-hidden shadow-2xl bg-app-image">
         
-        <!-- 1. Pantalla de Auth / Login -->
-        <div id="screen-login" class="hidden absolute inset-0 z-30 flex flex-col items-center p-6 bg-login">
-            <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
-            
-            <div class="relative z-10 flex-1 flex flex-col items-center justify-center w-full">
-                <h1 class="text-4xl font-black mb-1 text-white drop-shadow-lg tracking-wide text-center">BATTLE<br><span class="text-blue-400">ANSWERS</span></h1>
-                
-                <div class="w-full mt-8 space-y-4 bg-slate-900/60 p-6 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl">
-                    <input type="text" id="auth-name" placeholder="Tu Apodo (Ej: Ninja99)" class="w-full px-4 py-3.5 rounded-2xl bg-slate-800/80 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold">
-                    <input type="email" id="auth-email" placeholder="Correo electrónico" class="w-full px-4 py-3.5 rounded-2xl bg-slate-800/80 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
-                    <input type="password" id="auth-pass" placeholder="Contraseña" class="w-full px-4 py-3.5 rounded-2xl bg-slate-800/80 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
-                    
-                    <button onclick="window.resetPassword()" class="text-sm text-blue-400 hover:text-blue-300 w-full text-right px-2 -mt-2 block">¿Has olvidado la contraseña?</button>
+        <!-- Capa global oscura reducida (para que se vea más el fondo) -->
+        <div id="global-overlay" class="absolute inset-0 bg-slate-900/40 pointer-events-none transition-all duration-300 backdrop-blur-sm"></div>
 
-                    <button onclick="window.authWithEmail()" class="w-full py-4 bg-blue-600 active:bg-blue-700 active:scale-95 rounded-2xl font-black text-white transition-all shadow-lg shadow-blue-500/30 tracking-wider">
-                        ENTRAR / REGISTRARSE
-                    </button>
+        <!-- Notificaciones -->
+        <div id="toast-container" class="absolute top-4 left-0 right-0 z-[100] flex flex-col items-center gap-2 pointer-events-none px-4"></div>
+
+        <!-- HUD: Header del Juego -->
+        <header id="game-header" class="hidden absolute top-0 w-full p-4 flex justify-between items-center bg-slate-900/70 backdrop-blur-md border-b border-slate-700 z-30">
+            <div class="flex flex-col">
+                <span class="text-[10px] text-slate-400 font-bold tracking-wider">PUNTOS</span>
+                <span id="score-display" class="text-2xl font-black text-white leading-none">0</span>
+            </div>
+            <div class="flex gap-1 text-red-500 text-xl drop-shadow-md" id="lives-display">
+                <i class="fas fa-heart"></i><i class="fas fa-heart"></i><i class="fas fa-heart"></i>
+            </div>
+            <div class="flex flex-col items-end">
+                <span class="text-[10px] text-slate-400 font-bold tracking-wider">COMBO</span>
+                <span id="combo-display" class="text-2xl font-black text-yellow-400 leading-none">x1</span>
+            </div>
+        </header>
+
+        <!-- Barra de tiempo -->
+        <div id="timer-bar-container" class="hidden absolute top-[72px] w-full h-1.5 bg-slate-800 z-30">
+            <div id="timer-bar" class="h-full bg-blue-500 w-full transition-all duration-100 linear"></div>
+        </div>
+
+        <!-- Pantalla de Carga Inicial -->
+        <div id="screen-loading" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-md transition-opacity duration-300">
+            <i class="fas fa-circle-notch fa-spin text-5xl text-blue-500 mb-4"></i>
+            <p class="text-slate-400 font-black tracking-widest text-sm animate-pulse">CARGANDO...</p>
+        </div>
+
+        <!-- 1. Pantalla de Auth (Correo/Contraseña y Local) -->
+        <div id="screen-auth-form" class="hidden absolute inset-0 z-20 flex flex-col items-center justify-center p-6 bg-slate-900/40 transition-opacity duration-300">
+            <div class="w-full bg-slate-800/60 p-6 rounded-3xl border border-slate-600 shadow-2xl backdrop-blur-md">
+                <h2 class="text-2xl font-black text-white mb-2 text-center">Acceso</h2>
+                <p class="text-slate-300 text-sm mb-6 text-center">Inicia sesión o regístrate</p>
+                
+                <div class="space-y-4">
+                    <input type="text" id="auth-username" placeholder="Nombre de usuario" class="w-full px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-semibold transition-colors">
+                    <input type="email" id="auth-email" placeholder="Correo electrónico" class="w-full px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-semibold transition-colors">
+                    <input type="password" id="auth-pass" placeholder="Contraseña" class="w-full px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-semibold transition-colors">
                     
-                    <div class="flex items-center gap-3 my-4">
-                        <div class="flex-1 h-px bg-slate-600"></div>
-                        <span class="text-xs text-slate-400 font-bold uppercase">O JUEGA SOLO</span>
-                        <div class="flex-1 h-px bg-slate-600"></div>
+                    <div class="flex justify-end -mt-2 mb-2">
+                        <button onclick="window.resetPassword()" class="text-xs text-blue-400 hover:text-blue-300 font-bold transition-colors drop-shadow-md">¿Has olvidado la contraseña?</button>
                     </div>
                     
-                    <button onclick="window.playGuest()" class="w-full py-4 bg-slate-700 active:bg-slate-600 active:scale-95 rounded-2xl font-black text-white transition-all border border-slate-500 tracking-wider">
-                        MODO LOCAL (1 Jugador)
+                    <button onclick="window.loginEmail()" class="w-full py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 rounded-xl font-bold text-white transition-all shadow-lg flex items-center justify-center gap-2">
+                        <i class="fas fa-envelope"></i> Entrar / Registrarse
+                    </button>
+
+                    <div class="relative flex items-center py-2">
+                        <div class="flex-grow border-t border-slate-500"></div>
+                        <span class="flex-shrink-0 mx-4 text-slate-400 text-xs font-black uppercase tracking-widest">o entra directo</span>
+                        <div class="flex-grow border-t border-slate-500"></div>
+                    </div>
+
+                    <button onclick="window.loginGuest()" class="w-full py-3 bg-slate-700/80 hover:bg-slate-600 active:scale-95 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 shadow-lg border border-slate-600">
+                        <i class="fas fa-gamepad"></i> Modo Local (1 Jugador)
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- 2. Menú Principal -->
-        <div id="screen-main-menu" class="hidden absolute inset-0 z-20 flex flex-col bg-game">
-            <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
+        <div id="screen-main-menu" class="hidden absolute inset-0 z-20 flex flex-col p-6 bg-menu-image transition-opacity duration-300">
+            <div class="flex justify-between items-center mb-8 mt-4">
+                <div>
+                    <p class="text-[10px] text-slate-300 font-bold tracking-widest">HOLA,</p>
+                    <h2 id="main-player-name" class="text-xl font-black text-white uppercase tracking-wide drop-shadow-md">Jugador</h2>
+                </div>
+                <button id="btn-friends-modal" onclick="window.openFriendsModal()" class="px-4 py-2 bg-slate-800/80 backdrop-blur-sm border border-slate-500 active:scale-95 rounded-xl font-bold text-blue-400 transition-all flex items-center gap-2 shadow-lg">
+                    <i class="fas fa-user-friends"></i> AMIGOS
+                </button>
+            </div>
+
+            <div class="flex-1 flex flex-col justify-center gap-6 pb-12">
+                <button onclick="window.playLocalMode()" class="w-full h-32 bg-gradient-to-br from-blue-600 to-indigo-700 active:scale-95 rounded-[32px] font-black text-3xl text-white transition-all shadow-xl shadow-blue-900/50 flex flex-col items-center justify-center gap-2 border border-blue-400/30">
+                    <i class="fas fa-user text-4xl mb-1 opacity-90"></i>
+                    1 JUGADOR
+                </button>
+                
+                <button id="btn-multiplayer" onclick="window.goToMultiplayer()" class="w-full h-32 bg-gradient-to-br from-purple-600 to-pink-700 active:scale-95 rounded-[32px] font-black text-3xl text-white transition-all shadow-xl shadow-pink-900/50 flex flex-col items-center justify-center gap-2 border border-pink-400/30">
+                    <i class="fas fa-users text-4xl mb-1 opacity-90"></i>
+                    CON AMIGOS
+                </button>
+            </div>
             
-            <div class="relative z-10 flex-1 flex flex-col p-6">
-                <!-- Header Menú -->
-                <div class="flex justify-between items-center mb-10 mt-4">
-                    <div>
-                        <p class="text-xs font-bold text-slate-300 tracking-widest">BIENVENIDO</p>
-                        <h2 id="menu-player-name" class="text-2xl font-black text-white drop-shadow-md">Jugador</h2>
-                    </div>
-                    <button id="btn-open-friends" onclick="window.toggleFriendsModal()" class="relative w-12 h-12 rounded-full bg-slate-800/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-blue-400 shadow-lg active:scale-95 transition-all">
-                        <i class="fas fa-user-friends text-lg"></i>
-                        <div id="friends-badge" class="hidden absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-slate-900"></div>
+            <button id="btn-logout" onclick="window.logout()" class="absolute bottom-6 left-0 right-0 mx-auto w-max text-sm font-bold text-slate-400 hover:text-white transition-colors drop-shadow-md">
+                <i class="fas fa-sign-out-alt mr-1"></i> Cerrar sesión
+            </button>
+        </div>
+
+        <!-- 2.1 Modal de Amigos -->
+        <div id="modal-friends" class="hidden absolute inset-0 z-50 flex-col justify-end bg-black/50 backdrop-blur-sm transition-opacity">
+            <div id="modal-friends-content" class="bg-slate-900 w-full h-[85dvh] rounded-t-[40px] p-6 flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.5)] border-t border-slate-700 relative">
+                <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-6 opacity-50"></div>
+
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-black text-white tracking-wide"><i class="fas fa-user-friends text-blue-500 mr-2"></i>Mis Amigos</h3>
+                    <button onclick="window.closeFriendsModal()" class="w-10 h-10 bg-slate-800 border border-slate-700 active:scale-95 rounded-full flex items-center justify-center text-slate-400 transition-all">
+                        <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
 
-                <!-- Botones Principales (Cristalinos) -->
-                <div class="flex-1 flex flex-col justify-center gap-6 pb-12">
-                    <button onclick="window.playLocalMode()" class="group relative w-full aspect-[21/9] rounded-3xl overflow-hidden active:scale-95 transition-all shadow-2xl border border-white/20 bg-slate-800/30 backdrop-blur-md hover:bg-slate-700/40">
-                        <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
-                            <i class="fas fa-gamepad text-5xl text-blue-400 mb-2 drop-shadow-lg group-hover:scale-110 transition-transform"></i>
-                            <span class="text-2xl font-black text-white tracking-widest drop-shadow-md">1 JUGADOR</span>
+                <div class="bg-slate-800/80 rounded-2xl p-4 mb-4 border border-slate-600 flex flex-col gap-3 shadow-inner">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold tracking-widest">TU ID DE JUGADOR</p>
+                            <p class="font-black text-emerald-400 tracking-wider text-lg" id="my-player-id">CARGANDO...</p>
                         </div>
-                    </button>
-
-                    <button id="btn-menu-multi" onclick="window.showLobby()" class="group relative w-full aspect-[21/9] rounded-3xl overflow-hidden active:scale-95 transition-all shadow-2xl border border-white/20 bg-slate-800/30 backdrop-blur-md hover:bg-slate-700/40">
-                        <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
-                            <i class="fas fa-globe text-5xl text-emerald-400 mb-2 drop-shadow-lg group-hover:scale-110 transition-transform"></i>
-                            <span class="text-2xl font-black text-white tracking-widest drop-shadow-md">CON AMIGOS</span>
-                        </div>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal de Amigos (Deslizante y Translúcido) -->
-        <div id="modal-friends" class="hidden absolute inset-0 z-40 flex-col justify-end">
-            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="window.toggleFriendsModal()"></div>
-            <div class="relative bg-slate-900/80 backdrop-blur-xl rounded-t-3xl h-[85%] flex flex-col shadow-2xl border-t border-white/10 slide-up">
-                
-                <div class="p-4 border-b border-white/10 flex justify-between items-center">
-                    <h3 class="text-xl font-black text-white"><i class="fas fa-user-friends mr-2 text-blue-400"></i>Mis Amigos</h3>
-                    <div class="flex gap-3">
-                        <button onclick="window.switchFriendsTab('inbox')" class="relative w-10 h-10 rounded-full bg-slate-800/50 flex items-center justify-center text-slate-300 active:scale-95 transition-all border border-white/5">
-                            <i class="fas fa-envelope"></i>
-                            <div id="inbox-badge" class="hidden absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border border-slate-900"></div>
-                        </button>
-                        <button onclick="window.toggleFriendsModal()" class="w-10 h-10 rounded-full bg-slate-800/50 flex items-center justify-center text-slate-300 active:scale-95 transition-all border border-white/5">
-                            <i class="fas fa-times"></i>
+                        <button onclick="window.shareInvite()" class="bg-blue-600 active:scale-95 px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-900/50 text-white transition-all">
+                            <i class="fas fa-share-alt mr-1"></i> Invitar
                         </button>
                     </div>
                 </div>
 
-                <div class="p-4 bg-slate-800/30 flex flex-col gap-2 border-b border-white/5">
-                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider text-center">Tu Código de Jugador</p>
-                    <div class="flex bg-slate-900/50 rounded-xl border border-white/10 overflow-hidden">
-                        <div class="flex-1 p-3 text-center font-mono font-bold text-blue-400" id="my-player-id">Cargando...</div>
-                        <button onclick="window.copyMyId()" class="px-4 bg-slate-800 hover:bg-slate-700 transition-colors border-l border-white/10"><i class="fas fa-copy"></i></button>
+                <div class="flex gap-2 mb-4">
+                    <div class="flex-1 flex bg-slate-800 rounded-xl border border-slate-600 overflow-hidden focus-within:border-blue-500 transition-colors">
+                        <input type="text" id="add-friend-id" placeholder="Añadir amigo (ej: Maria)" class="w-full bg-transparent px-4 py-3 text-sm text-white focus:outline-none font-semibold">
+                        <button onclick="window.sendFriendRequest()" class="px-4 text-emerald-400 font-black text-[11px] uppercase tracking-wider active:scale-90 transition-all bg-slate-900/40 hover:bg-slate-700/80 border-l border-slate-600">AÑADIR</button>
                     </div>
+                    <button onclick="window.toggleInbox()" id="btn-inbox" class="bg-slate-800 active:scale-95 px-4 rounded-xl text-slate-400 font-bold relative border border-slate-600 transition-all">
+                        <i class="fas fa-envelope text-lg"></i>
+                        <span id="inbox-badge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-black border-2 border-slate-900">0</span>
+                    </button>
                 </div>
 
-                <!-- Tab: Lista -->
-                <div id="tab-friends-list" class="flex-1 flex flex-col overflow-hidden">
-                    <div class="p-4 border-b border-white/5 flex gap-2 bg-slate-800/20">
-                        <input type="text" id="add-friend-input" placeholder="ID del amigo" class="flex-1 px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono text-sm shadow-inner">
-                        <button onclick="window.addFriend()" class="px-5 py-3 bg-blue-600 active:bg-blue-700 rounded-xl font-bold text-white transition-all text-sm tracking-wider shadow-lg"><i class="fas fa-user-plus mr-1"></i> AÑADIR</button>
+                <div class="flex-1 bg-slate-800/60 rounded-2xl border border-slate-700 overflow-hidden flex flex-col shadow-inner">
+                    <div class="p-3 bg-slate-900/80 border-b border-slate-700 flex justify-between items-center">
+                        <h4 id="list-title" class="font-bold text-[10px] tracking-widest text-slate-400 uppercase">Mis Amigos</h4>
                     </div>
-                    <div class="flex-1 overflow-y-auto p-2" id="friends-container">
-                        <!-- Amigos inyectados por JS -->
-                    </div>
-                </div>
-
-                <!-- Tab: Bandeja -->
-                <div id="tab-friends-inbox" class="hidden flex-1 flex flex-col overflow-y-auto p-2">
-                    <div class="p-4 text-center border-b border-slate-800 mb-2">
-                        <h4 class="font-bold text-slate-300"><i class="fas fa-inbox mr-2"></i>Solicitudes Pendientes</h4>
-                        <button onclick="window.switchFriendsTab('list')" class="text-sm text-blue-400 mt-2">Volver a mis amigos</button>
-                    </div>
-                    <div id="inbox-container" class="space-y-2">
-                        <!-- Solicitudes inyectadas por JS -->
-                    </div>
+                    <div id="view-friends" class="flex-1 overflow-y-auto p-2 space-y-1 block"></div>
+                    <div id="view-inbox" class="flex-1 overflow-y-auto p-2 space-y-1 hidden"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 3. Lobby Multijugador (Unirse/Crear) -->
-        <div id="screen-lobby" class="hidden absolute inset-0 z-20 flex flex-col p-6 bg-game pt-12">
-            <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
-            <div class="relative z-10 flex flex-col w-full h-full">
-                <button onclick="window.showScreen('screen-main-menu')" class="self-start mb-6 w-10 h-10 rounded-full bg-slate-800/80 border border-slate-500 flex items-center justify-center text-slate-300 active:scale-95 transition-all">
+        <!-- 2.2 Pantalla de Lobby Multijugador -->
+        <div id="screen-multi-lobby" class="hidden absolute inset-0 z-20 flex flex-col p-6 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300">
+            <div class="flex items-center mb-8 gap-4 mt-4">
+                <button onclick="window.backToMainMenu()" class="w-10 h-10 bg-slate-800 border border-slate-600 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                
-                <h2 class="text-3xl font-black mb-8 text-center drop-shadow-md">MULTIJUGADOR</h2>
-
-                <div class="bg-slate-800/60 rounded-3xl p-6 border border-white/10 shadow-xl space-y-6 backdrop-blur-md">
-                    <div class="flex gap-2">
-                        <input type="text" id="room-code-input" placeholder="PIN" maxlength="4" class="w-2/3 min-w-0 px-4 py-4 rounded-2xl bg-slate-900 border border-slate-600 text-white text-center font-black text-2xl tracking-widest uppercase focus:outline-none focus:border-blue-500">
-                        <button onclick="window.joinRoomBtn()" class="w-1/3 shrink-0 py-4 bg-blue-600 active:bg-blue-700 rounded-2xl font-black text-white transition-all shadow-lg text-lg">
-                            IR
-                        </button>
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <div class="flex-1 h-px bg-slate-600"></div><span class="text-xs text-slate-400 font-bold uppercase">O</span><div class="flex-1 h-px bg-slate-600"></div>
-                    </div>
-
-                    <button onclick="window.createRoom()" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 active:scale-95 rounded-2xl font-black text-white transition-all shadow-lg text-lg tracking-wider">
-                        CREAR SALA
-                    </button>
-                </div>
+                <h2 class="text-2xl font-black text-white uppercase tracking-wide">Multijugador</h2>
             </div>
-        </div>
 
-        <!-- 4. Sala de Espera -->
-        <div id="screen-room" class="hidden absolute inset-0 z-20 flex flex-col p-6 bg-game pt-12">
-            <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
-            <div class="relative z-10 flex flex-col h-full w-full">
-                
-                <div class="text-center mb-6">
-                    <p class="text-xs font-bold text-slate-300 tracking-widest mb-1">PIN DE SALA</p>
-                    <div class="inline-block bg-slate-900/80 px-8 py-3 rounded-2xl border-2 border-blue-500/50 shadow-lg backdrop-blur-sm">
-                        <h2 id="room-pin-display" class="text-5xl font-black text-white tracking-widest">----</h2>
-                    </div>
-                    <div class="flex justify-center gap-2 mt-4">
-                        <button onclick="window.shareRoomCode()" class="px-4 py-2 rounded-full bg-slate-800 hover:bg-slate-700 text-sm font-bold transition-colors border border-slate-600">
-                            <i class="fas fa-share-alt mr-2 text-blue-400"></i>Compartir PIN
-                        </button>
-                        <button id="btn-invite-in-room" onclick="window.showRoomInviteModal()" class="px-4 py-2 rounded-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/50 hover:bg-emerald-600/40 text-sm font-bold transition-colors">
-                            <i class="fas fa-user-plus mr-2"></i>Invitar Amigos
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex-1 bg-slate-800/60 rounded-3xl border border-white/10 p-4 flex flex-col overflow-hidden backdrop-blur-md shadow-inner">
-                    <h3 class="font-black text-sm text-slate-300 mb-3 text-center tracking-widest">JUGADORES (<span id="player-count">1</span>/6)</h3>
-                    <div id="room-players-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
-                </div>
-
-                <div class="mt-6 space-y-3">
-                    <div id="room-host-controls" class="hidden">
-                        <button onclick="window.goToModeSelect()" class="w-full py-4 bg-blue-600 active:bg-blue-700 active:scale-95 rounded-2xl font-black text-white transition-all shadow-lg text-lg tracking-wider">
-                            ELEGIR MODO Y EMPEZAR
-                        </button>
-                    </div>
-                    <div id="room-guest-controls" class="text-center text-slate-300 font-bold bg-slate-800/60 py-4 rounded-2xl border border-white/10 hidden backdrop-blur-md">
-                        <i class="fas fa-circle-notch fa-spin mr-2"></i> Esperando al host...
-                    </div>
-                    <button onclick="window.leaveRoom()" class="w-full py-3 bg-red-500/10 text-red-400 rounded-2xl font-bold border border-red-500/30 active:bg-red-500/20 transition-all">
-                        Abandonar Sala
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. Seleccionar Modo de Juego -->
-        <div id="screen-mode-select" class="hidden absolute inset-0 z-20 flex flex-col p-6 bg-game pt-12">
-            <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
-            <div class="relative z-10 flex flex-col h-full">
-                <button onclick="window.backFromModeSelect()" class="self-start mb-6 w-10 h-10 rounded-full bg-slate-800/80 border border-slate-500 flex items-center justify-center text-slate-300 active:scale-95 transition-all">
-                    <i class="fas fa-arrow-left"></i>
+            <div class="bg-slate-800/60 rounded-[32px] p-6 border border-slate-600 shadow-xl flex-1 flex flex-col justify-center gap-8 mb-6 backdrop-blur-md">
+                <button onclick="window.createRoom()" class="w-full py-5 bg-gradient-to-r from-emerald-500 to-emerald-400 active:scale-95 rounded-2xl font-black text-slate-900 text-xl transition-all shadow-lg shadow-emerald-900/50 flex items-center justify-center gap-2">
+                    <i class="fas fa-plus-circle"></i> CREAR SALA NUEVA
                 </button>
-                <h2 class="text-3xl font-black mb-8 text-center drop-shadow-md">MODO DE JUEGO</h2>
                 
-                <div class="flex-1 flex flex-col gap-4">
-                    <button onclick="window.selectGameMode('normal')" class="w-full p-6 bg-blue-600 active:bg-blue-700 rounded-3xl text-left shadow-xl border border-blue-400/50 active:scale-95 transition-all">
-                        <h3 class="text-2xl font-black mb-1"><i class="fas fa-brain mr-2"></i>Clásico</h3>
-                        <p class="text-sm text-blue-200">Responde preguntas, suma puntos, no falles.</p>
-                    </button>
-                    
-                    <button class="w-full p-6 bg-slate-800/80 rounded-3xl text-left border border-slate-600 opacity-70 relative overflow-hidden">
-                        <div class="absolute top-4 right-4 bg-yellow-500 text-xs font-black px-2 py-1 rounded text-slate-900 rotate-12">PRONTO</div>
-                        <h3 class="text-2xl font-black mb-1 text-slate-400"><i class="fas fa-bolt mr-2"></i>Poderes</h3>
-                        <p class="text-sm text-slate-500">Usa habilidades para molestar a tus rivales.</p>
+                <div class="relative flex items-center py-2">
+                    <div class="flex-grow border-t border-slate-500"></div>
+                    <span class="flex-shrink-0 mx-4 text-slate-300 text-[10px] font-black uppercase tracking-widest">o únete con pin</span>
+                    <div class="flex-grow border-t border-slate-500"></div>
+                </div>
+
+                <div class="flex gap-2 w-full mt-2">
+                    <input type="text" id="room-code-input" placeholder="PIN" maxlength="4" class="w-full min-w-0 px-2 py-4 rounded-2xl bg-slate-900/80 border-2 border-slate-600 text-white text-center font-black text-2xl tracking-widest uppercase focus:outline-none focus:border-blue-500 transition-colors">
+                    <button onclick="window.joinRoomBtn()" class="w-24 shrink-0 px-2 py-4 bg-blue-600 active:scale-95 rounded-2xl font-black text-white transition-all shadow-lg shadow-blue-900/50 flex items-center justify-center">
+                        IR <i class="fas fa-chevron-right ml-1"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- 6. Seleccionar Categorías -->
-        <div id="screen-category-select" class="hidden absolute inset-0 z-20 flex flex-col p-6 bg-game pt-12">
-            <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
-            <div class="relative z-10 flex flex-col h-full">
-                <button onclick="window.showScreen('screen-mode-select')" class="self-start mb-4 w-10 h-10 rounded-full bg-slate-800/80 border border-slate-500 flex items-center justify-center text-slate-300 active:scale-95 transition-all">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h2 class="text-2xl font-black mb-2 text-center drop-shadow-md">ELIGE CATEGORÍAS</h2>
-                <p class="text-sm text-center text-slate-300 mb-6 font-semibold">Selecciona al menos 1</p>
-                
-                <div id="category-grid" class="flex-1 grid grid-cols-2 gap-3 mb-6 content-start">
-                    <!-- Generado por JS -->
+        <!-- 3. Pantalla de Sala / Espera -->
+        <div id="screen-room" class="hidden absolute inset-0 z-20 flex flex-col p-6 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300">
+            <div class="text-center mb-6 mt-8">
+                <p class="text-[10px] font-black tracking-widest text-slate-300 mb-2 drop-shadow">CÓDIGO DE SALA</p>
+                <div class="inline-block bg-slate-800/80 px-8 py-3 rounded-3xl border-2 border-dashed border-slate-400 shadow-inner">
+                    <h2 id="room-pin-display" class="text-5xl font-black text-white tracking-widest">----</h2>
                 </div>
-                
-                <button onclick="window.startGameMultiplayerFinal()" class="w-full py-4 bg-emerald-500 active:bg-emerald-600 active:scale-95 rounded-2xl font-black text-white transition-all shadow-lg text-lg tracking-wider">
-                    INICIAR BATALLA
+                <div class="flex justify-center gap-3 mt-5">
+                    <button onclick="window.shareRoomCode()" class="text-xs font-bold text-blue-400 bg-slate-800/80 px-4 py-2 rounded-full border border-slate-500 shadow-lg active:scale-95 transition-transform"><i class="fas fa-share-alt mr-1"></i> Compartir PIN</button>
+                    <button onclick="window.openRoomInvitesModal()" class="text-xs font-black text-emerald-400 bg-emerald-900/40 px-4 py-2 rounded-full border border-emerald-500/50 shadow-lg active:scale-95 transition-transform"><i class="fas fa-user-friends mr-1"></i> Invitar Amigos</button>
+                </div>
+            </div>
+
+            <div class="flex-1 bg-slate-800/60 rounded-3xl border border-slate-600 p-4 overflow-y-auto mb-6 backdrop-blur-md">
+                <h3 class="font-black text-[10px] tracking-widest text-slate-300 mb-4 text-center">JUGADORES (<span id="player-count">1</span>/6)</h3>
+                <div id="room-players-list" class="space-y-2"></div>
+            </div>
+
+            <div id="room-host-controls" class="hidden pb-4 w-full">
+                <button onclick="window.goToModeSelection()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 active:scale-95 rounded-2xl font-black text-white text-xl transition-all shadow-xl shadow-blue-900/50 border border-blue-400/30">
+                    <i class="fas fa-cogs mr-2"></i> ELEGIR MODO Y EMPEZAR
                 </button>
             </div>
+            <div id="room-guest-controls" class="text-center text-slate-300 hidden pb-4 font-bold bg-slate-800/60 rounded-2xl py-4 border border-slate-600">
+                <i class="fas fa-circle-notch fa-spin text-2xl mb-2 text-blue-400"></i>
+                <p class="text-sm">Esperando al creador...</p>
+            </div>
+            
+            <button onclick="window.leaveRoom()" class="text-sm font-bold text-red-400 py-2 text-center w-full drop-shadow">Abandonar sala</button>
         </div>
 
-        <!-- 7. Pantalla de Pregunta -->
+        <!-- 3.1 Seleccion de Modo (Host) -->
+        <div id="screen-mode-select" class="hidden absolute inset-0 z-30 flex flex-col p-6 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300">
+            <h2 class="text-3xl font-black text-white text-center mt-12 mb-8 drop-shadow">ELEGIR MODO</h2>
+            <div class="flex flex-col gap-6 justify-center flex-1">
+                <button onclick="window.selectMode('normal')" class="p-6 bg-blue-600 border border-blue-400 rounded-3xl font-black text-2xl text-white shadow-[0_0_20px_rgba(37,99,235,0.5)] active:scale-95 transition-transform">
+                    MODO NORMAL
+                </button>
+                <button onclick="window.selectMode('superpowers')" class="p-6 bg-gradient-to-r from-purple-600 to-pink-600 border border-pink-400 rounded-3xl font-black text-2xl text-white shadow-[0_0_20px_rgba(236,72,153,0.5)] active:scale-95 transition-transform flex flex-col items-center">
+                    MODO SUPERPODERES
+                    <span class="text-xs font-bold text-pink-200 mt-2 bg-black/30 px-3 py-1 rounded-full uppercase tracking-wider">Próximamente</span>
+                </button>
+            </div>
+            <button onclick="window.backToRoom()" class="mt-4 text-slate-300 font-bold mb-8 py-3 bg-slate-800/80 rounded-xl border border-slate-600">Cancelar</button>
+        </div>
+
+        <!-- 3.2 Seleccion de Categorias (Host) -->
+        <div id="screen-category-select" class="hidden absolute inset-0 z-30 flex flex-col p-6 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300">
+            <h2 class="text-2xl font-black text-white text-center mt-8 mb-2 drop-shadow">CATEGORÍAS</h2>
+            <p class="text-slate-300 text-center text-xs font-bold mb-6 drop-shadow">Selecciona al menos una</p>
+            
+            <div class="grid grid-cols-2 gap-4 flex-1 content-start" id="category-grid">
+                <!-- Generado por JS -->
+            </div>
+
+            <button onclick="window.startGameMultiplayerFinal()" class="w-full py-4 bg-emerald-500 border border-emerald-300 rounded-2xl font-black text-xl text-slate-900 shadow-[0_0_20px_rgba(16,185,129,0.5)] active:scale-95 mt-auto mb-4 transition-transform">
+                INICIAR BATALLA
+            </button>
+            <button onclick="window.goToModeSelection()" class="text-slate-300 font-bold mb-4 py-3 bg-slate-800/80 rounded-xl border border-slate-600">Atrás</button>
+        </div>
+
+        <!-- 4. Pantalla de Pregunta -->
         <div id="screen-question" class="hidden absolute inset-0 z-10 flex flex-col p-6 bg-slate-900/40 backdrop-blur-md pt-28 transition-opacity duration-300">
-            <!-- Header Integrado (Puntos y Vidas) -->
-            <div class="absolute top-0 left-0 right-0 p-4 bg-slate-900/80 border-b border-white/10 flex justify-between items-center z-20 backdrop-blur-md">
-                <div class="flex flex-col">
-                    <span class="text-[10px] text-slate-400 font-bold tracking-widest">PUNTOS</span>
-                    <span id="score-display" class="text-xl font-black text-white leading-none">0</span>
-                </div>
-                <div class="flex gap-1.5 text-red-500 text-lg drop-shadow-md" id="lives-display"></div>
-                <div class="flex flex-col items-end">
-                    <span class="text-[10px] text-slate-400 font-bold tracking-widest">COMBO</span>
-                    <span id="combo-display" class="text-xl font-black text-yellow-400 leading-none">x1</span>
-                </div>
-            </div>
-
-            <!-- Barra de tiempo -->
-            <div class="absolute top-[60px] left-0 right-0 w-full h-1.5 bg-slate-800 z-20">
-                <div id="timer-bar" class="h-full bg-blue-500 w-full transition-all duration-100 linear"></div>
-            </div>
-
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between mb-6">
                 <button onclick="window.leaveGame()" class="w-10 h-10 rounded-full bg-slate-800/80 border border-slate-500 flex items-center justify-center text-slate-300 active:scale-95 transition-all shadow-lg">
                     <i class="fas fa-times"></i>
                 </button>
@@ -351,66 +346,67 @@
                 <span class="text-xs text-white font-black tracking-wider bg-slate-800/80 px-3 py-1 rounded-full border border-slate-500 shadow" id="q-counter">1/5</span>
             </div>
             
-            <h2 id="question-text" class="text-xl md:text-2xl font-black text-center text-white leading-snug mt-2 px-2 drop-shadow-md">
+            <h2 id="question-text" class="text-2xl md:text-3xl font-black text-center mb-auto text-white leading-snug mt-2 px-2 drop-shadow-md">
                 ¿Cargando pregunta?
             </h2>
 
-            <!-- Contenedor de Imagen -->
-            <div id="question-image-container" class="hidden w-full max-w-[280px] mx-auto mt-4 mb-2 rounded-2xl overflow-hidden border-2 border-slate-600 shadow-xl shadow-black/50 bg-slate-800">
-                <img id="question-image" src="" alt="Imagen" class="w-full h-36 md:h-44 object-cover">
-            </div>
-
-            <div id="options-container" class="flex flex-col gap-3 mt-auto mb-6"></div>
+            <div id="options-container" class="flex flex-col gap-3 mt-8 mb-6"></div>
         </div>
 
-        <!-- 8. Pantalla de Game Over (Leaderboard) -->
-        <div id="screen-gameover" class="hidden absolute inset-0 z-30 flex flex-col items-center p-6 bg-game pt-12">
-            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
-            <div class="relative z-10 w-full h-full flex flex-col items-center">
-                <i class="fas fa-trophy text-6xl text-yellow-400 mb-4 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]"></i>
-                <h2 class="text-3xl font-black text-white mb-6 tracking-wide drop-shadow-md">RESULTADOS</h2>
-                
-                <div class="w-full bg-slate-800/60 rounded-3xl border border-white/10 p-2 mb-6 flex-1 overflow-y-auto shadow-inner backdrop-blur-md" id="leaderboard-container"></div>
-
-                <button onclick="window.leaveRoom()" class="w-full py-4 bg-blue-600 active:bg-blue-700 active:scale-95 rounded-2xl font-black text-white transition-all shadow-lg text-lg tracking-wider">
-                    VOLVER AL MENÚ
-                </button>
+        <!-- 5. Pantalla de Game Over -->
+        <div id="screen-gameover" class="hidden absolute inset-0 z-40 flex flex-col items-center p-6 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300">
+            <div class="mt-12 mb-6 relative">
+                <div class="absolute inset-0 bg-yellow-500 blur-2xl opacity-30 rounded-full"></div>
+                <i class="fas fa-trophy text-6xl text-yellow-400 relative z-10 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]"></i>
             </div>
+            <h2 class="text-3xl font-black text-white mb-6 tracking-wide drop-shadow">RESULTADOS</h2>
+            
+            <div class="w-full bg-slate-800/60 rounded-3xl border border-slate-600 p-3 mb-6 flex-1 overflow-y-auto shadow-inner backdrop-blur-md" id="leaderboard-container"></div>
+
+            <button onclick="window.leaveRoom()" class="w-full py-4 bg-slate-700/90 active:scale-95 rounded-2xl font-black text-lg text-white transition-all shadow-lg border border-slate-500 mb-4 backdrop-blur-md">
+                VOLVER AL MENÚ
+            </button>
         </div>
-        
-        <!-- Modal Confirmación Borrar Amigo -->
-        <div id="modal-confirm-delete" class="hidden absolute inset-0 z-50 flex items-center justify-center bg-black/80 px-6">
-            <div class="bg-slate-800 p-6 rounded-3xl w-full border border-slate-600 shadow-2xl flex flex-col items-center text-center slide-up">
-                <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center text-red-500 mb-4 text-3xl"><i class="fas fa-exclamation-triangle"></i></div>
-                <h3 class="text-xl font-black mb-2 text-white">¿Borrar Amigo?</h3>
-                <p class="text-sm text-slate-400 mb-6">Ya no podrás invitarlo a tus salas rápidamente.</p>
-                <div class="flex w-full gap-3">
-                    <button onclick="window.closeDeleteModal()" class="flex-1 py-3 rounded-xl bg-slate-700 font-bold text-white">Cancelar</button>
-                    <button id="btn-confirm-delete" class="flex-1 py-3 rounded-xl bg-red-600 font-bold text-white shadow-lg">Borrar</button>
+
+        <!-- Modal Confirmación -->
+        <div id="modal-confirm" class="hidden absolute inset-0 z-[100] flex-col items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity">
+            <div class="bg-slate-800 border border-slate-600 p-6 rounded-3xl shadow-2xl text-center w-10/12 max-w-xs transform scale-95 transition-transform duration-300" id="modal-confirm-content">
+                <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
+                </div>
+                <h3 class="text-xl font-black text-white mb-2">¿Estás seguro?</h3>
+                <p id="confirm-msg" class="text-slate-300 text-sm mb-6 font-semibold">¿Quieres eliminar a este amigo?</p>
+                <div class="flex gap-3">
+                    <button onclick="window.closeConfirm()" class="flex-1 py-3 bg-slate-700 hover:bg-slate-600 active:scale-95 rounded-xl font-bold text-white transition-all">Cancelar</button>
+                    <button onclick="window.executeDeleteFriend()" class="flex-1 py-3 bg-red-600 hover:bg-red-500 active:scale-95 rounded-xl font-bold text-white shadow-lg shadow-red-900/50 transition-all">Eliminar</button>
                 </div>
             </div>
         </div>
 
-        <!-- Modal Invitar Amigos en Sala -->
-        <div id="modal-room-invites" class="hidden absolute inset-0 z-40 flex-col justify-end">
-            <div class="absolute inset-0 bg-black/60" onclick="window.closeRoomInviteModal()"></div>
-            <div class="relative bg-slate-900 rounded-t-3xl h-[60%] flex flex-col shadow-2xl border-t border-slate-700 slide-up p-4">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-2">
-                    <h3 class="text-lg font-black"><i class="fas fa-user-plus mr-2 text-emerald-400"></i>Invitar Amigos</h3>
-                    <button onclick="window.closeRoomInviteModal()" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center"><i class="fas fa-times"></i></button>
+        <!-- Modal Invitar Amigos a Sala -->
+        <div id="modal-room-invites" class="hidden absolute inset-0 z-[60] flex-col justify-end bg-black/60 backdrop-blur-sm transition-opacity">
+            <div id="modal-room-invites-content" class="bg-slate-900 w-full h-[60dvh] rounded-t-[40px] p-6 flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.5)] border-t border-slate-700 relative translate-y-full transition-transform duration-300">
+                <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-6 opacity-50"></div>
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-black text-white tracking-wide"><i class="fas fa-user-friends text-emerald-400 mr-2"></i>Invitar a la Sala</h3>
+                    <button onclick="window.closeRoomInvitesModal()" class="w-10 h-10 bg-slate-800 border border-slate-700 active:scale-95 rounded-full flex items-center justify-center text-slate-400 transition-all">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
                 </div>
-                <div class="flex-1 overflow-y-auto space-y-2" id="room-invite-list"></div>
+                <div class="flex-1 bg-slate-800/60 rounded-2xl border border-slate-700 overflow-hidden flex flex-col shadow-inner">
+                    <div id="room-friends-list" class="flex-1 overflow-y-auto p-2 space-y-1 block"></div>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signInAnonymously, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, query, where, getDocs, deleteField } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, query, where, getDocs, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Configuración Firebase Original
         const firebaseConfig = {
             apiKey: "AIzaSyA7arwP5sS31SrEt1NoRsYqrwQp149IMg8",
             authDomain: "battle-answers.firebaseapp.com",
@@ -419,27 +415,24 @@
             messagingSenderId: "318591010224",
             appId: "1:318591010224:web:5bd1635f8c67e655b4c275"
         };
-        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Variables Globales
         let currentUser = null;
         let isGuest = false;
-        let userData = { friends: {}, invites: {} };
         let currentRoomRef = null;
         let unsubscribeRoom = null;
-        let unsubscribeUser = null;
         let localRoomData = null;
-        
-        // Juego
-        let score = 0, lives = 3, combo = 1, currentQIndex = 0, timeRemaining = 15, timerInterval;
-        let selectedGameMode = 'normal', selectedCategories = ['banderas', 'deportes', 'geografia', 'capitales', 'ciencia', 'musica'];
         let isLocalModeActive = false;
-        let friendToDelete = null;
+        
+        let score = 0, lives = 3, combo = 1, currentQIndex = 0;
+        let timeRemaining = 15;
+        let timerInterval;
 
-        // --- CONFIGURACIÓN DE CATEGORÍAS ---
+        let selectedGameMode = 'normal';
+        let selectedCategories = ['deportes', 'geografia', 'banderas', 'capitales', 'ciencia', 'musica'];
+
         const categoriesConfig = {
             'deportes': { name: 'Deportes', bg: 'bg-orange-500', icon: 'fa-futbol' },
             'geografia': { name: 'Geografía', bg: 'bg-blue-500', icon: 'fa-globe-americas' },
@@ -449,433 +442,560 @@
             'musica': { name: 'Música', bg: 'bg-pink-500', icon: 'fa-music' }
         };
 
-        // --- HERRAMIENTA SECRETA PARA SUBIR PREGUNTAS A FIREBASE ---
-        // Abre la consola de tu navegador (F12) y escribe: window.subirPreguntasAFirebase()
-        window.subirPreguntasAFirebase = async () => {
-            const tempPool = [
-                { cat: 'banderas', text: '¿A qué país pertenece esta bandera?', img: 'https://flagcdn.com/w320/es.png', options: ['México', 'España', 'Colombia', 'Ecuador'], correct: 1 },
-                { cat: 'banderas', text: '¿De qué país es esta bandera?', img: 'https://flagcdn.com/w320/ar.png', options: ['Uruguay', 'Argentina', 'El Salvador', 'Honduras'], correct: 1 },
-                { cat: 'banderas', text: '¿A qué nación corresponde?', img: 'https://flagcdn.com/w320/jp.png', options: ['Corea del Sur', 'China', 'Japón', 'Vietnam'], correct: 2 },
-                { cat: 'deportes', text: '¿En qué deporte se utiliza esta pelota?', img: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=320&q=80', options: ['Fútbol', 'Tenis', 'Golf', 'Béisbol'], correct: 1 },
-                { cat: 'deportes', text: '¿A qué deporte pertenece esta canasta?', img: 'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=320&q=80', options: ['Voleibol', 'Netball', 'Baloncesto', 'Korfbal'], correct: 2 },
-                { cat: 'geografia', text: '¿Cuál es el océano más grande?', options: ['Atlántico', 'Índico', 'Ártico', 'Pacífico'], correct: 3 },
-                { cat: 'capitales', text: '¿Cuál es la capital de Colombia?', options: ['Medellín', 'Bogotá', 'Cali', 'Barranquilla'], correct: 1 },
-                { cat: 'ciencia', text: '¿Cuál es el planeta más grande del sistema solar?', options: ['Tierra', 'Marte', 'Júpiter', 'Saturno'], correct: 2 },
-                { cat: 'musica', text: '¿Quién es conocido como el "Rey del Pop"?', options: ['Elvis Presley', 'Prince', 'Michael Jackson', 'Freddy Mercury'], correct: 2 }
-                // Puedes añadir tus 600 preguntas aquí temporalmente para subirlas
-            ];
+        const questionPool = [
+            { cat: 'ciencia', text: '¿Cuál es el planeta más grande del sistema solar?', options: ['Tierra', 'Marte', 'Júpiter', 'Saturno'], correct: 2 },
+            { cat: 'ciencia', text: '¿Qué gas respiramos los humanos para vivir?', options: ['CO2', 'Oxígeno', 'Nitrógeno', 'Helio'], correct: 1 },
+            { cat: 'deportes', text: '¿Cuántos jugadores hay en un equipo de fútbol?', options: ['9', '10', '11', '12'], correct: 2 },
+            { cat: 'deportes', text: '¿En qué deporte se utiliza un "puck"?', options: ['Golf', 'Hockey', 'Tenis', 'Rugby'], correct: 1 },
+            { cat: 'geografia', text: '¿Cuál es el río más largo del mundo?', options: ['Nilo', 'Amazonas', 'Yangtsé', 'Misisipi'], correct: 1 },
+            { cat: 'banderas', text: '¿De qué color es el círculo de la bandera de Japón?', options: ['Azul', 'Rojo', 'Blanco', 'Negro'], correct: 1 },
+            { cat: 'banderas', text: '¿Cuántas estrellas tiene la bandera de China?', options: ['1', '3', '5', '50'], correct: 2 },
+            { cat: 'capitales', text: '¿Cuál es la capital de Francia?', options: ['Roma', 'Madrid', 'París', 'Berlín'], correct: 2 },
+            { cat: 'capitales', text: '¿Cuál es la capital de Colombia?', options: ['Lima', 'Bogotá', 'Quito', 'Caracas'], correct: 1 },
+            { cat: 'musica', text: '¿Quién es conocido como el Rey del Pop?', options: ['Elvis Presley', 'Prince', 'Michael Jackson', 'Freddy Mercury'], correct: 2 },
+            { cat: 'musica', text: '¿Cuántas cuerdas tiene una guitarra clásica?', options: ['4', '5', '6', '7'], correct: 2 }
+        ];
 
-            let count = 0;
-            console.log("Iniciando subida a Firebase...");
-            for(let q of tempPool) {
-                try {
-                    await setDoc(doc(collection(db, "questions")), q);
-                    count++;
-                    console.log(`Subida ${count}/${tempPool.length}`);
-                } catch(e) { console.error("Error subiendo", e); }
-            }
-            alert(`¡Se subieron ${count} preguntas a Firebase exitosamente! Ya puedes borrar este código.`);
-        };
-
-        // --- UI y Notificaciones ---
-        window.showToast = (msg, isError = false) => {
+        function showToast(message, isError = false) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `toast-enter px-6 py-3 rounded-2xl font-black text-sm shadow-2xl text-white flex items-center gap-3 border ${isError ? 'bg-red-500 border-red-400' : 'bg-slate-800 border-slate-600'}`;
-            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle text-lg' : 'fa-check-circle text-emerald-400 text-lg'}"></i> ${msg}`;
+            toast.className = `toast-enter px-6 py-3 rounded-full font-black text-sm shadow-xl text-white flex items-center gap-2 w-max max-w-full ${isError ? 'bg-red-500 border border-red-300' : 'bg-slate-800 border border-slate-500'}`;
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> <span>${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transform = 'translateY(-10px)';
-                toast.style.transition = 'all 0.3s ease';
+                toast.style.transform = 'translateY(-100%)';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
-        };
+        }
 
-        window.showGlobalInvite = (roomId, hostName) => {
-            const container = document.getElementById('invite-popup-container');
-            const toast = document.createElement('div');
-            toast.className = `toast-enter w-full max-w-sm px-4 py-3 rounded-2xl shadow-2xl bg-emerald-600 border-2 border-emerald-400 flex flex-col`;
-            toast.innerHTML = `
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-white font-black text-sm"><i class="fas fa-gamepad mr-2"></i>¡${hostName} te invita!</span>
-                    <button class="text-emerald-200 hover:text-white" onclick="this.parentElement.parentElement.remove()"><i class="fas fa-times"></i></button>
-                </div>
-                <button onclick="window.joinRoomDirect('${roomId}'); this.parentElement.remove()" class="w-full py-2 bg-white text-emerald-700 rounded-xl font-black active:scale-95 transition-transform">
-                    UNIRSE AHORA
-                </button>
-            `;
-            container.appendChild(toast);
-            setTimeout(() => {
-                if(toast.parentElement) toast.remove();
-            }, 10000); // Desaparece en 10s
-        };
-
-        window.showScreen = (id) => {
-            ['screen-loading', 'screen-login', 'screen-main-menu', 'screen-lobby', 'screen-room', 'screen-mode-select', 'screen-category-select', 'screen-question', 'screen-gameover'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        };
+        function showScreen(screenId) {
+            const screens = ['screen-loading', 'screen-auth-form', 'screen-main-menu', 'screen-multi-lobby', 'screen-room', 'screen-question', 'screen-gameover', 'screen-mode-select', 'screen-category-select'];
+            screens.forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden');
+            
+            const inGame = screenId === 'screen-question';
+            document.getElementById('game-header').classList.toggle('hidden', !inGame);
+            document.getElementById('timer-bar-container').classList.toggle('hidden', !inGame);
+        }
 
         // --- AUTH ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                isGuest = user.isAnonymous;
-                
-                if (isGuest) {
-                    document.getElementById('menu-player-name').innerText = "Invitado";
-                    document.getElementById('btn-open-friends').classList.add('hidden');
-                    document.getElementById('btn-menu-multi').classList.add('hidden');
-                    window.showScreen('screen-main-menu');
-                } else {
-                    document.getElementById('menu-player-name').innerText = user.displayName || "Jugador";
-                    document.getElementById('my-player-id').innerText = user.displayName;
-                    document.getElementById('btn-open-friends').classList.remove('hidden');
-                    document.getElementById('btn-menu-multi').classList.remove('hidden');
-                    setupUserListener(user.uid);
-                    window.showScreen('screen-main-menu');
-                }
-            } else {
-                currentUser = null;
-                window.showScreen('screen-login');
-            }
-        });
-
-        window.authWithEmail = async () => {
-            const name = document.getElementById('auth-name').value.trim();
+        window.loginEmail = async () => {
+            const user = document.getElementById('auth-username').value.trim();
             const email = document.getElementById('auth-email').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
+            if(!email || !pass) return showToast("Falta correo o contraseña", true);
             
-            if(!name || !email || !pass) return window.showToast("Rellena todos los campos", true);
-            
+            showScreen('screen-loading');
             try {
-                // Intenta login
                 await signInWithEmailAndPassword(auth, email, pass);
-                if(currentUser && currentUser.displayName !== name) {
-                    await updateProfile(currentUser, { displayName: name });
-                }
-            } catch (err) {
-                if(err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+            } catch (error) {
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                    if(!user) { showScreen('screen-auth-form'); return showToast("Ingresa usuario para registrarte", true); }
                     try {
-                        // Crea cuenta si no existe
                         const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                        await updateProfile(cred.user, { displayName: name });
-                        await setDoc(doc(db, "users", cred.user.uid), {
-                            displayName: name, searchName: name.toLowerCase(),
-                            friends: {}, invites: {}
-                        });
-                        window.showToast("Cuenta creada con éxito");
-                    } catch(e) { window.showToast(e.message, true); }
+                        await updateProfile(cred.user, { displayName: user });
+                    } catch (e2) {
+                        showScreen('screen-auth-form'); return showToast(e2.message, true);
+                    }
                 } else {
-                    window.showToast(err.message, true);
+                    showScreen('screen-auth-form'); return showToast(error.message, true);
                 }
             }
+        };
+
+        window.loginGuest = () => {
+            isGuest = true;
+            document.getElementById('main-player-name').innerText = 'Invitado';
+            document.getElementById('btn-friends-modal').classList.add('hidden');
+            document.getElementById('btn-multiplayer').classList.add('hidden');
+            document.getElementById('btn-logout').innerHTML = '<i class="fas fa-arrow-left mr-1"></i> Volver al inicio';
+            showScreen('screen-main-menu');
         };
 
         window.resetPassword = async () => {
             const email = document.getElementById('auth-email').value.trim();
-            if(!email) return window.showToast("Escribe tu correo primero", true);
+            if(!email) return showToast("Escribe tu correo primero en el campo superior", true);
+            
+            showScreen('screen-loading');
             try {
                 await sendPasswordResetEmail(auth, email);
-                window.showToast("Correo de recuperación enviado");
-            } catch(e) { window.showToast("Error al enviar correo", true); }
+                showScreen('screen-auth-form');
+                showToast("¡Enlace enviado a tu correo!");
+            } catch (error) {
+                showScreen('screen-auth-form');
+                showToast("Error al enviar (Verifica tu correo)", true);
+            }
         };
 
-        window.playGuest = async () => {
-            try { await signInAnonymously(auth); } catch(e) { window.showToast("Error de conexión", true); }
+        window.logout = () => {
+            if (isGuest) { isGuest = false; return showScreen('screen-auth-form'); }
+            signOut(auth).then(() => showScreen('screen-auth-form'));
         };
 
-        // --- AMIGOS (FIREBASE REALTIME) ---
-        function setupUserListener(uid) {
-            if(unsubscribeUser) unsubscribeUser();
-            unsubscribeUser = onSnapshot(doc(db, "users", uid), (snap) => {
-                if(!snap.exists()) return;
-                userData = snap.data() || { friends: {}, invites: {} };
-                if(!userData.friends) userData.friends = {};
-                if(!userData.invites) userData.invites = {};
+        onAuthStateChanged(auth, (user) => {
+            if (isGuest) return;
+            currentUser = user;
+            if (user) {
+                const dName = user.displayName || user.email.split('@')[0];
+                const myTag = dName + '#' + user.uid.substring(0,4).toUpperCase();
                 
-                updateFriendsUI();
-                checkRoomInvites();
-            }, (error) => {
-                console.log("No se pudo escuchar usuario (posibles reglas)", error);
-            });
-        }
+                document.getElementById('main-player-name').innerText = dName;
+                document.getElementById('my-player-id').innerText = myTag;
+                document.getElementById('btn-friends-modal').classList.remove('hidden');
+                document.getElementById('btn-multiplayer').classList.remove('hidden');
+                document.getElementById('btn-logout').innerHTML = '<i class="fas fa-sign-out-alt mr-1"></i> Cerrar sesión';
+                showScreen('screen-main-menu');
 
-        let lastSeenInviteCount = 0;
-        function checkRoomInvites() {
-            // Revisa si en las invites hay alguna de tipo 'room'
-            Object.keys(userData.invites).forEach(key => {
-                const inv = userData.invites[key];
-                if(inv.type === 'room' && !inv.seen) {
-                    window.showGlobalInvite(inv.roomId, inv.hostName);
-                    // Marcar como vista (localmente o en DB)
-                    updateDoc(doc(db, "users", currentUser.uid), {
-                        [`invites.${key}.seen`]: true
-                    }).catch(()=>{});
+                // NUEVO: Crear perfil en base de datos para sistema de amigos
+                const userRef = doc(db, 'users', user.uid);
+                setDoc(userRef, { uid: user.uid, name: dName, tag: myTag }, { merge: true });
+                
+                // Escuchar solicitudes y amigos en tiempo real
+                onSnapshot(userRef, (snap) => {
+                    if(snap.exists()) {
+                        const data = snap.data();
+                        friendsList = data.friends || [];
+                        inboxRequests = data.inbox || [];
+
+                        // Escuchar invitaciones a partidas (NUEVO)
+                        const gameInvites = data.gameInvites || [];
+                        gameInvites.forEach(inv => {
+                            const inviteId = inv.roomId + inv.timestamp;
+                            if(!processedInvites.includes(inviteId)) {
+                                processedInvites.push(inviteId);
+                                // Mostrar pop-up solo si la invitación es reciente (menos de 5 mins)
+                                if(Date.now() - inv.timestamp < 300000) {
+                                    window.showInvitePopUp(inv.hostName, inv.roomId);
+                                }
+                            }
+                        });
+
+                        renderFriendsUI();
+                    }
+                });
+
+            } else {
+                showScreen('screen-auth-form');
+            }
+        });
+
+        // --- SISTEMA DE AMIGOS ---
+        let friendsList = [];
+        let inboxRequests = []; 
+        let isShowingInbox = false;
+        let processedInvites = [];
+        let friendToDelete = null;
+
+        window.openFriendsModal = () => {
+            const modal = document.getElementById('modal-friends');
+            const content = document.getElementById('modal-friends-content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            content.classList.remove('modal-leave');
+            content.classList.add('modal-enter');
+            renderFriendsUI();
+        };
+
+        window.closeFriendsModal = () => {
+            const modal = document.getElementById('modal-friends');
+            const content = document.getElementById('modal-friends-content');
+            content.classList.remove('modal-enter');
+            content.classList.add('modal-leave');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+        };
+
+        window.shareInvite = async () => {
+            const idText = document.getElementById('my-player-id').innerText;
+            if (navigator.share) {
+                try { await navigator.share({ text: idText }); } catch(e) {}
+            } else {
+                try {
+                    const ta = document.createElement("textarea"); ta.value = idText;
+                    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+                    showToast("¡ID copiado!");
+                } catch(e) { showToast("Error al copiar", true); }
+            }
+        };
+
+        window.shareRoomCode = async () => {
+            const code = document.getElementById('room-pin-display').innerText;
+            if(code !== '----') {
+                if (navigator.share) {
+                    try { await navigator.share({ text: code }); } catch(e) {}
+                } else {
+                    const ta = document.createElement("textarea"); ta.value = code;
+                    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+                    showToast("¡Código copiado!");
                 }
-            });
-        }
-
-        function updateFriendsUI() {
-            const inboxCount = Object.keys(userData.invites).filter(k => userData.invites[k].type === 'friend').length;
-            const friendsCount = Object.keys(userData.friends).length;
-
-            // Badges
-            document.getElementById('inbox-badge').classList.toggle('hidden', inboxCount === 0);
-            document.getElementById('friends-badge').classList.toggle('hidden', inboxCount === 0);
-
-            // Lista Amigos
-            const fCont = document.getElementById('friends-container');
-            if(friendsCount === 0) {
-                fCont.innerHTML = `<div class="text-center p-6 text-slate-500 font-bold"><i class="fas fa-ghost text-4xl mb-2 opacity-50 block"></i>No tienes amigos agregados</div>`;
-            } else {
-                fCont.innerHTML = Object.keys(userData.friends).map(k => {
-                    const f = userData.friends[k];
-                    return `
-                        <div class="flex items-center justify-between p-3 mb-2 rounded-xl bg-slate-800 border border-slate-700">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center font-black">${f.name.charAt(0).toUpperCase()}</div>
-                                <span class="font-bold">${f.name}</span>
-                            </div>
-                            <button onclick="window.confirmDeleteFriend('${k}')" class="w-8 h-8 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center active:scale-95"><i class="fas fa-trash"></i></button>
-                        </div>
-                    `;
-                }).join('');
             }
+        };
 
-            // Lista Bandeja
-            const iCont = document.getElementById('inbox-container');
-            const friendInvites = Object.keys(userData.invites).filter(k => userData.invites[k].type === 'friend');
+        window.toggleInbox = () => {
+            isShowingInbox = !isShowingInbox;
+            document.getElementById('btn-inbox').classList.toggle('text-yellow-400', isShowingInbox);
+            document.getElementById('btn-inbox').classList.toggle('text-slate-400', !isShowingInbox);
+            document.getElementById('view-friends').style.display = isShowingInbox ? 'none' : 'block';
+            document.getElementById('view-inbox').style.display = isShowingInbox ? 'block' : 'none';
+            document.getElementById('list-title').innerText = isShowingInbox ? "Bandeja de Entrada" : "Mis Amigos";
+            renderFriendsUI();
+        };
+
+        window.sendFriendRequest = async () => {
+            const input = document.getElementById('add-friend-id');
+            const val = input.value.trim();
+            if(!val) return;
+            if(!currentUser) return;
             
-            if(friendInvites.length === 0) {
-                iCont.innerHTML = `<div class="text-center p-6 text-slate-500 font-bold"><i class="fas fa-envelope-open text-4xl mb-2 opacity-50 block"></i>Bandeja vacía</div>`;
-            } else {
-                iCont.innerHTML = friendInvites.map(k => {
-                    const inv = userData.invites[k];
-                    return `
-                        <div class="flex items-center justify-between p-3 bg-slate-800 rounded-xl border border-slate-700">
-                            <span class="font-bold text-sm text-slate-300">De: <span class="text-white">${inv.fromName}</span></span>
-                            <div class="flex gap-2">
-                                <button onclick="window.acceptFriend('${k}', '${inv.fromName}')" class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center active:scale-95"><i class="fas fa-check"></i></button>
-                                <button onclick="window.rejectInvite('${k}')" class="w-8 h-8 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center active:scale-95"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-        }
-
-        window.toggleFriendsModal = () => {
-            const m = document.getElementById('modal-friends');
-            m.classList.toggle('hidden'); m.classList.toggle('flex');
-            window.switchFriendsTab('list');
-        };
-
-        window.switchFriendsTab = (tab) => {
-            document.getElementById('tab-friends-list').classList.toggle('hidden', tab !== 'list');
-            document.getElementById('tab-friends-inbox').classList.toggle('hidden', tab !== 'inbox');
-        };
-
-        window.copyMyId = () => {
-            navigator.clipboard.writeText(currentUser.displayName).then(()=>window.showToast("ID Copiado")).catch(()=>window.showToast("Error al copiar", true));
-        };
-
-        window.addFriend = async () => {
-            const input = document.getElementById('add-friend-input');
-            const searchName = input.value.trim();
-            if(!searchName) return;
-            if(searchName.toLowerCase() === currentUser.displayName.toLowerCase()) return window.showToast("No puedes agregarte a ti mismo", true);
+            const myTag = document.getElementById('my-player-id').innerText;
+            if(val === myTag) return showToast("No puedes agregarte a ti mismo", true);
             
-            input.value = '';
-            window.showToast("Buscando...");
-
+            showToast("Buscando jugador...");
             try {
-                const q = query(collection(db, "users"), where("searchName", "==", searchName.toLowerCase()));
-                const snap = await getDocs(q);
-                if(snap.empty) return window.showToast("Jugador no encontrado", true);
+                // Buscar en Firestore por ID o Nombre
+                const usersRef = collection(db, 'users');
+                const qTag = query(usersRef, where('tag', '==', val));
+                const qName = query(usersRef, where('name', '==', val));
                 
-                const targetDoc = snap.docs[0];
-                await updateDoc(targetDoc.ref, {
-                    [`invites.${currentUser.uid}`]: { type: 'friend', fromName: currentUser.displayName, timestamp: Date.now() }
+                let targetDoc = null;
+                const snapTag = await getDocs(qTag);
+                
+                if (!snapTag.empty) { targetDoc = snapTag.docs[0]; } 
+                else {
+                    const snapName = await getDocs(qName);
+                    if (!snapName.empty) targetDoc = snapName.docs[0];
+                }
+
+                if (!targetDoc) return showToast("Jugador no encontrado", true);
+                const targetData = targetDoc.data();
+                
+                // Evitar duplicados
+                if (friendsList.find(f => f.uid === targetData.uid)) return showToast("Ya sois amigos", true);
+
+                // Escribir en la bandeja de entrada del otro usuario
+                await updateDoc(doc(db, 'users', targetData.uid), {
+                    inbox: arrayUnion({ uid: currentUser.uid, name: currentUser.displayName })
                 });
-                window.showToast("Solicitud enviada");
-            } catch(e) { window.showToast("Error de conexión", true); }
+                
+                showToast(`¡Solicitud enviada a ${targetData.name}!`);
+                input.value = '';
+            } catch (error) { 
+                showToast("Error al enviar solicitud", true); 
+            }
         };
 
-        window.acceptFriend = async (friendUid, friendName) => {
+        window.acceptRequest = async (reqUid, reqName) => {
+            if(!currentUser) return;
+            // 1. Quitar de mi bandeja y añadir a mis amigos
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                inbox: arrayRemove({ uid: reqUid, name: reqName }),
+                friends: arrayUnion({ uid: reqUid, name: reqName })
+            });
+            // 2. Añadirme a los amigos de la otra persona
+            await updateDoc(doc(db, 'users', reqUid), {
+                friends: arrayUnion({ uid: currentUser.uid, name: currentUser.displayName })
+            });
+            showToast(`¡Aceptaste a ${reqName}!`);
+        };
+
+        window.rejectRequest = async (reqUid, reqName) => {
+            if(!currentUser) return;
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                inbox: arrayRemove({ uid: reqUid, name: reqName })
+            });
+            showToast("Solicitud rechazada");
+        };
+
+        window.deleteFriend = async (fUid, fName) => {
+            if(!currentUser) return;
+            // Borrar de mis amigos
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                friends: arrayRemove({ uid: fUid, name: fName })
+            });
+            // Borrar de sus amigos
+            await updateDoc(doc(db, 'users', fUid), {
+                friends: arrayRemove({ uid: currentUser.uid, name: currentUser.displayName })
+            });
+            showToast(`Eliminaste a ${fName}`);
+        };
+
+        function renderFriendsUI() {
+            const badge = document.getElementById('inbox-badge');
+            badge.classList.toggle('hidden', inboxRequests.length === 0);
+            badge.innerText = inboxRequests.length;
+
+            const viewInbox = document.getElementById('view-inbox');
+            if(inboxRequests.length === 0) {
+                viewInbox.innerHTML = '<p class="text-[11px] text-slate-500 text-center mt-6 font-bold uppercase tracking-wider">Sin solicitudes</p>';
+            } else {
+                viewInbox.innerHTML = inboxRequests.map(req => `
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-slate-700/40 border border-slate-600 mb-1 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-lg font-black shadow-inner text-white">${req.name.charAt(0).toUpperCase()}</div>
+                            <span class="text-sm font-bold text-white">${req.name}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="window.acceptRequest('${req.uid}', '${req.name}')" class="w-9 h-9 rounded-full bg-emerald-500 active:scale-95 text-white flex items-center justify-center shadow"><i class="fas fa-check"></i></button>
+                            <button onclick="window.rejectRequest('${req.uid}', '${req.name}')" class="w-9 h-9 rounded-full bg-red-500 active:scale-95 text-white flex items-center justify-center shadow"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            const viewFriends = document.getElementById('view-friends');
+            if(friendsList.length === 0) {
+                viewFriends.innerHTML = '<p class="text-[11px] text-slate-500 text-center mt-6 font-bold uppercase tracking-wider">No tienes amigos agregados</p>';
+            } else {
+                viewFriends.innerHTML = friendsList.map(f => `
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-slate-700/40 border border-slate-600 mb-1 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-lg font-black shadow-inner text-white">${f.name.charAt(0).toUpperCase()}</div>
+                            <span class="text-sm font-bold text-white">${f.name}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="w-9 h-9 rounded-full bg-slate-600 active:scale-95 text-white flex items-center justify-center shadow"><i class="fas fa-gamepad"></i></button>
+                            <button onclick="window.confirmDeleteFriend('${f.uid}', '${f.name}')" class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 hover:text-red-400 border border-slate-600 flex items-center justify-center shadow transition-colors"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        window.confirmDeleteFriend = (fUid, fName) => {
+            friendToDelete = { uid: fUid, name: fName };
+            document.getElementById('confirm-msg').innerText = `¿Quieres eliminar a ${fName} de tu lista?`;
+            const modal = document.getElementById('modal-confirm');
+            const content = document.getElementById('modal-confirm-content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => { content.classList.remove('scale-95'); content.classList.add('scale-100'); }, 10);
+        };
+
+        window.closeConfirm = () => {
+            const modal = document.getElementById('modal-confirm');
+            const content = document.getElementById('modal-confirm-content');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); friendToDelete = null; }, 300);
+        };
+
+        window.executeDeleteFriend = async () => {
+            if(!currentUser || !friendToDelete) return;
+            const { uid, name } = friendToDelete;
+            window.closeConfirm();
+            
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                friends: arrayRemove({ uid: uid, name: name })
+            });
+            await updateDoc(doc(db, 'users', uid), {
+                friends: arrayRemove({ uid: currentUser.uid, name: currentUser.displayName })
+            });
+            showToast(`Eliminaste a ${name}`);
+        };
+
+        window.openRoomInvitesModal = () => {
+            const modal = document.getElementById('modal-room-invites');
+            const content = document.getElementById('modal-room-invites-content');
+            
+            const listDiv = document.getElementById('room-friends-list');
+            if(friendsList.length === 0) {
+                listDiv.innerHTML = '<p class="text-[11px] text-slate-500 text-center mt-6 font-bold uppercase tracking-wider">No tienes amigos para invitar</p>';
+            } else {
+                listDiv.innerHTML = friendsList.map(f => `
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-slate-700/40 border border-slate-600 mb-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-lg font-black shadow-inner text-white">${f.name.charAt(0).toUpperCase()}</div>
+                            <span class="text-sm font-bold text-white">${f.name}</span>
+                        </div>
+                        <button onclick="window.sendGameInvite('${f.uid}', '${f.name}')" class="px-4 py-2 rounded-xl bg-emerald-500 active:scale-95 text-slate-900 font-black text-[11px] uppercase tracking-wider shadow-lg transition-all">Invitar</button>
+                    </div>
+                `).join('');
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => { content.classList.remove('translate-y-full'); content.classList.add('translate-y-0'); }, 10);
+        };
+
+        window.closeRoomInvitesModal = () => {
+            const modal = document.getElementById('modal-room-invites');
+            const content = document.getElementById('modal-room-invites-content');
+            content.classList.remove('translate-y-0');
+            content.classList.add('translate-y-full');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+        };
+
+        window.sendGameInvite = async (fUid, fName) => {
+            if(!currentRoomRef || !currentUser) return;
+            const code = document.getElementById('room-pin-display').innerText;
+            
             try {
-                // Me agrego su info
-                await updateDoc(doc(db, "users", currentUser.uid), {
-                    [`friends.${friendUid}`]: { name: friendName },
-                    [`invites.${friendUid}`]: deleteField()
+                await updateDoc(doc(db, 'users', fUid), {
+                    gameInvites: arrayUnion({
+                        roomId: code,
+                        hostName: currentUser.displayName,
+                        timestamp: Date.now()
+                    })
                 });
-                // Le agrego mi info a él
-                await updateDoc(doc(db, "users", friendUid), {
-                    [`friends.${currentUser.uid}`]: { name: currentUser.displayName }
-                });
-                window.showToast(`${friendName} añadido!`);
-            } catch(e) {}
+                showToast(`¡Invitación enviada a ${fName}!`);
+                window.closeRoomInvitesModal();
+            } catch (error) { 
+                showToast("Error al invitar", true); 
+            }
         };
 
-        window.rejectInvite = async (key) => {
-            try { await updateDoc(doc(db, "users", currentUser.uid), { [`invites.${key}`]: deleteField() }); } catch(e) {}
+        window.showInvitePopUp = (hostName, roomId) => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast-enter p-3 rounded-2xl shadow-2xl text-white flex flex-col gap-2 w-full max-w-sm bg-slate-900 border-2 border-emerald-500 pointer-events-auto z-[101]`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-slate-900"><i class="fas fa-gamepad"></i></div>
+                    <span class="text-sm font-black tracking-wide">¡${hostName} te invita a jugar!</span>
+                </div>
+                <div class="flex gap-2 mt-1">
+                    <button onclick="window.acceptGameInvite('${roomId}', this)" class="flex-1 bg-emerald-500 active:scale-95 text-slate-900 font-black py-2 rounded-xl text-xs transition-all shadow-lg">UNIRSE AHORA</button>
+                    <button onclick="this.parentElement.parentElement.remove()" class="px-4 bg-slate-800 active:scale-95 text-slate-300 border border-slate-600 font-bold py-2 rounded-xl text-xs transition-all">Cerrar</button>
+                </div>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if(toast.parentElement) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 10000); // Desaparece a los 10 segundos
         };
 
-        window.confirmDeleteFriend = (uid) => {
-            friendToDelete = uid;
-            document.getElementById('modal-confirm-delete').classList.remove('hidden');
+        window.acceptGameInvite = async (roomId, btnEl) => {
+            if(btnEl) btnEl.parentElement.parentElement.remove();
+            if(!currentUser) return showToast("Inicia sesión para jugar", true);
+            
+            if(isLocalModeActive) { isLocalModeActive = false; }
+            window.closeFriendsModal(); // Por si estaba abierto
+            
+            document.getElementById('room-code-input').value = roomId;
+            showScreen('screen-loading');
+            await window.joinRoomBtn();
         };
 
-        window.closeDeleteModal = () => {
-            friendToDelete = null;
-            document.getElementById('modal-confirm-delete').classList.add('hidden');
-        };
+        // --- MENÚS Y MULTIJUGADOR ---
+        window.goToMultiplayer = () => { isLocalModeActive = false; showScreen('screen-multi-lobby'); };
+        window.backToMainMenu = () => showScreen('screen-main-menu');
+        window.leaveGame = () => { clearInterval(timerInterval); window.leaveRoom(); };
 
-        document.getElementById('btn-confirm-delete').onclick = async () => {
-            if(!friendToDelete) return;
-            try {
-                await updateDoc(doc(db, "users", currentUser.uid), { [`friends.${friendToDelete}`]: deleteField() });
-                await updateDoc(doc(db, "users", friendToDelete), { [`friends.${currentUser.uid}`]: deleteField() });
-                window.showToast("Amigo borrado");
-            } catch(e) {}
-            window.closeDeleteModal();
+        window.playLocalMode = () => {
+            isLocalModeActive = true;
+            const apodo = isGuest ? 'Invitado' : (currentUser ? currentUser.displayName : 'Jugador');
+            const shuffled = [...questionPool].sort(() => 0.5 - Math.random());
+            localRoomData = {
+                status: 'playing',
+                hostId: 'local',
+                players: { 'local': { name: apodo, score: 0, isDone: false } },
+                questions: shuffled.slice(0, 5)
+            };
+            currentRoomRef = null; 
+            startLocalGameLoop();
         };
-
-        // --- MULTIJUGADOR ---
-        window.showLobby = () => window.showScreen('screen-lobby');
 
         window.createRoom = async () => {
+            if (!currentUser) return;
             const code = Math.random().toString(36).substring(2, 6).toUpperCase();
-            currentRoomRef = doc(db, 'rooms', code); // Ruta directa
-            
-            try {
-                await setDoc(currentRoomRef, {
-                    status: 'waiting',
-                    hostId: currentUser.uid,
-                    players: { [currentUser.uid]: { name: currentUser.displayName, score: 0, isDone: false } },
-                    createdAt: Date.now()
-                });
-                document.getElementById('room-pin-display').innerText = code;
-                isLocalModeActive = false;
-                setupRoomListener();
-                window.showScreen('screen-room');
-            } catch(e) { window.showToast("Error al crear. Revisa las reglas de DB.", true); }
-        };
-
-        window.joinRoomBtn = () => {
-            const code = document.getElementById('room-code-input').value.trim().toUpperCase();
-            if(code.length === 4) window.joinRoomDirect(code);
-        };
-
-        window.joinRoomDirect = async (code) => {
             currentRoomRef = doc(db, 'rooms', code);
+            
+            const initialData = {
+                status: 'waiting',
+                hostId: currentUser.uid,
+                players: { [currentUser.uid]: { name: currentUser.displayName, score: 0, isDone: false } },
+                createdAt: Date.now()
+            };
             try {
-                const snap = await getDoc(currentRoomRef);
-                if(!snap.exists() || snap.data().status !== 'waiting') return window.showToast("Sala no válida", true);
-                if(Object.keys(snap.data().players).length >= 6) return window.showToast("La sala está llena (Max 6)", true);
-
-                await updateDoc(currentRoomRef, {
-                    [`players.${currentUser.uid}`]: { name: currentUser.displayName, score: 0, isDone: false }
-                });
+                await setDoc(currentRoomRef, initialData);
                 document.getElementById('room-pin-display').innerText = code;
-                isLocalModeActive = false;
                 setupRoomListener();
-                window.showScreen('screen-room');
-            } catch(e) { window.showToast("Error al unirse", true); }
+                showScreen('screen-room');
+            } catch (error) { showToast("Error al crear", true); }
         };
 
-        window.shareRoomCode = () => {
-            const code = document.getElementById('room-pin-display').innerText;
-            if(navigator.share) {
-                navigator.share({ title: 'Battle Answers', text: `Únete a mi sala. PIN: ${code}` }).catch(()=>{});
-            } else {
-                navigator.clipboard.writeText(code).then(()=>window.showToast("PIN Copiado"));
-            }
-        };
+        window.joinRoomBtn = async () => {
+            const code = document.getElementById('room-code-input').value.trim().toUpperCase();
+            if (code.length !== 4) return showToast("El PIN son 4 caracteres", true);
+            if (!currentUser) return;
 
-        // Modal invitar desde la sala
-        window.showRoomInviteModal = () => {
-            const m = document.getElementById('modal-room-invites');
-            const list = document.getElementById('room-invite-list');
-            if(Object.keys(userData.friends).length === 0) {
-                list.innerHTML = `<div class="text-center p-4 text-slate-500 font-bold">No tienes amigos agregados</div>`;
-            } else {
-                list.innerHTML = Object.keys(userData.friends).map(k => {
-                    const f = userData.friends[k];
-                    return `
-                        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800 border border-slate-700">
-                            <span class="font-bold">${f.name}</span>
-                            <button onclick="window.sendRoomInvite('${k}')" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold active:scale-95">Invitar</button>
-                        </div>
-                    `;
-                }).join('');
-            }
-            m.classList.remove('hidden'); m.classList.add('flex');
-        };
-        window.closeRoomInviteModal = () => {
-            document.getElementById('modal-room-invites').classList.add('hidden');
-            document.getElementById('modal-room-invites').classList.remove('flex');
-        };
-
-        window.sendRoomInvite = async (friendUid) => {
-            const code = document.getElementById('room-pin-display').innerText;
+            const roomRef = doc(db, 'rooms', code);
             try {
-                await updateDoc(doc(db, "users", friendUid), {
-                    [`invites.room_${code}`]: { type: 'room', roomId: code, hostName: currentUser.displayName, seen: false, timestamp: Date.now() }
-                });
-                window.showToast("Invitación enviada");
-            } catch(e) {}
+                const snap = await getDoc(roomRef);
+                if (!snap.exists()) return showToast("Sala no encontrada", true);
+                if (snap.data().status !== 'waiting') return showToast("La partida ya empezó", true);
+                if (Object.keys(snap.data().players).length >= 6) return showToast("Sala llena (Máx 6)", true);
+
+                await updateDoc(roomRef, { [`players.${currentUser.uid}`]: { name: currentUser.displayName, score: 0, isDone: false } });
+                currentRoomRef = roomRef;
+                document.getElementById('room-pin-display').innerText = code;
+                setupRoomListener();
+                showScreen('screen-room');
+            } catch (error) { showToast("Error al unirse", true); }
         };
 
         function setupRoomListener() {
-            if(unsubscribeRoom) unsubscribeRoom();
+            if (unsubscribeRoom) unsubscribeRoom();
             unsubscribeRoom = onSnapshot(currentRoomRef, (snap) => {
-                if(!snap.exists()) return;
+                if (!snap.exists()) return;
                 localRoomData = snap.data();
                 
+                const playersList = document.getElementById('room-players-list');
+                playersList.innerHTML = '';
                 const playersArr = Object.values(localRoomData.players);
                 document.getElementById('player-count').innerText = playersArr.length;
-                document.getElementById('room-players-list').innerHTML = playersArr.map(p => `
-                    <div class="flex items-center gap-3 p-3 bg-slate-800/80 rounded-xl border border-white/5">
-                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-black text-sm">${p.name.charAt(0).toUpperCase()}</div>
-                        <span class="font-bold flex-1 truncate">${p.name}</span>
-                        ${localRoomData.hostId === p.uid ? '<i class="fas fa-crown text-yellow-400 text-sm"></i>' : ''}
-                    </div>
-                `).join('');
+
+                playersArr.forEach(p => {
+                    playersList.innerHTML += `
+                        <div class="flex items-center gap-3 p-3 bg-slate-700/50 rounded-xl border border-slate-600 shadow-inner">
+                            <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-black text-white text-lg">${p.name.charAt(0).toUpperCase()}</div>
+                            <span class="font-bold text-white text-lg">${p.name}</span>
+                            ${localRoomData.hostId === p.uid ? '<i class="fas fa-crown text-yellow-400 ml-auto text-lg drop-shadow-md"></i>' : ''}
+                        </div>
+                    `;
+                });
 
                 const isHost = localRoomData.hostId === currentUser.uid;
                 document.getElementById('room-host-controls').classList.toggle('hidden', !isHost);
                 document.getElementById('room-guest-controls').classList.toggle('hidden', isHost);
 
-                if(localRoomData.status === 'playing' && document.getElementById('screen-room').classList.contains('hidden') === false) {
+                const isWaitingScreen = !document.getElementById('screen-room').classList.contains('hidden') || 
+                                        !document.getElementById('screen-mode-select').classList.contains('hidden') || 
+                                        !document.getElementById('screen-category-select').classList.contains('hidden');
+
+                if (localRoomData.status === 'playing' && isWaitingScreen) {
                     startLocalGameLoop();
                 }
-                if(document.getElementById('screen-gameover').classList.contains('hidden') === false) {
+
+                if (!document.getElementById('screen-gameover').classList.contains('hidden')) {
                     updateLeaderboardUI(localRoomData.players);
                 }
             });
         }
 
-        window.leaveRoom = () => {
-            if(unsubscribeRoom) unsubscribeRoom();
-            currentRoomRef = null; localRoomData = null;
-            clearInterval(timerInterval);
-            window.showScreen('screen-main-menu');
-        };
+        // --- FLUJO DEL HOST (MODO Y CATEGORIAS) ---
+        window.goToModeSelection = () => showScreen('screen-mode-select');
+        window.backToRoom = () => showScreen('screen-room');
 
-        // --- CONFIGURACIÓN DE JUEGO ---
-        window.playLocalMode = () => {
-            isLocalModeActive = true; currentRoomRef = null;
-            window.goToModeSelect();
-        };
-
-        window.goToModeSelect = () => window.showScreen('screen-mode-select');
-        window.backFromModeSelect = () => window.showScreen(isLocalModeActive ? 'screen-main-menu' : 'screen-room');
-
-        window.selectGameMode = (mode) => {
+        window.selectMode = (mode) => {
             selectedGameMode = mode;
+            showScreen('screen-category-select');
             renderCategoryGrid();
-            window.showScreen('screen-category-select');
+        };
+
+        window.toggleCategory = (cat) => {
+            if (selectedCategories.includes(cat)) {
+                if (selectedCategories.length > 1) selectedCategories = selectedCategories.filter(c => c !== cat);
+                else showToast("Debes elegir al menos una", true);
+            } else {
+                selectedCategories.push(cat);
+            }
+            renderCategoryGrid();
         };
 
         function renderCategoryGrid() {
@@ -884,189 +1004,162 @@
                 const conf = categoriesConfig[cat];
                 const isSelected = selectedCategories.includes(cat);
                 return `
-                    <button onclick="window.toggleCategory('${cat}')" class="p-4 rounded-3xl font-black flex flex-col items-center justify-center gap-3 transition-all duration-200 border-2 ${isSelected ? conf.bg + ' border-transparent text-white shadow-lg' : 'bg-slate-800/60 border-slate-600 text-slate-400 scale-95'}">
+                    <button onclick="window.toggleCategory('${cat}')" class="p-4 rounded-3xl font-black flex flex-col items-center justify-center gap-3 transition-all duration-200 border-2 ${isSelected ? conf.bg + ' border-transparent text-white scale-100 shadow-xl' : 'bg-slate-800/60 border-slate-600 text-slate-400 scale-95 hover:border-slate-500'}">
                         <i class="fas ${conf.icon} text-4xl mb-1"></i>
-                        <span class="text-[10px] uppercase tracking-widest">${conf.name}</span>
+                        <span class="text-[10px] uppercase tracking-widest drop-shadow-md">${conf.name}</span>
                     </button>
                 `;
             }).join('');
         }
 
-        window.toggleCategory = (cat) => {
-            if(selectedCategories.includes(cat)) {
-                if(selectedCategories.length > 1) selectedCategories = selectedCategories.filter(c => c !== cat);
-            } else {
-                selectedCategories.push(cat);
-            }
-            renderCategoryGrid();
-        };
-
         window.startGameMultiplayerFinal = async () => {
-            if(selectedCategories.length === 0) return window.showToast("Selecciona al menos 1 categoría", true);
+            if (!currentRoomRef) return;
+            const filteredPool = questionPool.filter(q => selectedCategories.includes(q.cat));
+            if(filteredPool.length === 0) return showToast("No hay preguntas para estas categorías", true);
             
-            document.getElementById('screen-category-select').classList.add('opacity-50', 'pointer-events-none');
-            window.showToast("Descargando preguntas de Firebase...");
-
+            const shuffled = [...filteredPool].sort(() => 0.5 - Math.random());
+            const selectedQs = shuffled.slice(0, 5);
             try {
-                // Descargar preguntas SOLO de las categorías seleccionadas
-                const q = query(collection(db, "questions"), where("cat", "in", selectedCategories));
-                const snap = await getDocs(q);
-                
-                let fetchedQuestions = [];
-                snap.forEach(doc => fetchedQuestions.push(doc.data()));
-
-                if(fetchedQuestions.length < 5) {
-                    document.getElementById('screen-category-select').classList.remove('opacity-50', 'pointer-events-none');
-                    return window.showToast("Faltan preguntas en la BD para estas categorías.", true);
-                }
-                
-                // Mezclar y elegir 5
-                const shuffled = fetchedQuestions.sort(() => 0.5 - Math.random());
-                const selectedQs = shuffled.slice(0, 5); 
-
-                if (isLocalModeActive) {
-                    localRoomData = {
-                        status: 'playing', hostId: 'local',
-                        players: { 'local': { name: currentUser ? currentUser.displayName : 'Jugador', score: 0, isDone: false } },
-                        questions: selectedQs
-                    };
-                    document.getElementById('screen-category-select').classList.remove('opacity-50', 'pointer-events-none');
-                    startLocalGameLoop();
-                } else {
-                    if(!currentRoomRef) return;
-                    await updateDoc(currentRoomRef, { status: 'playing', mode: selectedGameMode, questions: selectedQs });
-                    document.getElementById('screen-category-select').classList.remove('opacity-50', 'pointer-events-none');
-                }
-            } catch(e) { 
-                console.error(e);
-                document.getElementById('screen-category-select').classList.remove('opacity-50', 'pointer-events-none');
-                window.showToast("Error conectando a la Base de Datos", true); 
-            }
+                await updateDoc(currentRoomRef, { status: 'playing', mode: selectedGameMode, questions: selectedQs });
+            } catch (error) { showToast("Error al iniciar juego", true); }
         };
 
-        // --- BUCLE DE JUEGO ---
+        window.leaveRoom = () => {
+            clearInterval(timerInterval);
+            if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
+            currentRoomRef = null; localRoomData = null;
+            if (isLocalModeActive) { isLocalModeActive = false; showScreen('screen-main-menu'); } 
+            else { showScreen('screen-multi-lobby'); }
+        };
+
+        // --- GAME LOOP ---
         function startLocalGameLoop() {
             score = 0; lives = 3; combo = 1; currentQIndex = 0;
-            updateHUD();
-            window.showScreen('screen-question');
-            loadNextQuestion();
+            updateHUD(); showScreen('screen-question'); loadNextQuestion();
         }
-
-        window.leaveGame = () => {
-            clearInterval(timerInterval);
-            if(isLocalModeActive) window.showScreen('screen-main-menu');
-            else window.leaveRoom();
-        };
 
         function updateHUD() {
             document.getElementById('score-display').innerText = score;
             document.getElementById('combo-display').innerText = `x${combo}`;
-            document.getElementById('lives-display').innerHTML = Array(3).fill(0).map((_,i) => `<i class="fas fa-heart ${i<lives?'text-red-500':'text-slate-600/50'}"></i>`).join('');
+            const livesDiv = document.getElementById('lives-display');
+            livesDiv.innerHTML = '';
+            for(let i=0; i<3; i++) livesDiv.innerHTML += i < lives ? '<i class="fas fa-heart text-red-500"></i>' : '<i class="far fa-heart text-slate-600"></i>';
         }
 
         function loadNextQuestion() {
-            if(lives <= 0 || currentQIndex >= localRoomData.questions.length) return finishLocalGame();
+            if (lives <= 0 || currentQIndex >= localRoomData.questions.length) return finishLocalGame();
 
             const q = localRoomData.questions[currentQIndex];
             const conf = categoriesConfig[q.cat];
 
             document.getElementById('q-counter').innerText = `${currentQIndex + 1}/${localRoomData.questions.length}`;
             const badge = document.getElementById('q-category-badge');
-            badge.innerText = conf.name; badge.className = `px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-white shadow-lg border border-white/20 ${conf.bg}`;
+            badge.innerText = conf.name;
+            badge.className = `px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-white shadow-lg border border-white/20 ${conf.bg}`;
             
             document.getElementById('question-text').innerText = q.text;
-
-            // Renderizar imagen si existe
-            const imgContainer = document.getElementById('question-image-container');
-            const imgEl = document.getElementById('question-image');
-            if(q.img) {
-                imgEl.src = q.img; imgContainer.classList.remove('hidden');
-            } else {
-                imgContainer.classList.add('hidden'); imgEl.src = '';
-            }
             
-            const opts = document.getElementById('options-container');
-            opts.innerHTML = '';
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
             q.options.forEach((opt, index) => {
                 const btn = document.createElement('button');
-                btn.className = 'w-full p-4 bg-slate-800/90 border border-slate-600 hover:bg-slate-700 rounded-2xl text-left font-bold text-lg transition-all shadow-lg text-white';
+                btn.className = 'w-full p-4 bg-slate-800/90 active:scale-[0.98] rounded-2xl text-center font-black text-lg transition-all border-2 border-slate-600 text-slate-200 focus:outline-none shadow-lg';
                 btn.innerText = opt;
                 btn.onclick = () => handleAnswer(index, btn, q.correct);
-                opts.appendChild(btn);
+                optionsContainer.appendChild(btn);
             });
             startTimer();
         }
 
         function startTimer() {
             timeRemaining = 15;
-            const bar = document.getElementById('timer-bar');
-            bar.style.width = '100%'; bar.className = 'h-full w-full transition-all duration-100 linear bg-blue-500';
+            const timerBar = document.getElementById('timer-bar');
+            timerBar.style.width = '100%';
+            timerBar.className = 'h-full w-full transition-all duration-100 linear bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)]';
 
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeRemaining -= 0.1;
-                bar.style.width = `${(timeRemaining/15)*100}%`;
-                if(timeRemaining <= 5) bar.classList.replace('bg-blue-500', 'bg-red-500');
-                if(timeRemaining <= 0) {
-                    clearInterval(timerInterval);
-                    handleAnswer(-1, null, localRoomData.questions[currentQIndex].correct);
+                timerBar.style.width = `${(timeRemaining / 15) * 100}%`;
+                if (timeRemaining <= 5) {
+                    timerBar.classList.replace('bg-blue-500', 'bg-red-500');
+                    timerBar.classList.replace('shadow-[0_0_10px_rgba(59,130,246,0.8)]', 'shadow-[0_0_10px_rgba(239,68,68,0.8)]');
                 }
+                if (timeRemaining <= 0) { clearInterval(timerInterval); handleAnswer(-1, null, localRoomData.questions[currentQIndex].correct); }
             }, 100);
         }
 
-        function handleAnswer(selIdx, btnEl, corIdx) {
+        function handleAnswer(selectedIndex, buttonEl, correctIndex) {
             clearInterval(timerInterval);
             const btns = document.getElementById('options-container').querySelectorAll('button');
             btns.forEach(b => b.disabled = true);
 
-            const isCorrect = selIdx === corIdx;
-            if(isCorrect) {
-                if(btnEl) { btnEl.classList.remove('bg-slate-800/90','border-slate-600'); btnEl.classList.add('bg-emerald-500', 'border-emerald-400'); }
+            if (selectedIndex === correctIndex) {
+                if(buttonEl) {
+                    buttonEl.classList.remove('bg-slate-800/90', 'border-slate-600', 'text-slate-200');
+                    buttonEl.classList.add('bg-emerald-500', 'border-emerald-400', 'text-white', 'shadow-[0_0_15px_rgba(16,185,129,0.5)]');
+                }
                 score += (100 * combo); combo++;
             } else {
-                if(btnEl) { btnEl.classList.remove('bg-slate-800/90','border-slate-600'); btnEl.classList.add('bg-red-500', 'border-red-400', 'shake'); }
-                btns[corIdx].classList.remove('bg-slate-800/90','border-slate-600'); btns[corIdx].classList.add('bg-emerald-500', 'border-emerald-400');
-                if(selIdx === -1) document.getElementById('screen-question').classList.add('shake');
+                if(buttonEl) {
+                    buttonEl.classList.remove('bg-slate-800/90', 'border-slate-600', 'text-slate-200');
+                    buttonEl.classList.add('bg-red-500', 'border-red-400', 'text-white', 'shake', 'shadow-[0_0_15px_rgba(239,68,68,0.5)]');
+                }
+                const cBtn = btns[correctIndex];
+                cBtn.classList.remove('bg-slate-800/90', 'border-slate-600', 'text-slate-200');
+                cBtn.classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
+                if(selectedIndex === -1) document.getElementById('screen-question').classList.add('shake');
                 lives--; combo = 1;
             }
 
             updateHUD();
-            if(currentRoomRef && currentUser) updateDoc(currentRoomRef, { [`players.${currentUser.uid}.score`]: score }).catch(()=>{});
-
-            setTimeout(() => {
-                document.getElementById('screen-question').classList.remove('shake');
-                currentQIndex++; loadNextQuestion();
-            }, 1500);
+            if (!isLocalModeActive && currentRoomRef && currentUser && !isGuest) {
+                updateDoc(currentRoomRef, { [`players.${currentUser.uid}.score`]: score }).catch(e=>console.log(e));
+            }
+            setTimeout(() => { document.getElementById('screen-question').classList.remove('shake'); currentQIndex++; loadNextQuestion(); }, 1500);
         }
 
         async function finishLocalGame() {
-            if(currentRoomRef && currentUser) await updateDoc(currentRoomRef, { [`players.${currentUser.uid}.isDone`]: true });
-            window.showScreen('screen-gameover');
+            if (!isLocalModeActive && currentRoomRef && currentUser && !isGuest) {
+                await updateDoc(currentRoomRef, { [`players.${currentUser.uid}.isDone`]: true });
+            }
+            showScreen('screen-gameover');
             updateLeaderboardUI(localRoomData.players);
         }
 
-        function updateLeaderboardUI(players) {
-            const cont = document.getElementById('leaderboard-container');
-            const sorted = Object.values(players).sort((a, b) => b.score - a.score);
-            cont.innerHTML = sorted.map((p, i) => {
-                const isMe = p.name === (currentUser?currentUser.displayName:'Jugador');
-                let med = i===0?'<i class="fas fa-medal text-yellow-400 ml-2"></i>':(i===1?'<i class="fas fa-medal text-slate-300 ml-2"></i>':(i===2?'<i class="fas fa-medal text-amber-600 ml-2"></i>':''));
-                return `
-                    <div class="flex items-center justify-between p-4 mb-3 rounded-2xl ${isMe ? 'bg-blue-600/30 border border-blue-400/50' : 'bg-slate-800/80 border border-white/5'}">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-black">${i+1}</div>
-                            <div class="flex flex-col">
-                                <span class="font-black text-lg">${p.name}${med}</span>
-                                ${p.isDone?'<span class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Terminó</span>':'<span class="text-[10px] text-yellow-400 font-bold uppercase tracking-widest">Jugando...</span>'}
+        function updateLeaderboardUI(playersObj) {
+            const container = document.getElementById('leaderboard-container');
+            container.innerHTML = '';
+            const sortedPlayers = Object.values(playersObj).sort((a, b) => b.score - a.score);
+
+            sortedPlayers.forEach((p, index) => {
+                const uidToCheck = isGuest ? 'local' : (currentUser ? currentUser.uid : 'local');
+                const isMe = Object.keys(playersObj).find(k => playersObj[k] === p) === uidToCheck;
+                
+                let medal = '';
+                if(index === 0) medal = '<i class="fas fa-medal text-yellow-400 text-2xl drop-shadow-md"></i>';
+                else if(index === 1) medal = '<i class="fas fa-medal text-slate-300 text-2xl drop-shadow-md"></i>';
+                else if(index === 2) medal = '<i class="fas fa-medal text-amber-600 text-2xl drop-shadow-md"></i>';
+                else medal = `<span class="text-slate-400 font-black text-xl">#${index+1}</span>`;
+
+                const statusStr = p.isDone ? '<span class="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">Terminó</span>' : '<span class="text-[10px] uppercase font-bold text-yellow-400 tracking-wider"><i class="fas fa-spinner fa-spin mr-1"></i>Jugando</span>';
+
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-4 mb-3 rounded-2xl ${isMe ? 'bg-blue-600/50 border border-blue-400 shadow-lg' : 'bg-slate-700/50 border border-slate-600'} transition-all">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 flex items-center justify-center">${medal}</div>
+                            <div class="flex flex-col text-left">
+                                <span class="font-black text-white text-xl leading-none mb-1">${p.name}</span>
+                                ${statusStr}
                             </div>
                         </div>
-                        <div class="text-right flex flex-col items-end">
+                        <div class="text-right">
                             <span class="text-3xl font-black text-white leading-none">${p.score}</span>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">PTS</span>
+                            <span class="text-[10px] font-bold text-slate-400 block tracking-widest mt-1">PTS</span>
                         </div>
                     </div>
                 `;
-            }).join('');
+            });
         }
     </script>
 </body>
