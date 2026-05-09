@@ -243,7 +243,7 @@
 
         <!-- MODAL DE AMIGOS -->
         <div id="friends-modal" class="hidden absolute inset-0 z-40 bg-black/50 backdrop-blur-sm flex flex-col justify-end">
-            <div class="h-[85%] bg-slate-900 border-t border-slate-700 rounded-t-3xl flex flex-col slide-up shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+            <div class="h-[85dvh] bg-slate-900 border-t border-slate-700 rounded-t-3xl flex flex-col slide-up shadow-[0_-10px_40px_rgba(0,0,0,0.5)] w-full">
                 
                 <div class="flex justify-between items-center p-5 border-b border-slate-800 shrink-0">
                     <h3 id="friends-modal-title" class="font-black text-xl text-white">AMIGOS</h3>
@@ -253,7 +253,7 @@
                 </div>
 
                 <div class="p-5 flex-1 flex flex-col gap-5 overflow-hidden">
-                    <div class="glass-panel p-4 rounded-2xl flex justify-between items-center bg-slate-800 shrink-0">
+                    <div class="glass-panel p-4 rounded-2xl flex justify-between items-center bg-slate-800 shrink-0 mb-2">
                         <div>
                             <p class="text-xs text-slate-400">TU ID PARA COMPARTIR</p>
                             <p id="my-player-id" class="font-mono font-bold text-blue-400 select-all">Player#0000</p>
@@ -262,21 +262,21 @@
                     </div>
 
                     <!-- Vista Amigos -->
-                    <div id="friends-list-container" class="flex-1 flex flex-col min-h-0 overflow-hidden">
+                    <div id="friends-list-container" class="flex-1 h-0 flex flex-col overflow-hidden">
                         <div class="flex gap-2 shrink-0 mb-4">
                             <input type="text" id="add-friend-input" placeholder="Añadir ID (Ej: Juan#1234)" class="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
-                            <button onclick="window.addFriend()" class="px-5 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-white active:scale-95 flex items-center gap-2 text-sm">
+                            <button onclick="window.addFriend()" class="px-5 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-white active:scale-95 flex items-center gap-2 text-sm shrink-0">
                                 AÑADIR
                             </button>
                         </div>
                         <p class="text-xs text-slate-400 font-bold mb-3 border-b border-slate-700 pb-1 shrink-0">LISTA DE AMIGOS</p>
-                        <div id="friends-list" class="space-y-2 overflow-y-auto flex-1 pr-1 pb-4"></div>
+                        <div id="friends-list" class="space-y-2 overflow-y-auto h-full pr-1 pb-4"></div>
                     </div>
 
                     <!-- Vista Bandeja -->
-                    <div id="inbox-container" class="hidden flex-1 flex flex-col min-h-0 overflow-hidden">
+                    <div id="inbox-container" class="hidden flex-1 h-0 flex flex-col overflow-hidden">
                         <p class="text-xs text-slate-400 font-bold mb-3 border-b border-slate-700 pb-1 text-emerald-400 shrink-0">SOLICITUDES Y ALERTAS</p>
-                        <div id="inbox-list" class="space-y-2 overflow-y-auto flex-1 pr-1 pb-4"></div>
+                        <div id="inbox-list" class="space-y-2 overflow-y-auto h-full pr-1 pb-4"></div>
                     </div>
                 </div>
             </div>
@@ -717,7 +717,7 @@
             
             // Badges
             const lobbyBadge = document.getElementById('lobby-inbox-badge');
-            if(userData.inbox && userData.inbox.length > 0) {
+            if(userData.inbox && Array.isArray(userData.inbox) && userData.inbox.length > 0) {
                 lobbyBadge.classList.remove('hidden'); lobbyBadge.innerText = userData.inbox.length;
             } else {
                 lobbyBadge.classList.add('hidden');
@@ -726,8 +726,9 @@
             // Amigos List
             const fList = document.getElementById('friends-list');
             fList.innerHTML = '';
-            if(!userData.friends || userData.friends.length === 0) fList.innerHTML = '<p class="text-xs text-slate-500 text-center mt-4">Lista vacía.</p>';
-            else {
+            if(!userData.friends || !Array.isArray(userData.friends) || userData.friends.length === 0) {
+                fList.innerHTML = '<p class="text-xs text-slate-500 text-center mt-4">Lista vacía.</p>';
+            } else {
                 userData.friends.forEach((f, i) => {
                     fList.innerHTML += `
                         <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800 border border-slate-700">
@@ -740,8 +741,9 @@
             // Inbox List
             const iList = document.getElementById('inbox-list');
             iList.innerHTML = '';
-            if(!userData.inbox || userData.inbox.length === 0) iList.innerHTML = '<p class="text-xs text-slate-500 text-center mt-4">Nada por aquí.</p>';
-            else {
+            if(!userData.inbox || !Array.isArray(userData.inbox) || userData.inbox.length === 0) {
+                iList.innerHTML = '<p class="text-xs text-slate-500 text-center mt-4">Nada por aquí.</p>';
+            } else {
                 userData.inbox.forEach((req, i) => {
                     let btnHTML = '';
                     if(req.type === 'friend') {
