@@ -10,18 +10,16 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap');
         
         :root {
-            /* Variable dinámica para controlar la transparencia de los menús desde Ajustes */
             --glass-opacity: 0.6;
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #020617;
+            background-color: transparent;
             color: white;
             overflow: hidden; 
         }
 
-        /* Modo Ahorro Batería (Desactiva animaciones) */
         body.battery-saver * {
             animation: none !important;
             transition: none !important;
@@ -50,12 +48,12 @@
         .slide-up { animation: slideUp 0.3s ease-out forwards; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        /* EFECTO CRISTAL MAGNÉTICO (Afectado por Ajustes) */
         .glass-panel {
             background: rgba(15, 23, 42, var(--glass-opacity));
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -63,7 +61,6 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
     </style>
     
-    <!-- PWA Setup iOS/Android -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script>
@@ -84,52 +81,73 @@
     </script>
 </head>
 
-<body class="w-screen h-[100dvh] flex justify-center items-center">
+<body class="w-screen h-[100dvh] flex justify-center items-center bg-slate-950">
 
     <div id="toast-container" class="fixed top-4 left-0 right-0 z-[100] flex flex-col items-center gap-2 pointer-events-none"></div>
 
     <div id="app-container" class="w-full max-w-md h-full relative overflow-hidden flex flex-col shadow-2xl bg-start transition-all duration-500 sm:border-x sm:border-white/10">
         
-        <!-- PANTALLA DE INTRODUCCIÓN -->
-        <div id="screen-intro" class="flex-1 flex flex-col items-center z-50 absolute inset-0 bg-black overflow-hidden">
-            <video autoplay loop muted playsinline poster="https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Gemini_Generated_Image_4vljw74vljw74vlj.png" class="absolute inset-0 w-full h-full object-cover opacity-80 pointer-events-none">
+        <!-- PANTALLA DE INTRO -->
+        <div id="screen-intro" class="flex-1 flex flex-col items-center justify-center p-6 text-center z-50 absolute inset-0 bg-black overflow-hidden">
+            <video autoplay loop muted playsinline poster="https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Gemini_Generated_Image_4vljw74vljw74vlj.png" class="absolute inset-0 w-full h-full object-cover opacity-70 pointer-events-none">
                 <source src="https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/mp4.mp4" type="video/mp4">
             </video>
-            
-            <div class="relative z-10 flex flex-col items-center w-full h-full justify-end pb-20 px-6">
-                <button onclick="window.startFromIntro()" class="w-full max-w-[280px] py-4 bg-emerald-500 hover:bg-emerald-400 rounded-[2rem] font-black text-2xl text-white shadow-[0_0_40px_rgba(16,185,129,0.8)] active:scale-95 border-2 border-emerald-300 animate-pulse transition-all">
+            <div class="relative z-10 flex flex-col items-center w-full h-full justify-end pb-10">
+                <button onclick="window.startFromIntro()" class="w-full max-w-[250px] py-4 bg-emerald-500 hover:bg-emerald-400 rounded-[2rem] font-black text-2xl text-white shadow-[0_0_40px_rgba(16,185,129,0.8)] active:scale-95 border-2 border-emerald-300 animate-pulse transition-all">
                     COMENZAR
                 </button>
             </div>
         </div>
 
-        <div id="screen-loading" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center z-50 absolute inset-0 glass-panel">
-            <i class="fas fa-circle-notch fa-spin text-5xl text-blue-400 mb-4"></i>
+        <header id="game-header" class="hidden p-4 flex justify-between items-center glass-panel z-20 sticky top-0 rounded-b-2xl mx-2 mt-2">
+            <button onclick="window.exitGameConfirm()" class="w-10 h-10 glass-panel bg-red-500/10 border border-red-500/30 rounded-full flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white active:scale-95 transition-all shadow-md">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="flex flex-col text-center">
+                <span class="text-[10px] text-slate-300 font-bold">PUNTOS</span>
+                <span id="score-display" class="text-xl font-black text-white drop-shadow-md">0</span>
+            </div>
+            
+            <div class="flex gap-1 text-red-500 text-lg flex-wrap justify-center max-w-[80px]" id="lives-display"></div>
+            
+            <div class="flex flex-col items-end" id="combo-container">
+                <span class="text-[10px] text-slate-300 font-bold">COMBO</span>
+                <span id="combo-display" class="text-xl font-black text-yellow-400 drop-shadow-md">x1</span>
+            </div>
+        </header>
+
+        <div id="timer-bar-container" class="hidden w-full h-1.5 bg-slate-800/50 z-20 px-2 mt-2 shrink-0">
+            <div id="timer-bar" class="h-full bg-blue-500 w-full transition-all duration-100 linear rounded-full shadow-[0_0_10px_rgba(59,130,246,0.6)]"></div>
+        </div>
+
+        <div id="screen-loading" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center z-50 absolute inset-0 glass-panel bg-slate-900/80">
+            <i class="fas fa-circle-notch fa-spin text-5xl text-blue-500 mb-4 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]"></i>
             <h2 class="text-xl font-bold text-white drop-shadow-md">Cargando...</h2>
         </div>
 
-        <!-- 1. PANTALLA DE LOGIN -->
+        <!-- 1. LOGIN -->
         <div id="screen-login" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center z-20 absolute inset-0">
-            <div class="w-full max-w-sm glass-panel rounded-3xl p-6 shadow-2xl flex flex-col gap-4">
-                <h1 class="text-3xl font-extrabold mb-2 text-white tracking-wider">ACCESO</h1>
+            <div class="w-full max-w-sm glass-panel rounded-3xl p-6 flex flex-col gap-4">
+                <h1 class="text-3xl font-black mb-2 text-white tracking-wider drop-shadow-lg">ACCESO</h1>
                 
-                <input type="text" id="auth-username" placeholder="Nombre de usuario" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-semibold text-center">
-                <input type="email" id="auth-email" placeholder="Correo electrónico" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-semibold text-center">
-                <input type="password" id="auth-password" placeholder="Contraseña" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-semibold text-center">
+                <input type="text" id="auth-username" placeholder="Nombre de usuario" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner">
+                <input type="email" id="auth-email" placeholder="Correo electrónico" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner">
+                <input type="password" id="auth-password" placeholder="Contraseña" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner">
                 
-                <button onclick="window.resetPassword()" class="text-xs text-blue-400 hover:text-blue-300 transition-colors w-full text-right -mt-2 font-bold">¿Has olvidado la contraseña?</button>
+                <button onclick="window.resetPassword()" class="text-xs text-blue-400 hover:text-blue-300 transition-colors w-full text-right -mt-2 font-bold drop-shadow-md">¿Has olvidado la contraseña?</button>
 
-                <button onclick="window.loginEmail()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-white transition-all shadow-lg active:scale-95 text-lg mt-2">
+                <button onclick="window.loginEmail()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-white transition-all shadow-lg shadow-blue-500/30 active:scale-95 text-lg mt-2 border border-blue-400">
                     ENTRAR / REGISTRARSE
                 </button>
                 
                 <div class="flex items-center gap-3 my-2">
-                    <div class="h-px bg-slate-600 flex-1"></div>
-                    <span class="text-xs text-slate-400 font-bold">O</span>
-                    <div class="h-px bg-slate-600 flex-1"></div>
+                    <div class="h-px bg-white/20 flex-1"></div>
+                    <span class="text-xs text-white/50 font-bold">O</span>
+                    <div class="h-px bg-white/20 flex-1"></div>
                 </div>
 
-                <button onclick="window.playLocal()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 font-bold text-slate-300 transition-all active:scale-95">
+                <button onclick="window.playLocal()" class="w-full py-3 glass-panel rounded-2xl border border-white/20 font-bold text-slate-200 transition-all active:scale-95 shadow-md hover:bg-white/10">
                     MODO LOCAL (Invitado)
                 </button>
             </div>
@@ -143,9 +161,12 @@
             </button>
 
             <div class="flex justify-between items-center mb-10 pt-14">
-                <div class="glass-panel px-5 py-2.5 rounded-2xl border-white/10 shadow-lg">
-                    <p class="text-[10px] text-emerald-400 font-black tracking-widest mb-0.5">BIENVENIDO</p>
-                    <h2 id="menu-player-name" class="text-xl font-black text-white drop-shadow-md truncate max-w-[150px]">Jugador</h2>
+                <div class="glass-panel px-5 py-2.5 rounded-2xl border-white/10 shadow-lg flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <div>
+                        <p class="text-[9px] text-emerald-400 font-black tracking-widest mb-0.5">BIENVENIDO</p>
+                        <h2 id="menu-player-name" class="text-lg font-black text-white drop-shadow-md truncate max-w-[140px]">Jugador</h2>
+                    </div>
                 </div>
                 
                 <button onclick="window.toggleSettingsModal()" class="relative w-12 h-12 glass-panel rounded-full flex items-center justify-center text-slate-300 hover:text-white transition-colors active:scale-95 border-white/10 shadow-lg">
@@ -154,14 +175,18 @@
             </div>
 
             <div class="flex-1 flex flex-col justify-center gap-6 pb-20">
-                <button onclick="window.goToSetup(false)" class="glass-panel w-full py-8 rounded-3xl flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group">
-                    <i class="fas fa-user text-4xl text-blue-400 group-hover:scale-110 transition-transform"></i>
-                    <span class="font-black text-2xl text-white tracking-widest">1 JUGADOR</span>
+                <button onclick="window.goToSetup(false)" class="glass-panel bg-blue-600/20 border-blue-400/30 hover:bg-blue-600/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all group shadow-2xl">
+                    <div class="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.6)] group-hover:scale-110 transition-transform">
+                        <i class="fas fa-user text-3xl text-white"></i>
+                    </div>
+                    <span class="font-black text-3xl text-white tracking-widest drop-shadow-md">1 JUGADOR</span>
                 </button>
 
-                <button id="btn-menu-multi" onclick="window.showScreen('screen-lobby')" class="glass-panel w-full py-8 rounded-3xl flex flex-col items-center justify-center gap-3 active:scale-95 transition-all border-emerald-500/30 group">
-                    <i class="fas fa-globe text-4xl text-emerald-400 group-hover:scale-110 transition-transform"></i>
-                    <span class="font-black text-2xl text-white tracking-widest">CON AMIGOS</span>
+                <button id="btn-menu-multi" onclick="window.showScreen('screen-lobby')" class="glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all group shadow-2xl">
+                    <div class="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.6)] group-hover:scale-110 transition-transform">
+                        <i class="fas fa-globe text-3xl text-white"></i>
+                    </div>
+                    <span class="font-black text-3xl text-white tracking-widest drop-shadow-md">CON AMIGOS</span>
                 </button>
             </div>
         </div>
@@ -177,27 +202,27 @@
                 <div>
                     <label class="text-xs text-slate-400 font-bold mb-2 block">CAMBIAR NOMBRE</label>
                     <div class="flex gap-2 w-full">
-                        <input type="text" id="settings-name-input" placeholder="Nuevo apodo" class="flex-1 min-w-0 px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 text-white focus:outline-none focus:border-blue-500 text-sm font-bold">
-                        <button onclick="window.changeUsername()" class="shrink-0 px-5 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-black text-white text-sm active:scale-95 transition-all">OK</button>
+                        <input type="text" id="settings-name-input" placeholder="Nuevo apodo" class="flex-1 min-w-0 px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 text-white focus:outline-none focus:border-blue-500 text-sm font-bold shadow-inner">
+                        <button onclick="window.changeUsername()" class="shrink-0 px-5 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-black text-white text-sm active:scale-95 transition-all shadow-md">OK</button>
                     </div>
                 </div>
 
                 <div>
                     <label class="text-xs text-slate-400 font-bold mb-2 flex justify-between">
-                        <span>TRANSPARENCIA CRISTAL</span>
-                        <span id="transparency-val">60%</span>
+                        <span>OPACIDAD MENÚS</span>
+                        <span id="transparency-val" class="text-emerald-400">60%</span>
                     </label>
                     <input type="range" id="settings-transparency" min="10" max="95" value="60" oninput="window.updateTransparency(this.value)" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                 </div>
 
-                <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700">
-                    <span class="text-sm font-bold text-slate-300"><i class="fas fa-volume-up w-6 text-blue-400"></i> Sonidos de Juego</span>
-                    <button id="toggle-sound-btn" onclick="window.toggleSound()" class="w-12 h-6 bg-emerald-500 rounded-full relative transition-colors shadow-inner"><div id="toggle-sound-knob" class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full transition-all"></div></button>
+                <div class="flex justify-between items-center bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+                    <span class="text-sm font-bold text-slate-300"><i class="fas fa-volume-up w-6 text-blue-400"></i> Sonidos</span>
+                    <button id="toggle-sound-btn" onclick="window.toggleSound()" class="w-12 h-6 bg-emerald-500 rounded-full relative transition-colors shadow-inner"><div id="toggle-sound-knob" class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full transition-all shadow-md"></div></button>
                 </div>
 
-                <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700">
+                <div class="flex justify-between items-center bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
                     <span class="text-sm font-bold text-slate-300"><i class="fas fa-bolt w-6 text-yellow-400"></i> Ahorro Batería</span>
-                    <button id="toggle-fx-btn" onclick="window.toggleFX()" class="w-12 h-6 bg-slate-600 rounded-full relative transition-colors shadow-inner"><div id="toggle-fx-knob" class="absolute left-1 top-1 w-4 h-4 bg-slate-300 rounded-full transition-all"></div></button>
+                    <button id="toggle-fx-btn" onclick="window.toggleFX()" class="w-12 h-6 bg-slate-600 rounded-full relative transition-colors shadow-inner"><div id="toggle-fx-knob" class="absolute left-1 top-1 w-4 h-4 bg-slate-300 rounded-full transition-all shadow-md"></div></button>
                 </div>
             </div>
         </div>
@@ -206,32 +231,34 @@
         <div id="screen-lobby" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0">
             
             <div class="flex justify-between items-center mb-6 mt-4 w-full">
-                <button onclick="window.showScreen('screen-main-menu')" class="glass-panel w-10 h-10 rounded-full text-slate-200 hover:text-white flex items-center justify-center font-black active:scale-95 transition-all border-white/10 shrink-0">
-                    <i class="fas fa-arrow-left"></i>
+                <button onclick="window.showScreen('screen-main-menu')" class="glass-panel px-4 py-2 rounded-full text-slate-200 hover:text-white flex items-center gap-2 font-black text-xs tracking-wider active:scale-95 transition-all shadow-lg border-white/10 shrink-0">
+                    <i class="fas fa-arrow-left"></i> ATRÁS
                 </button>
                 
                 <div class="flex gap-2">
-                    <button onclick="window.openFriends('inbox')" class="glass-panel px-4 py-2 rounded-2xl text-slate-200 hover:text-white font-bold text-xs tracking-wider active:scale-95 transition-all border-white/10 flex items-center gap-2 relative">
-                        BANDEJA
-                        <div id="lobby-inbox-badge" class="hidden absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-[9px] font-bold text-white">1</div>
+                    <button onclick="window.openFriends('inbox')" class="glass-panel bg-slate-800/80 px-4 py-2.5 rounded-2xl text-slate-200 hover:text-white font-bold text-xs tracking-wider active:scale-95 transition-all border-white/10 flex items-center gap-2 relative shadow-md">
+                        <i class="fas fa-inbox text-slate-400"></i> BANDEJA
+                        <div id="lobby-inbox-badge" class="hidden absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-[10px] font-black text-white shadow-md">1</div>
                     </button>
-                    <button onclick="window.openFriends('friends')" class="glass-panel px-4 py-2 rounded-2xl text-emerald-400 hover:text-emerald-300 font-black text-xs tracking-wider active:scale-95 transition-all border-emerald-500/30 flex items-center gap-2">
-                        AMIGOS
+                    <button onclick="window.openFriends('friends')" class="glass-panel bg-blue-600/20 border-blue-400/30 px-4 py-2.5 rounded-2xl text-blue-400 hover:text-blue-300 font-black text-xs tracking-wider active:scale-95 transition-all flex items-center gap-2 shadow-md">
+                        <i class="fas fa-user-friends"></i> AMIGOS
                     </button>
                 </div>
             </div>
 
             <div class="flex-1 flex flex-col justify-center gap-6 pb-20">
-                <button onclick="window.createRoom()" class="glass-panel w-full py-8 rounded-3xl flex flex-col items-center justify-center gap-3 active:scale-95 transition-all border-emerald-500/40">
-                    <i class="fas fa-plus-circle text-4xl text-emerald-400"></i>
-                    <span class="font-black text-2xl text-white tracking-widest">CREAR SALA</span>
+                <button onclick="window.createRoom()" class="glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all shadow-2xl">
+                    <div class="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.5)]">
+                        <i class="fas fa-plus text-3xl text-white"></i>
+                    </div>
+                    <span class="font-black text-2xl text-white tracking-widest drop-shadow-md">CREAR SALA</span>
                 </button>
                 
-                <div class="glass-panel w-full p-6 rounded-3xl flex flex-col items-center gap-4">
-                    <p class="text-sm font-bold text-slate-300">UNIRSE CON CÓDIGO</p>
+                <div class="glass-panel w-full p-6 rounded-[2rem] flex flex-col items-center gap-4 shadow-xl">
+                    <p class="text-sm font-black text-slate-300 tracking-wider">UNIRSE CON CÓDIGO</p>
                     <div class="flex gap-3 w-full">
-                        <input type="text" id="room-code-input" placeholder="PIN" maxlength="4" class="w-full min-w-0 px-4 py-4 rounded-2xl bg-slate-800 border border-slate-600 text-white text-center font-black text-2xl tracking-widest uppercase focus:outline-none focus:border-blue-500">
-                        <button onclick="window.joinRoomBtn()" class="shrink-0 px-6 py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-white transition-colors active:scale-95 text-xl">
+                        <input type="text" id="room-code-input" placeholder="PIN" maxlength="4" class="w-full min-w-0 px-4 py-4 rounded-2xl bg-slate-900/60 border border-slate-600 text-white text-center font-black text-3xl tracking-widest uppercase focus:outline-none focus:border-blue-500 shadow-inner">
+                        <button onclick="window.joinRoomBtn()" class="shrink-0 px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-white transition-colors active:scale-95 text-xl shadow-lg border border-blue-400">
                             IR
                         </button>
                     </div>
@@ -239,220 +266,218 @@
             </div>
         </div>
 
-        <!-- MODAL DE AMIGOS -->
-        <div id="friends-modal" class="hidden absolute inset-0 z-40 bg-black/50 backdrop-blur-sm flex flex-col justify-end">
-            <div class="h-[85dvh] bg-slate-900 border-t border-slate-700 rounded-t-3xl flex flex-col slide-up shadow-[0_-10px_40px_rgba(0,0,0,0.5)] w-full">
+        <!-- MODAL DE AMIGOS (Rediseñado para iOS Fix) -->
+        <div id="friends-modal" class="hidden absolute inset-0 z-40 bg-black/60 backdrop-blur-sm flex flex-col justify-end">
+            <div class="h-[85dvh] max-h-[85dvh] bg-slate-900/95 backdrop-blur-xl border-t border-slate-700 rounded-t-[2rem] flex flex-col slide-up shadow-[0_-10px_40px_rgba(0,0,0,0.5)] w-full">
                 
-                <div class="flex justify-between items-center p-5 border-b border-slate-800 shrink-0">
-                    <h3 id="friends-modal-title" class="font-black text-xl text-white">AMIGOS</h3>
-                    <div class="flex gap-4">
-                        <button onclick="window.toggleFriendsModal()" class="text-slate-400 hover:text-white transition-colors"><i class="fas fa-times text-xl"></i></button>
-                    </div>
+                <div class="flex justify-between items-center p-6 border-b border-slate-800 shrink-0">
+                    <h3 id="friends-modal-title" class="font-black text-2xl text-white drop-shadow-md">AMIGOS</h3>
+                    <button onclick="window.toggleFriendsModal()" class="w-10 h-10 rounded-full bg-slate-800 text-slate-400 hover:text-white transition-colors flex items-center justify-center active:scale-95"><i class="fas fa-times text-xl"></i></button>
                 </div>
 
-                <div class="p-5 flex-1 flex flex-col gap-5 overflow-hidden">
-                    <div class="glass-panel p-4 rounded-2xl flex justify-between items-center bg-slate-800 shrink-0 mb-2">
+                <div class="p-6 flex-1 flex flex-col gap-5 overflow-hidden">
+                    
+                    <div class="glass-panel p-4 rounded-2xl flex justify-between items-center bg-slate-800/50 shrink-0 shadow-md">
                         <div>
-                            <p class="text-xs text-slate-400">TU ID PARA COMPARTIR</p>
-                            <p id="my-player-id" class="font-mono font-bold text-blue-400 select-all">Player#0000</p>
+                            <p class="text-[10px] text-slate-400 font-bold tracking-wider mb-1">TU ID PARA COMPARTIR</p>
+                            <p id="my-player-id" class="font-mono font-bold text-lg text-blue-400 select-all drop-shadow-sm">Player#0000</p>
                         </div>
-                        <button onclick="window.shareText(document.getElementById('my-player-id').innerText)" class="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-white hover:bg-slate-600 active:scale-95"><i class="fas fa-share-alt"></i></button>
+                        <button onclick="window.shareText(document.getElementById('my-player-id').innerText)" class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white hover:bg-blue-500 active:scale-95 shadow-lg border border-blue-400"><i class="fas fa-share-alt"></i></button>
                     </div>
 
-                    <div id="friends-list-container" class="flex-1 h-0 flex flex-col overflow-hidden">
+                    <div id="friends-list-container" class="flex-1 flex flex-col overflow-hidden h-0">
                         <div class="flex gap-2 shrink-0 mb-4">
-                            <input type="text" id="add-friend-input" placeholder="Añadir ID (Ej: Juan#1234)" class="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
-                            <button onclick="window.addFriend()" class="px-5 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-white active:scale-95 flex items-center gap-2 text-sm shrink-0">
+                            <input type="text" id="add-friend-input" placeholder="Añadir ID (Ej: Juan#1234)" class="flex-1 min-w-0 px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-600 text-white focus:outline-none focus:border-blue-500 font-mono text-sm shadow-inner">
+                            <button onclick="window.addFriend()" class="shrink-0 px-5 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-black text-white active:scale-95 flex items-center gap-2 text-sm shadow-md border border-emerald-400">
                                 AÑADIR
                             </button>
                         </div>
-                        <p class="text-xs text-slate-400 font-bold mb-3 border-b border-slate-700 pb-1 shrink-0">LISTA DE AMIGOS</p>
-                        <div id="friends-list" class="space-y-2 overflow-y-auto h-full pr-1 pb-4"></div>
+                        <p class="text-[10px] text-slate-400 font-bold tracking-widest mb-3 border-b border-slate-700 pb-2 shrink-0">LISTA DE AMIGOS</p>
+                        <div id="friends-list" class="flex-1 overflow-y-auto space-y-2 pr-1 pb-4"></div>
                     </div>
 
-                    <div id="inbox-container" class="hidden flex-1 h-0 flex flex-col overflow-hidden">
-                        <p class="text-xs text-slate-400 font-bold mb-3 border-b border-slate-700 pb-1 text-emerald-400 shrink-0">SOLICITUDES Y ALERTAS</p>
-                        <div id="inbox-list" class="space-y-2 overflow-y-auto h-full pr-1 pb-4"></div>
+                    <div id="inbox-container" class="hidden flex-1 flex flex-col overflow-hidden h-0">
+                        <p class="text-[10px] text-emerald-400 font-black tracking-widest mb-3 border-b border-slate-700 pb-2 shrink-0">SOLICITUDES Y ALERTAS</p>
+                        <div id="inbox-list" class="flex-1 overflow-y-auto space-y-2 pr-1 pb-4"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 4. SETUP (Modo y Categorías) -->
-        <div id="screen-setup" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 overflow-y-auto">
-            <button onclick="window.backFromSetup()" class="self-start glass-panel px-5 py-2.5 rounded-full text-slate-200 hover:text-white mb-4 mt-2 flex items-center gap-2 font-black text-xs tracking-wider active:scale-95 transition-all shadow-lg border-white/10 shrink-0">
+        <!-- 4. SETUP (Niveles y Categorías) -->
+        <div id="screen-setup" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 overflow-y-auto pb-24">
+            <button onclick="window.backFromSetup()" class="self-start glass-panel px-5 py-2.5 rounded-full text-slate-200 hover:text-white mb-6 mt-2 flex items-center gap-2 font-black text-xs tracking-wider active:scale-95 transition-all shadow-lg border-white/10 shrink-0">
                 <i class="fas fa-arrow-left text-sm"></i> ATRÁS
             </button>
             
-            <h2 class="text-2xl font-black text-white mb-6 text-center drop-shadow-md shrink-0">CONFIGURA LA PARTIDA</h2>
-
-            <!-- Panel de Modo General -->
-            <div class="glass-panel p-4 rounded-2xl mb-6 shrink-0">
-                <p class="text-xs text-slate-400 font-bold mb-3">MODO DE JUEGO</p>
-                <div class="grid grid-cols-2 gap-3">
-                    <button class="py-3 bg-blue-600 rounded-xl font-bold border-2 border-blue-400 text-white shadow-lg">Normal</button>
-                    <button class="py-3 bg-slate-800/80 rounded-xl font-bold border-2 border-slate-700 text-slate-500 relative overflow-hidden" disabled>
-                        Poderes
-                        <span class="absolute top-0 right-0 bg-red-500 text-[8px] px-2 py-0.5 rounded-bl-lg text-white">PRONTO</span>
-                    </button>
-                </div>
-            </div>
+            <h2 class="text-3xl font-black text-white mb-8 text-center drop-shadow-lg shrink-0">CONFIGURACIÓN</h2>
 
             <!-- Panel de Niveles (Sólo visible en 1 Jugador) -->
-            <div id="sp-level-section" class="glass-panel p-4 rounded-2xl mb-6 hidden shrink-0 border-blue-500/30">
-                <p class="text-xs text-slate-400 font-bold mb-3 flex justify-between items-end">
-                    <span>NIVEL (1 JUGADOR)</span> 
-                    <span id="lvl-desc" class="text-emerald-400 font-black">10 Preguntas</span>
+            <div id="sp-level-section" class="glass-panel p-5 rounded-3xl mb-6 shrink-0 shadow-xl hidden">
+                <p class="text-[10px] text-slate-400 font-black tracking-widest mb-4 flex justify-between items-end border-b border-slate-700 pb-2">
+                    <span>NIVEL DE DIFICULTAD</span> 
+                    <span id="lvl-desc" class="text-emerald-400 text-xs">10 Preguntas</span>
                 </p>
                 <div class="flex gap-2">
-                    <button id="btn-lvl-1" onclick="window.selectLevel(1)" class="flex-1 py-2 rounded-xl font-black bg-blue-600 border border-blue-400 text-white transition-all active:scale-95 shadow-lg">1</button>
-                    <button id="btn-lvl-2" onclick="window.selectLevel(2)" class="flex-1 py-2 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95">2</button>
-                    <button id="btn-lvl-3" onclick="window.selectLevel(3)" class="flex-1 py-2 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95">3</button>
-                    <button id="btn-lvl-4" onclick="window.selectLevel(4)" class="flex-1 py-2 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95">4</button>
-                    <button id="btn-lvl-5" onclick="window.selectLevel(5)" class="flex-1 py-2 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95">5</button>
+                    <button id="btn-lvl-1" onclick="window.selectLevel(1)" class="flex-1 py-3 rounded-xl font-black bg-blue-600 border border-blue-400 text-white transition-all active:scale-95 shadow-lg">1</button>
+                    <button id="btn-lvl-2" onclick="window.selectLevel(2)" class="flex-1 py-3 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95 hover:bg-white/5">2</button>
+                    <button id="btn-lvl-3" onclick="window.selectLevel(3)" class="flex-1 py-3 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95 hover:bg-white/5">3</button>
+                    <button id="btn-lvl-4" onclick="window.selectLevel(4)" class="flex-1 py-3 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95 hover:bg-white/5">4</button>
+                    <button id="btn-lvl-5" onclick="window.selectLevel(5)" class="flex-1 py-3 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95 hover:bg-white/5">5</button>
                 </div>
             </div>
+            
+            <div id="mp-info-section" class="glass-panel p-4 rounded-2xl mb-6 shrink-0 bg-blue-600/20 border border-blue-500/30 text-center hidden">
+                <p class="text-xs font-bold text-blue-300 mb-1"><i class="fas fa-bolt text-yellow-400 mr-1"></i> MODO BATALLA SÍNCRONA</p>
+                <p class="text-[10px] text-slate-300">15 Preguntas. ¡El más rápido gana más puntos!</p>
+            </div>
 
-            <div class="glass-panel p-4 rounded-2xl mb-6 shrink-0">
-                <p class="text-xs text-slate-400 font-bold mb-3">CATEGORÍAS (Elige al menos 1)</p>
+            <div class="glass-panel p-5 rounded-3xl mb-6 shrink-0 shadow-xl">
+                <p class="text-[10px] text-slate-400 font-black tracking-widest mb-4 border-b border-slate-700 pb-2">CATEGORÍAS (Elige al menos 1)</p>
                 <div class="grid grid-cols-2 gap-3" id="categories-grid">
                     <!-- JS rellena esto -->
                 </div>
             </div>
 
-            <button onclick="window.confirmSetup()" class="w-full mt-auto py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-black text-xl text-white transition-all shadow-lg active:scale-95 border-2 border-emerald-400 mb-4 shrink-0">
-                <span id="setup-btn-text">EMPEZAR PARTIDA</span>
-            </button>
+            <div class="fixed bottom-6 left-6 right-6 z-30 max-w-md mx-auto">
+                <button onclick="window.confirmSetup()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-black text-xl text-white transition-all shadow-[0_10px_30px_rgba(16,185,129,0.5)] active:scale-95 border-2 border-emerald-400">
+                    <span id="setup-btn-text">EMPEZAR PARTIDA</span>
+                </button>
+            </div>
         </div>
 
         <!-- 5. SALA DE ESPERA (ROOM) -->
-        <div id="screen-room" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0">
-            <div class="text-center mb-6 mt-8 glass-panel py-4 rounded-3xl border border-white/10">
-                <p class="text-xs text-slate-300 font-bold mb-1">CÓDIGO DE SALA</p>
-                <h2 id="room-pin-display" class="text-5xl font-black text-blue-400 tracking-widest drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">----</h2>
-                <div class="flex justify-center gap-3 mt-4">
-                    <button onclick="window.shareText(document.getElementById('room-pin-display').innerText)" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm font-bold active:scale-95 transition-all"><i class="fas fa-share-alt mr-2"></i>Compartir PIN</button>
-                    <button id="btn-invite-inroom" onclick="window.openInviteModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-bold active:scale-95 transition-all hidden"><i class="fas fa-users mr-2"></i>Invitar Amigos</button>
+        <div id="screen-room" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-20">
+            <div class="text-center mb-6 mt-8 glass-panel p-6 rounded-3xl shadow-xl">
+                <p class="text-[10px] text-slate-400 font-black tracking-widest mb-2">CÓDIGO DE SALA</p>
+                <h2 id="room-pin-display" class="text-6xl font-black text-blue-400 tracking-widest drop-shadow-[0_0_20px_rgba(59,130,246,0.6)]">----</h2>
+                <div class="flex justify-center gap-3 mt-6">
+                    <button onclick="window.shareRoomCode()" class="flex-1 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm font-bold active:scale-95 transition-all shadow-md"><i class="fas fa-share-alt mr-2"></i>Compartir PIN</button>
+                    <button id="btn-invite-inroom" onclick="window.openInviteModal()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 border border-emerald-400 rounded-xl text-sm font-bold active:scale-95 transition-all hidden shadow-[0_0_15px_rgba(16,185,129,0.4)] text-white"><i class="fas fa-users mr-2"></i>Invitar Amigos</button>
                 </div>
             </div>
 
-            <div class="flex-1 glass-panel rounded-3xl p-5 overflow-y-auto mb-6">
-                <h3 class="font-black text-sm text-slate-300 mb-4 text-center">JUGADORES (<span id="player-count">1</span>/6)</h3>
+            <div class="flex-1 glass-panel rounded-3xl p-5 overflow-y-auto mb-6 shadow-lg border-white/5">
+                <h3 class="font-black text-xs text-slate-400 mb-4 text-center tracking-widest border-b border-slate-700 pb-2">JUGADORES (<span id="player-count">1</span>/6)</h3>
                 <div id="room-players-list" class="space-y-3"></div>
             </div>
 
-            <div id="room-host-controls" class="hidden pb-4">
-                <button onclick="window.goToSetup(true)" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-xl transition-all shadow-lg shadow-blue-600/30 active:scale-95 text-white border-2 border-blue-400">
-                    ELEGIR MODO Y EMPEZAR
+            <div id="room-host-controls" class="hidden fixed bottom-6 left-6 right-6 z-30 max-w-md mx-auto">
+                <button onclick="window.goToSetup(true)" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-xl transition-all shadow-[0_10px_30px_rgba(59,130,246,0.5)] active:scale-95 text-white border-2 border-blue-400">
+                    CONFIGURAR Y EMPEZAR
                 </button>
             </div>
-            <div id="room-guest-controls" class="text-center text-white font-bold hidden glass-panel py-4 rounded-2xl mb-4">
-                <i class="fas fa-circle-notch fa-spin text-2xl text-blue-400 mb-2"></i>
-                <p>Esperando al host...</p>
+            
+            <div id="room-guest-controls" class="text-center text-white font-bold hidden glass-panel py-5 rounded-2xl mb-4 shadow-md">
+                <i class="fas fa-circle-notch fa-spin text-3xl text-blue-400 mb-3 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]"></i>
+                <p class="tracking-wide">Esperando al host...</p>
             </div>
             
-            <button onclick="window.leaveRoom()" class="mt-auto mb-2 py-4 glass-panel bg-red-500/10 border border-red-500/30 rounded-2xl text-red-400 hover:text-red-300 font-black text-center w-full active:scale-95 transition-all shadow-lg tracking-wider">
+            <button onclick="window.leaveRoom()" class="glass-panel px-6 py-3 rounded-full text-red-400 hover:bg-red-500/20 font-bold text-xs tracking-wider active:scale-95 transition-all shadow-md self-center mb-16 border-white/5">
                 ABANDONAR SALA
             </button>
         </div>
 
-        <!-- HEADER DEL JUEGO -->
-        <header id="game-header" class="hidden p-4 flex justify-between items-center glass-panel z-10 sticky top-0 rounded-b-2xl mb-2 mx-2 border-t-0">
-            <button onclick="window.exitGameConfirm()" class="w-10 h-10 glass-panel bg-red-500/10 border border-red-500/30 rounded-full flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white active:scale-95 transition-all shadow-md">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            
-            <div class="flex flex-col text-center">
-                <span class="text-[10px] text-slate-300 font-bold">PUNTOS</span>
-                <span id="score-display" class="text-xl font-black text-white">0</span>
-            </div>
-            <div class="flex gap-1 text-red-500 text-lg flex-wrap justify-center max-w-[80px]" id="lives-display"></div>
-            <div class="flex flex-col items-end">
-                <span class="text-[10px] text-slate-300 font-bold">COMBO</span>
-                <span id="combo-display" class="text-xl font-black text-yellow-400">x1</span>
-            </div>
-        </header>
-
-        <div id="timer-bar-container" class="hidden w-full h-1.5 bg-slate-800/50 z-10 px-2 mb-4 shrink-0">
-            <div id="timer-bar" class="h-full bg-blue-500 w-full transition-all duration-100 linear rounded-full shadow-[0_0_10px_rgba(59,130,246,0.6)]"></div>
-        </div>
-
         <!-- 6. PANTALLA DE PREGUNTA -->
-        <div id="screen-question" class="hidden flex-1 flex flex-col p-4 z-0 relative pb-6 overflow-hidden">
-            <div class="glass-panel rounded-3xl p-5 flex-1 flex flex-col shadow-2xl overflow-y-auto">
+        <div id="screen-question" class="hidden flex-1 flex flex-col p-4 z-10 relative pb-6 overflow-hidden">
+            <div class="glass-panel rounded-3xl p-5 flex-1 flex flex-col shadow-2xl overflow-y-auto border-white/10 relative">
                 
-                <div class="flex items-center justify-between mb-4 shrink-0">
+                <!-- Overlay MP Waiting -->
+                <div id="mp-waiting-overlay" class="hidden absolute inset-0 z-20 bg-slate-900/90 backdrop-blur-md flex flex-col items-center justify-center rounded-3xl">
+                    <i class="fas fa-circle-notch fa-spin text-5xl text-blue-500 mb-6 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]"></i>
+                    <h3 class="text-xl font-black text-white tracking-widest animate-pulse">ESPERANDO A LOS DEMÁS...</h3>
+                </div>
+
+                <div class="flex items-center justify-between mb-4 shrink-0 border-b border-slate-700/50 pb-3">
                     <span id="q-category-badge" class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-md">Categoría</span>
-                    <span class="text-xs text-slate-300 font-bold bg-slate-800/80 px-3 py-1 rounded-full border border-slate-600" id="q-counter">1/10</span>
+                    <span class="text-xs text-slate-300 font-bold bg-slate-900/80 px-3 py-1 rounded-full border border-slate-600 shadow-inner" id="q-counter">1/10</span>
                 </div>
                 
-                <h2 id="question-text" class="text-lg md:text-xl font-black text-center text-white leading-tight mb-4 shrink-0 drop-shadow-md">
+                <h2 id="question-text" class="text-xl md:text-2xl font-black text-center text-white leading-tight mb-4 shrink-0 drop-shadow-md">
                     ¿Pregunta?
                 </h2>
 
-                <div id="q-image-container" class="hidden w-full h-40 md:h-48 mb-4 rounded-2xl overflow-hidden border-2 border-slate-600 shadow-inner bg-black/50 shrink-0 flex items-center justify-center">
-                    <img id="q-image" src="" alt="Imagen" class="w-full h-full object-contain p-2">
+                <div id="q-image-container" class="hidden w-full h-40 md:h-48 mb-4 rounded-2xl overflow-hidden border-2 border-slate-600 shadow-lg bg-black/60 shrink-0 flex items-center justify-center backdrop-blur-sm">
+                    <img id="q-image" src="" alt="Imagen" class="w-full h-full object-contain p-2 drop-shadow-lg">
                 </div>
 
-                <div id="options-container" class="flex flex-col gap-2 mt-auto w-full shrink-0">
+                <div id="options-container" class="flex flex-col gap-3 mt-auto w-full shrink-0">
                     <!-- Respuestas -->
                 </div>
             </div>
         </div>
 
-        <!-- 7. GAME OVER -->
-        <div id="screen-gameover" class="hidden flex-1 flex flex-col items-center p-6 text-center z-20 absolute inset-0 glass-panel">
-            <i class="fas fa-trophy text-6xl text-yellow-400 mb-4 mt-10 drop-shadow-[0_0_20px_rgba(250,204,21,0.6)]"></i>
-            <h2 class="text-4xl font-black text-white mb-8 tracking-wider">RESULTADOS</h2>
+        <!-- PANTALLA DE RESULTADOS MP (RANKING POR PREGUNTA) -->
+        <div id="screen-question-results" class="hidden flex-1 flex flex-col p-6 z-30 absolute inset-0 glass-panel bg-slate-900/95 backdrop-blur-xl">
+            <h2 class="text-3xl font-black text-white text-center mb-6 mt-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] tracking-widest">RESULTADOS</h2>
             
-            <div class="w-full glass-panel rounded-3xl p-3 mb-6 flex-1 overflow-y-auto" id="leaderboard-container"></div>
+            <div class="glass-panel p-4 rounded-2xl mb-6 bg-slate-800/80 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+                <p class="text-[10px] font-black text-slate-400 text-center tracking-widest mb-1">LA RESPUESTA CORRECTA ERA:</p>
+                <p id="correct-answer-text" class="text-xl font-black text-emerald-400 text-center drop-shadow-md"></p>
+            </div>
+            
+            <div id="mp-results-list" class="flex-1 overflow-y-auto space-y-3 pb-4 pr-1">
+                <!-- Rankings -->
+            </div>
+            
+            <div id="mp-next-countdown-container" class="text-center mt-auto pb-4 pt-4 border-t border-slate-700">
+                <p class="text-[10px] font-black text-slate-400 tracking-widest mb-1">PRÓXIMA PREGUNTA EN</p>
+                <div class="text-4xl font-black text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" id="mp-countdown-sec">5</div>
+            </div>
+        </div>
 
-            <button onclick="window.exitGameComplete()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-xl text-white transition-all shadow-lg active:scale-95 border-2 border-blue-400 mb-6 shrink-0">
+        <!-- 7. GAME OVER -->
+        <div id="screen-gameover" class="hidden flex-1 flex flex-col items-center p-6 text-center z-20 absolute inset-0 glass-panel bg-slate-900/90 backdrop-blur-xl">
+            <i class="fas fa-trophy text-6xl text-yellow-400 mb-4 mt-10 drop-shadow-[0_0_30px_rgba(250,204,21,0.6)] animate-pulse"></i>
+            <h2 class="text-4xl font-black text-white mb-8 tracking-widest drop-shadow-lg">PODIO FINAL</h2>
+            
+            <div class="w-full glass-panel rounded-3xl p-3 mb-8 flex-1 overflow-y-auto shadow-inner border-white/5" id="leaderboard-container"></div>
+
+            <button onclick="window.exitGameComplete()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-xl text-white transition-all shadow-[0_10px_30px_rgba(59,130,246,0.5)] active:scale-95 border-2 border-blue-400 shrink-0">
                 CONTINUAR
             </button>
         </div>
 
-        <!-- Notificación de Invitación Flotante -->
-        <div id="invite-popup" class="hidden absolute top-6 left-4 right-4 bg-emerald-600 rounded-2xl p-4 shadow-[0_10px_40px_rgba(0,0,0,0.8)] border-2 border-emerald-400 z-[100] toast-enter flex items-center justify-between">
+        <!-- Popups y Modales -->
+        <div id="invite-popup" class="hidden absolute top-6 left-4 right-4 bg-emerald-600 rounded-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.8)] border-2 border-emerald-400 z-[100] toast-enter flex items-center justify-between">
             <div>
-                <p class="text-[10px] font-black text-emerald-200">¡INVITACIÓN A SALA!</p>
+                <p class="text-[10px] font-black text-emerald-200 tracking-widest mb-0.5"><i class="fas fa-bell mr-1"></i>¡INVITACIÓN A SALA!</p>
                 <p id="invite-popup-text" class="text-sm font-bold text-white truncate max-w-[200px]">Alguien te invita</p>
             </div>
             <div class="flex gap-2">
-                <button onclick="window.declineInvitePopup()" class="w-10 h-10 bg-emerald-800 rounded-xl text-emerald-200 hover:text-white flex items-center justify-center active:scale-95"><i class="fas fa-times"></i></button>
-                <button onclick="window.acceptInvitePopup()" class="w-10 h-10 bg-white rounded-xl text-emerald-600 flex items-center justify-center active:scale-95"><i class="fas fa-check"></i></button>
+                <button onclick="window.declineInvitePopup()" class="w-10 h-10 bg-emerald-800 rounded-xl text-emerald-200 hover:text-white flex items-center justify-center active:scale-95 shadow-inner"><i class="fas fa-times"></i></button>
+                <button onclick="window.acceptInvitePopup()" class="px-4 h-10 bg-white rounded-xl font-black text-emerald-600 flex items-center justify-center active:scale-95 shadow-lg">UNIRSE</button>
             </div>
         </div>
 
-        <!-- Modal Confirmar Borrar Amigo -->
-        <div id="delete-friend-modal" class="hidden absolute inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 opacity-0 transition-opacity">
-            <div id="delete-friend-panel" class="w-full max-w-sm glass-panel bg-slate-900/90 rounded-3xl p-6 text-center transform scale-95 transition-transform border border-red-500/30">
-                <i class="fas fa-exclamation-triangle text-5xl text-red-500 mb-4 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]"></i>
-                <h3 class="text-xl font-black text-white mb-2">¿Eliminar Amigo?</h3>
-                <p id="delete-friend-name" class="text-slate-400 text-sm mb-6">Se borrará de tu lista.</p>
+        <div id="delete-friend-modal" class="hidden absolute inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 opacity-0 transition-opacity">
+            <div id="delete-friend-panel" class="w-full max-w-sm glass-panel bg-slate-900/95 rounded-3xl p-6 text-center transform scale-95 transition-transform border border-red-500/40 shadow-[0_0_40px_rgba(239,68,68,0.3)]">
+                <i class="fas fa-exclamation-triangle text-5xl text-red-500 mb-4 drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]"></i>
+                <h3 class="text-2xl font-black text-white mb-2 tracking-wide">¿Borrar amigo?</h3>
+                <p id="delete-friend-name" class="text-slate-400 text-sm mb-8 font-bold">Se eliminará de tu lista.</p>
                 <div class="flex gap-3">
-                    <button onclick="window.closeDeleteModal()" class="flex-1 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl font-bold text-white active:scale-95">CANCELAR</button>
-                    <button onclick="window.confirmDeleteFriend()" class="flex-1 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white active:scale-95 shadow-[0_0_15px_rgba(239,68,68,0.4)]">ELIMINAR</button>
+                    <button onclick="window.closeDeleteModal()" class="flex-1 py-3 glass-panel rounded-xl font-bold text-white active:scale-95 hover:bg-white/10">CANCELAR</button>
+                    <button onclick="window.confirmDeleteFriend()" class="flex-1 py-3 bg-red-600 hover:bg-red-500 border border-red-400 rounded-xl font-bold text-white active:scale-95 shadow-[0_0_20px_rgba(239,68,68,0.5)]">ELIMINAR</button>
                 </div>
             </div>
         </div>
 
-        <!-- Modal Invitar Amigos (Dentro de Sala) -->
-        <div id="invite-room-modal" class="hidden absolute inset-0 z-[50] bg-black/50 backdrop-blur-sm flex items-center justify-center p-6">
-            <div class="w-full max-w-sm glass-panel bg-slate-900/90 rounded-3xl p-5 shadow-2xl slide-up flex flex-col h-[60%]">
-                <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-3 shrink-0">
-                    <h3 class="font-black text-lg text-emerald-400"><i class="fas fa-users mr-2"></i>INVITAR AMIGOS</h3>
-                    <button onclick="window.closeInviteModal()" class="text-slate-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+        <div id="invite-room-modal" class="hidden absolute inset-0 z-[50] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
+            <div class="w-full max-w-sm glass-panel bg-slate-900/95 rounded-[2rem] p-6 shadow-2xl slide-up flex flex-col h-[60%] border border-emerald-500/30">
+                <div class="flex justify-between items-center border-b border-slate-700/50 pb-4 mb-4 shrink-0">
+                    <h3 class="font-black text-xl text-emerald-400 tracking-wider"><i class="fas fa-users mr-2"></i>INVITAR AMIGOS</h3>
+                    <button onclick="window.closeInviteModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fas fa-times"></i></button>
                 </div>
                 <div id="invite-room-list" class="flex-1 overflow-y-auto pr-2 space-y-2"></div>
             </div>
         </div>
     </div>
 
+    <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA7arwP5sS31SrEt1NoRsYqrwQp149IMg8",
@@ -466,6 +491,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // --- GLOBAL STATE ---
         let introSeen = false;
         let nextScreenAfterIntro = 'screen-loading';
         let currentUser = null;
@@ -474,18 +500,19 @@
         let currentRoomRef = null;
         let unsubscribeRoom = null;
         let localRoomData = null;
+        let hostForceNextTimeout = null;
+        let showingResults = false;
         
-        let score = 0, lives = 3, combo = 1, currentQIndex = 0, timeRemaining = 20; // Actualizado a 20s
+        let score = 0, lives = 3, combo = 1, currentQIndex = 0, timeRemaining = 20; 
         let timerInterval;
+        let questionStartTime = 0;
         let selectedCategories = [];
         let isMultiplayerSetup = false;
         let activeQuestions = [];
         let pendingInviteCode = null;
         
-        // --- NUEVAS VARIABLES: NIVELES Y CURACIÓN ---
         let selectedLevel = 1;
         let correctAnswersCount = 0;
-
         let isSoundOn = true;
         let isFXOn = false;
 
@@ -508,8 +535,8 @@
         const showToast = (msg, isErr=false) => {
             const c = document.getElementById('toast-container');
             const t = document.createElement('div');
-            t.className = `toast-enter px-6 py-3 rounded-full font-bold text-sm shadow-2xl text-white flex items-center gap-2 border ${isErr?'bg-red-500 border-red-400':'glass-panel border-white/20'}`;
-            t.innerHTML = `<i class="fas ${isErr?'fa-exclamation-triangle':(msg.includes('❤️') ? 'fa-heart' : 'fa-info-circle')}"></i> ${msg}`;
+            t.className = `toast-enter px-6 py-3 rounded-full font-bold text-sm shadow-2xl text-white flex items-center gap-2 border ${isErr?'bg-red-500 border-red-400':'glass-panel bg-slate-800/90 border-white/20'}`;
+            t.innerHTML = `<i class="fas ${isErr?'fa-exclamation-triangle':(msg.includes('❤️') ? 'fa-heart text-red-500' : 'fa-info-circle text-blue-400')}"></i> ${msg}`;
             c.appendChild(t);
             setTimeout(() => { t.style.opacity=0; t.style.transform='translateY(-100%)'; t.style.transition='all 0.3s'; setTimeout(()=>t.remove(),300); }, 3000);
         };
@@ -527,18 +554,28 @@
         }
 
         window.showScreen = (id) => {
-            ['screen-intro', 'screen-login', 'screen-main-menu', 'screen-lobby', 'screen-setup', 'screen-room', 'screen-question', 'screen-gameover', 'screen-loading'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['screen-intro', 'screen-login', 'screen-main-menu', 'screen-lobby', 'screen-setup', 'screen-room', 'screen-question', 'screen-question-results', 'screen-gameover', 'screen-loading'].forEach(s => document.getElementById(s).classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             
-            const inGame = id === 'screen-question';
+            const inGame = id === 'screen-question' || id === 'screen-question-results';
             document.getElementById('game-header').classList.toggle('hidden', !inGame);
-            document.getElementById('timer-bar-container').classList.toggle('hidden', !inGame);
+            document.getElementById('timer-bar-container').classList.toggle('hidden', id !== 'screen-question');
+            
+            // Si es multi, esconder elementos de SP del HUD
+            if(isMultiplayerSetup && inGame) {
+                document.getElementById('lives-display').classList.add('hidden');
+                document.getElementById('combo-container').classList.add('hidden');
+            } else {
+                document.getElementById('lives-display').classList.remove('hidden');
+                document.getElementById('combo-container').classList.remove('hidden');
+            }
 
             const appC = document.getElementById('app-container');
             if(id === 'screen-login' || id === 'screen-loading' || id === 'screen-intro') appC.classList.replace('bg-menu', 'bg-start');
             else appC.classList.replace('bg-start', 'bg-menu');
         };
 
+        // --- AUTH ---
         onAuthStateChanged(auth, async (user) => {
             if (user && !user.isAnonymous) {
                 currentUser = user;
@@ -558,6 +595,7 @@
             } else {
                 currentUser = null; userData = null;
                 nextScreenAfterIntro = 'screen-login';
+                if(introSeen && document.getElementById('screen-loading').classList.contains('hidden') === false) window.showScreen('screen-login');
             }
         });
 
@@ -578,7 +616,7 @@
                 const cred = await signInWithEmailAndPassword(auth, e, p);
                 currentUser = cred.user;
                 showToast("¡Sesión iniciada!");
-                setTimeout(() => window.showScreen('screen-main-menu'), 500);
+                // onAuthStateChanged lo llevará al menú principal
             } catch (err) {
                 if(err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
                     if(!u) { window.showScreen('screen-login'); return showToast("Pon un Usuario para registrarte", true); }
@@ -590,7 +628,6 @@
                         userData = { uid: currentUser.uid, name: u, playerId: playerId, friends: [], inbox: [] };
                         await setDoc(doc(db, 'users', currentUser.uid), userData);
                         showToast("¡Cuenta creada!");
-                        setTimeout(() => window.showScreen('screen-main-menu'), 500);
                     } catch(e2) {
                         window.showScreen('screen-login'); showToast("Error al crear cuenta", true);
                     }
@@ -621,150 +658,94 @@
             window.showScreen('screen-login');
         };
 
+        // --- SETTINGS ---
         window.toggleSettingsModal = () => {
-            const modal = document.getElementById('settings-modal');
-            const panel = document.getElementById('settings-panel');
-            if(modal.classList.contains('hidden')){
-                modal.classList.remove('hidden');
-                setTimeout(() => { modal.classList.remove('opacity-0'); panel.classList.remove('scale-95'); }, 10);
-            }
+            const m = document.getElementById('settings-modal'); const p = document.getElementById('settings-panel');
+            if(m.classList.contains('hidden')){ m.classList.remove('hidden'); setTimeout(() => { m.classList.remove('opacity-0'); p.classList.remove('scale-95'); }, 10); }
         };
-        
         window.closeSettingsModal = () => {
-            const modal = document.getElementById('settings-modal');
-            const panel = document.getElementById('settings-panel');
-            modal.classList.add('opacity-0'); panel.classList.add('scale-95');
-            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+            const m = document.getElementById('settings-modal'); const p = document.getElementById('settings-panel');
+            m.classList.add('opacity-0'); p.classList.add('scale-95'); setTimeout(() => { m.classList.add('hidden'); }, 300);
         };
-
         window.changeUsername = async () => {
             const newName = document.getElementById('settings-name-input').value.trim();
             if(!newName) return showToast("Escribe un nombre válido", true);
             if(!currentUser || isLocalMode) {
                 document.getElementById('menu-player-name').innerText = newName;
-                showToast("Nombre cambiado (Local)");
-                return window.closeSettingsModal();
+                showToast("Nombre cambiado (Local)"); return window.closeSettingsModal();
             }
-            
             try {
                 await updateProfile(currentUser, { displayName: newName });
                 await updateDoc(doc(db, 'users', currentUser.uid), { name: newName });
                 document.getElementById('menu-player-name').innerText = newName;
-                showToast("¡Nombre actualizado!");
-                window.closeSettingsModal();
+                showToast("¡Nombre actualizado!"); window.closeSettingsModal();
             } catch(e) { showToast("Error al guardar", true); }
         };
-
         window.updateTransparency = (val) => {
             document.documentElement.style.setProperty('--glass-opacity', val / 100);
             document.getElementById('transparency-val').innerText = val + '%';
         };
-
         window.toggleSound = () => {
             isSoundOn = !isSoundOn;
-            const btn = document.getElementById('toggle-sound-btn');
-            const knob = document.getElementById('toggle-sound-knob');
-            if(isSoundOn) {
-                btn.classList.replace('bg-slate-600', 'bg-emerald-500');
-                knob.classList.replace('left-1', 'right-1');
-                showToast("Sonido Activado"); playBeep(600);
-            } else {
-                btn.classList.replace('bg-emerald-500', 'bg-slate-600');
-                knob.classList.replace('right-1', 'left-1');
-                showToast("Sonido Silenciado");
-            }
+            const btn = document.getElementById('toggle-sound-btn'); const knob = document.getElementById('toggle-sound-knob');
+            if(isSoundOn) { btn.classList.replace('bg-slate-600', 'bg-emerald-500'); knob.classList.replace('left-1', 'right-1'); showToast("Sonido Activado"); playBeep(600); } 
+            else { btn.classList.replace('bg-emerald-500', 'bg-slate-600'); knob.classList.replace('right-1', 'left-1'); showToast("Sonido Silenciado"); }
         };
-
         window.toggleFX = () => {
             isFXOn = !isFXOn;
-            const btn = document.getElementById('toggle-fx-btn');
-            const knob = document.getElementById('toggle-fx-knob');
-            if(isFXOn) {
-                btn.classList.replace('bg-slate-600', 'bg-emerald-500');
-                knob.classList.replace('left-1', 'right-1');
-                document.body.classList.add('battery-saver');
-                showToast("Ahorro Batería Activado");
-            } else {
-                btn.classList.replace('bg-emerald-500', 'bg-slate-600');
-                knob.classList.replace('right-1', 'left-1');
-                document.body.classList.remove('battery-saver');
-                showToast("Ahorro Batería Desactivado");
-            }
+            const btn = document.getElementById('toggle-fx-btn'); const knob = document.getElementById('toggle-fx-knob');
+            if(isFXOn) { btn.classList.replace('bg-slate-600', 'bg-emerald-500'); knob.classList.replace('left-1', 'right-1'); document.body.classList.add('battery-saver'); showToast("Ahorro Batería Activado"); } 
+            else { btn.classList.replace('bg-emerald-500', 'bg-slate-600'); knob.classList.replace('right-1', 'left-1'); document.body.classList.remove('battery-saver'); showToast("Ahorro Batería Desactivado"); }
         };
 
+        // --- AMIGOS Y BANDEJA ---
         let unsubMyData = null;
         function listenToMyData() {
             if(!currentUser) return;
             if(unsubMyData) unsubMyData();
             unsubMyData = onSnapshot(doc(db, 'users', currentUser.uid), (docS) => {
-                if(docS.exists()) {
-                    userData = docS.data();
-                    updateFriendsUI();
-                    checkInvites();
-                }
+                if(docS.exists()) { userData = docS.data(); updateFriendsUI(); checkInvites(); }
             });
         }
-
         window.openFriends = (tab) => {
             document.getElementById('friends-modal').classList.remove('hidden');
-            const list = document.getElementById('friends-list-container');
-            const inbox = document.getElementById('inbox-container');
-            const title = document.getElementById('friends-modal-title');
-            
-            if (tab === 'inbox') {
-                list.classList.add('hidden'); inbox.classList.remove('hidden');
-                title.innerHTML = '<i class="fas fa-envelope mr-2"></i>BANDEJA';
-            } else {
-                list.classList.remove('hidden'); inbox.classList.add('hidden');
-                title.innerHTML = '<i class="fas fa-user-friends mr-2"></i>AMIGOS';
-            }
+            const list = document.getElementById('friends-list-container'); const inbox = document.getElementById('inbox-container'); const title = document.getElementById('friends-modal-title');
+            if (tab === 'inbox') { list.classList.add('hidden'); inbox.classList.remove('hidden'); title.innerHTML = '<i class="fas fa-inbox mr-2 text-slate-400"></i>BANDEJA'; } 
+            else { list.classList.remove('hidden'); inbox.classList.add('hidden'); title.innerHTML = '<i class="fas fa-user-friends mr-2 text-blue-400"></i>AMIGOS'; }
         };
-
         window.toggleFriendsModal = () => document.getElementById('friends-modal').classList.add('hidden');
-
         function updateFriendsUI() {
             if(!userData) return;
-            
             const lobbyBadge = document.getElementById('lobby-inbox-badge');
-            if(userData.inbox && Array.isArray(userData.inbox) && userData.inbox.length > 0) {
-                lobbyBadge.classList.remove('hidden'); lobbyBadge.innerText = userData.inbox.length;
-            } else {
-                lobbyBadge.classList.add('hidden');
-            }
+            if(userData.inbox && Array.isArray(userData.inbox) && userData.inbox.length > 0) { lobbyBadge.classList.remove('hidden'); lobbyBadge.innerText = userData.inbox.length; } 
+            else { lobbyBadge.classList.add('hidden'); }
 
-            const fList = document.getElementById('friends-list');
-            fList.innerHTML = '';
-            if(!userData.friends || !Array.isArray(userData.friends) || userData.friends.length === 0) {
-                fList.innerHTML = '<p class="text-xs text-slate-500 text-center mt-4">Lista vacía.</p>';
-            } else {
+            const fList = document.getElementById('friends-list'); fList.innerHTML = '';
+            if(!userData.friends || !Array.isArray(userData.friends) || userData.friends.length === 0) { fList.innerHTML = '<p class="text-xs text-slate-500 text-center mt-4 font-bold">Lista vacía.</p>'; } 
+            else {
                 userData.friends.forEach((f, i) => {
                     fList.innerHTML += `
-                        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800 border border-slate-700">
-                            <span class="font-bold text-sm text-white">${f.name} <span class="text-[10px] text-slate-400 font-mono block">${f.id}</span></span>
-                            <button onclick="window.askDeleteFriend(${i}, '${f.name}')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center"><i class="fas fa-trash text-xs"></i></button>
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/80 border border-slate-700/50 shadow-sm">
+                            <span class="font-bold text-sm text-white">${f.name} <span class="text-[10px] text-blue-400 font-mono block">${f.id}</span></span>
+                            <button onclick="window.askDeleteFriend(${i}, '${f.name}')" class="w-8 h-8 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center"><i class="fas fa-trash text-xs"></i></button>
                         </div>`;
                 });
             }
 
-            const iList = document.getElementById('inbox-list');
-            iList.innerHTML = '';
-            if(!userData.inbox || !Array.isArray(userData.inbox) || userData.inbox.length === 0) {
-                iList.innerHTML = '<p class="text-xs text-slate-500 text-center mt-4">Nada por aquí.</p>';
-            } else {
+            const iList = document.getElementById('inbox-list'); iList.innerHTML = '';
+            if(!userData.inbox || !Array.isArray(userData.inbox) || userData.inbox.length === 0) { iList.innerHTML = '<p class="text-xs text-slate-500 text-center mt-4 font-bold">Nada por aquí.</p>'; } 
+            else {
                 userData.inbox.forEach((req, i) => {
-                    let btnHTML = '';
-                    if(req.type === 'friend') {
-                        btnHTML = `<button onclick="window.acceptFriend(${i})" class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center active:scale-95"><i class="fas fa-check"></i></button>`;
-                    }
+                    let btnHTML = req.type === 'friend' ? `<button onclick="window.acceptFriend(${i})" class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center active:scale-95 shadow-md"><i class="fas fa-check"></i></button>` : '';
                     iList.innerHTML += `
-                        <div class="flex items-center justify-between p-3 rounded-xl glass-panel border-white/20">
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/80 border border-emerald-500/30 shadow-sm">
                             <div>
-                                <span class="font-bold text-sm text-white">${req.fromName}</span>
-                                <span class="text-[10px] block text-emerald-400">${req.type === 'friend' ? 'Solicitud de Amistad' : 'Invitación a jugar'}</span>
+                                <span class="font-black text-sm text-white">${req.fromName}</span>
+                                <span class="text-[10px] block text-emerald-400 font-bold">${req.type === 'friend' ? 'Quiere ser tu amigo' : 'Te invita a su sala'}</span>
                             </div>
                             <div class="flex gap-2">
                                 ${btnHTML}
-                                <button onclick="window.rejectReq(${i})" class="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center active:scale-95 hover:bg-red-500 hover:text-white"><i class="fas fa-times"></i></button>
+                                <button onclick="window.rejectReq(${i})" class="w-10 h-10 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center active:scale-95 hover:bg-red-500 hover:text-white"><i class="fas fa-times"></i></button>
                             </div>
                         </div>`;
                 });
@@ -773,26 +754,18 @@
 
         let friendToDeleteIdx = -1;
         window.askDeleteFriend = (idx, name) => {
-            friendToDeleteIdx = idx;
-            document.getElementById('delete-friend-name').innerText = `Se borrará a ${name} de tu lista.`;
-            const m = document.getElementById('delete-friend-modal');
-            const p = document.getElementById('delete-friend-panel');
-            m.classList.remove('hidden');
-            setTimeout(()=>{ m.classList.remove('opacity-0'); p.classList.remove('scale-95'); }, 10);
+            friendToDeleteIdx = idx; document.getElementById('delete-friend-name').innerText = `Se eliminará a ${name} de tu lista.`;
+            const m = document.getElementById('delete-friend-modal'); const p = document.getElementById('delete-friend-panel');
+            m.classList.remove('hidden'); setTimeout(()=>{ m.classList.remove('opacity-0'); p.classList.remove('scale-95'); }, 10);
         };
-
         window.closeDeleteModal = () => {
-            const m = document.getElementById('delete-friend-modal');
-            const p = document.getElementById('delete-friend-panel');
-            m.classList.add('opacity-0'); p.classList.add('scale-95');
-            setTimeout(()=>{ m.classList.add('hidden'); }, 300);
+            const m = document.getElementById('delete-friend-modal'); const p = document.getElementById('delete-friend-panel');
+            m.classList.add('opacity-0'); p.classList.add('scale-95'); setTimeout(()=>{ m.classList.add('hidden'); }, 300);
         };
-
         window.confirmDeleteFriend = async () => {
             if(friendToDeleteIdx > -1) {
                 const updatedFriends = userData.friends.filter((_, i) => i !== friendToDeleteIdx);
-                await updateDoc(doc(db, 'users', currentUser.uid), { friends: updatedFriends });
-                showToast("Amigo eliminado", true);
+                await updateDoc(doc(db, 'users', currentUser.uid), { friends: updatedFriends }); showToast("Amigo eliminado", true);
             }
             window.closeDeleteModal();
         };
@@ -801,132 +774,96 @@
             const targetId = document.getElementById('add-friend-input').value.trim();
             if(!targetId || !targetId.includes('#')) return showToast("Pon un ID válido", true);
             if(targetId === userData.playerId) return showToast("Ese eres tú", true);
-            showToast("Buscando...");
+            showToast("Buscando jugador...");
             try {
-                const q = query(collection(db, "users"), where("playerId", "==", targetId));
-                const snap = await getDocs(q);
+                const q = query(collection(db, "users"), where("playerId", "==", targetId)); const snap = await getDocs(q);
                 if(snap.empty) return showToast("Jugador no encontrado", true);
-                
                 const targetDoc = snap.docs[0]; const targetData = targetDoc.data();
                 const newReq = { type: 'friend', fromUid: currentUser.uid, fromName: userData.name, fromId: userData.playerId };
-                const updatedInbox = targetData.inbox ? [...targetData.inbox, newReq] : [newReq];
-                await updateDoc(doc(db, 'users', targetDoc.id), { inbox: updatedInbox });
-                showToast("Solicitud enviada");
+                const updatedInbox = targetData.inbox && Array.isArray(targetData.inbox) ? [...targetData.inbox, newReq] : [newReq];
+                await updateDoc(doc(db, 'users', targetDoc.id), { inbox: updatedInbox }); showToast("¡Solicitud enviada!");
                 document.getElementById('add-friend-input').value = '';
-            } catch(e) { showToast("Error de red", true); }
+            } catch(e) { showToast("Error al buscar", true); }
         };
-
         window.acceptFriend = async (index) => {
-            const req = userData.inbox[index];
-            const newFriend = { uid: req.fromUid, name: req.fromName, id: req.fromId };
-            const updatedFriends = userData.friends ? [...userData.friends, newFriend] : [newFriend];
+            const req = userData.inbox[index]; const newFriend = { uid: req.fromUid, name: req.fromName, id: req.fromId };
+            const updatedFriends = userData.friends && Array.isArray(userData.friends) ? [...userData.friends, newFriend] : [newFriend];
             const updatedInbox = userData.inbox.filter((_, i) => i !== index);
             await updateDoc(doc(db, 'users', currentUser.uid), { friends: updatedFriends, inbox: updatedInbox });
-            
             try {
                 const tSnap = await getDoc(doc(db, 'users', req.fromUid));
                 if(tSnap.exists()) {
                     const myCard = { uid: currentUser.uid, name: userData.name, id: userData.playerId };
-                    const tFriends = tSnap.data().friends ? [...tSnap.data().friends, myCard] : [myCard];
+                    const tFriends = tSnap.data().friends && Array.isArray(tSnap.data().friends) ? [...tSnap.data().friends, myCard] : [myCard];
                     await updateDoc(doc(db, 'users', req.fromUid), { friends: tFriends });
                 }
-            } catch(e){}
-            showToast("¡Amigo añadido!");
+            } catch(e){} showToast("¡Amigo añadido!");
         };
-
         window.rejectReq = async (index) => {
             const updatedInbox = userData.inbox.filter((_, i) => i !== index);
             await updateDoc(doc(db, 'users', currentUser.uid), { inbox: updatedInbox });
         };
-
         window.openInviteModal = () => {
-            if(!userData || !userData.friends || userData.friends.length === 0) return showToast("No tienes amigos agregados", true);
+            if(!userData || !Array.isArray(userData.friends) || userData.friends.length === 0) return showToast("No tienes amigos agregados", true);
             const list = document.getElementById('invite-room-list'); list.innerHTML = '';
             const code = document.getElementById('room-pin-display').innerText;
-            
             userData.friends.forEach(f => {
                 list.innerHTML += `
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800 border border-slate-700">
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/80 border border-slate-700/50">
                         <span class="font-bold text-sm text-white">${f.name}</span>
-                        <button onclick="window.sendRoomInvite('${f.uid}', '${code}')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all active:scale-95">INVITAR</button>
+                        <button onclick="window.sendRoomInvite('${f.uid}', '${code}')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition-all active:scale-95 shadow-md border border-emerald-400">INVITAR</button>
                     </div>`;
             });
             document.getElementById('invite-room-modal').classList.remove('hidden');
         };
-
         window.closeInviteModal = () => document.getElementById('invite-room-modal').classList.add('hidden');
-
         window.sendRoomInvite = async (targetUid, code) => {
             try {
                 const tSnap = await getDoc(doc(db, 'users', targetUid));
                 if(tSnap.exists()) {
-                    const tData = tSnap.data();
-                    const newReq = { type: 'room_invite', roomCode: code, fromName: userData.name };
-                    const updatedInbox = tData.inbox ? [...tData.inbox, newReq] : [newReq];
-                    await updateDoc(doc(db, 'users', targetUid), { inbox: updatedInbox });
-                    showToast("Invitación enviada");
+                    const tData = tSnap.data(); const newReq = { type: 'room_invite', roomCode: code, fromName: userData.name };
+                    const updatedInbox = tData.inbox && Array.isArray(tData.inbox) ? [...tData.inbox, newReq] : [newReq];
+                    await updateDoc(doc(db, 'users', targetUid), { inbox: updatedInbox }); showToast("Invitación enviada");
                 }
             } catch(e){ showToast("Error al invitar", true); }
         };
-
         function checkInvites() {
-            if(!userData || !userData.inbox) return;
+            if(!userData || !Array.isArray(userData.inbox)) return;
             const roomInvite = userData.inbox.find(req => req.type === 'room_invite');
             if(roomInvite && pendingInviteCode !== roomInvite.roomCode && document.getElementById('screen-room').classList.contains('hidden')) {
                 pendingInviteCode = roomInvite.roomCode;
-                document.getElementById('invite-popup-text').innerText = `${roomInvite.fromName} te invitó a jugar`;
-                const popup = document.getElementById('invite-popup');
-                popup.classList.remove('hidden');
+                document.getElementById('invite-popup-text').innerText = `${roomInvite.fromName} te invita a su sala`;
+                const popup = document.getElementById('invite-popup'); popup.classList.remove('hidden');
                 if(isSoundOn) playBeep(800, 'sine', 0.2);
             }
         }
-
         window.acceptInvitePopup = () => {
             document.getElementById('invite-popup').classList.add('hidden');
             if(pendingInviteCode) {
-                document.getElementById('room-code-input').value = pendingInviteCode;
-                window.joinRoomBtn();
-                pendingInviteCode = null;
-                if(userData.inbox) {
-                    const newInbox = userData.inbox.filter(r => r.type !== 'room_invite');
-                    updateDoc(doc(db, 'users', currentUser.uid), { inbox: newInbox });
-                }
+                document.getElementById('room-code-input').value = pendingInviteCode; window.joinRoomBtn(); pendingInviteCode = null;
+                if(userData.inbox) { const newInbox = userData.inbox.filter(r => r.type !== 'room_invite'); updateDoc(doc(db, 'users', currentUser.uid), { inbox: newInbox }); }
             }
         };
-
         window.declineInvitePopup = () => {
-            document.getElementById('invite-popup').classList.add('hidden');
-            pendingInviteCode = null;
-            if(userData.inbox) {
-                const newInbox = userData.inbox.filter(r => r.type !== 'room_invite');
-                updateDoc(doc(db, 'users', currentUser.uid), { inbox: newInbox });
-            }
+            document.getElementById('invite-popup').classList.add('hidden'); pendingInviteCode = null;
+            if(userData.inbox) { const newInbox = userData.inbox.filter(r => r.type !== 'room_invite'); updateDoc(doc(db, 'users', currentUser.uid), { inbox: newInbox }); }
         };
-
         window.shareText = async (textToShare) => {
-            if (navigator.share) {
-                try { await navigator.share({ title: 'Battle Answers PIN', text: textToShare }); } 
-                catch (err) {}
-            } else {
+            if (navigator.share) { try { await navigator.share({ text: textToShare }); } catch (err) {} } 
+            else {
                 const el = document.createElement('textarea'); el.value = textToShare; document.body.appendChild(el); el.select();
-                try { document.execCommand('copy'); showToast("Copiado al portapapeles"); } catch (err) {}
-                document.body.removeChild(el);
+                try { document.execCommand('copy'); showToast("Copiado al portapapeles"); } catch (err) {} document.body.removeChild(el);
             }
         };
+        window.shareRoomCode = () => { window.shareText(document.getElementById('room-pin-display').innerText); };
 
+        // --- SALAS MULTIJUGADOR ---
         window.createRoom = async () => {
-            const code = Math.random().toString(36).substring(2, 6).toUpperCase();
-            currentRoomRef = doc(db, 'rooms', code);
-            const initialData = { status: 'waiting', hostId: currentUser.uid, players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false } }, questions: [], createdAt: Date.now() };
-            try {
-                await setDoc(currentRoomRef, initialData);
-                document.getElementById('room-pin-display').innerText = code;
-                setupRoomListener();
-                document.getElementById('btn-invite-inroom').classList.remove('hidden');
-                window.showScreen('screen-room');
-            } catch(e) { showToast("Error de conexión", true); }
+            const code = Math.random().toString(36).substring(2, 6).toUpperCase(); currentRoomRef = doc(db, 'rooms', code);
+            const initialData = { status: 'waiting', hostId: currentUser.uid, players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false } }, questions: [], currentQ: 0, answers: {}, createdAt: Date.now() };
+            try { await setDoc(currentRoomRef, initialData); document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.remove('hidden'); window.showScreen('screen-room'); } 
+            catch(e) { showToast("Error de conexión", true); }
         };
-
         window.joinRoomBtn = async () => {
             const code = document.getElementById('room-code-input').value.trim().toUpperCase();
             if(code.length !== 4) return showToast("Código de 4 caracteres", true);
@@ -935,12 +872,8 @@
                 const snap = await getDoc(currentRoomRef);
                 if(!snap.exists() || snap.data().status !== 'waiting') return showToast("Sala no disponible", true);
                 if(Object.keys(snap.data().players).length >= 6) return showToast("Sala llena (6/6)", true);
-                
                 await updateDoc(currentRoomRef, { [`players.${currentUser.uid}`]: { name: userData.name, score: 0, isDone: false } });
-                document.getElementById('room-pin-display').innerText = code;
-                setupRoomListener();
-                document.getElementById('btn-invite-inroom').classList.add('hidden');
-                window.showScreen('screen-room');
+                document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.add('hidden'); window.showScreen('screen-room');
             } catch(e) { showToast("Fallo al entrar", true); }
         };
 
@@ -949,19 +882,37 @@
             unsubscribeRoom = onSnapshot(currentRoomRef, (snap) => {
                 if(!snap.exists()) return window.leaveRoom();
                 localRoomData = snap.data();
-                updateRoomWaitingUI(localRoomData);
-                if(localRoomData.status === 'playing' && document.getElementById('screen-room').classList.contains('hidden')===false) startLocalGameLoop();
-                if(!document.getElementById('screen-gameover').classList.contains('hidden')) updateLeaderboardUI(localRoomData.players);
+                if(localRoomData.status === 'waiting') updateRoomWaitingUI(localRoomData);
+                
+                if(localRoomData.status === 'playing') {
+                    if(document.getElementById('screen-room').classList.contains('hidden') === false) {
+                        window.showScreen('screen-question');
+                    }
+                    if(currentQIndex !== localRoomData.currentQ || showingResults) {
+                        showingResults = false;
+                        currentQIndex = localRoomData.currentQ;
+                        loadMPQuestion();
+                    }
+                    checkHostAdvancement();
+                }
+
+                if(localRoomData.status === 'results' && !showingResults) {
+                    showMPResults();
+                }
+
+                if(localRoomData.status === 'finished') {
+                    window.showScreen('screen-gameover');
+                    updateLeaderboardUI(localRoomData.players);
+                }
             });
         }
 
         function updateRoomWaitingUI(data) {
             const pList = document.getElementById('room-players-list'); pList.innerHTML = '';
-            const pArr = Object.values(data.players);
-            document.getElementById('player-count').innerText = pArr.length;
+            const pArr = Object.values(data.players); document.getElementById('player-count').innerText = pArr.length;
             pArr.forEach(p => {
                 pList.innerHTML += `
-                    <div class="flex items-center gap-3 p-3 glass-panel rounded-xl border border-white/10">
+                    <div class="flex items-center gap-3 p-3 glass-panel rounded-xl border border-white/5">
                         <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-black text-sm text-white">${p.name.charAt(0).toUpperCase()}</div>
                         <span class="font-bold text-white">${p.name}</span>
                         ${data.hostId === p.uid ? '<i class="fas fa-crown text-yellow-400 ml-auto"></i>' : ''}
@@ -972,200 +923,278 @@
             document.getElementById('room-guest-controls').classList.toggle('hidden', isHost);
         }
 
-        window.leaveRoom = () => {
-            if(unsubscribeRoom) unsubscribeRoom();
-            currentRoomRef = null; localRoomData = null;
-            window.showScreen(isLocalMode ? 'screen-main-menu' : 'screen-lobby');
-        };
+        window.leaveRoom = () => { if(unsubscribeRoom) unsubscribeRoom(); currentRoomRef = null; localRoomData = null; window.showScreen(isLocalMode ? 'screen-main-menu' : 'screen-lobby'); };
 
+        // --- SETUP Y PARTIDA ---
         window.selectLevel = (lvl) => {
-            selectedLevel = lvl;
-            const qCount = lvl * 5 + 5;
-            document.getElementById('lvl-desc').innerText = `${qCount} Preguntas`;
+            selectedLevel = lvl; const qCount = lvl * 5 + 5; document.getElementById('lvl-desc').innerText = `${qCount} Preguntas`;
             for(let i=1; i<=5; i++){
                 const b = document.getElementById(`btn-lvl-${i}`);
-                if(i === lvl){
-                    b.className = "flex-1 py-2 rounded-xl font-black bg-blue-600 border border-blue-400 text-white transition-all active:scale-95 shadow-lg";
-                } else {
-                    b.className = "flex-1 py-2 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95";
-                }
+                if(i === lvl) b.className = "flex-1 py-3 rounded-xl font-black bg-blue-600 border border-blue-400 text-white transition-all active:scale-95 shadow-lg";
+                else b.className = "flex-1 py-3 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95 hover:bg-white/5";
             }
         };
 
         window.goToSetup = (isMulti) => {
             isMultiplayerSetup = isMulti;
             document.getElementById('sp-level-section').classList.toggle('hidden', isMulti);
-            if(!isMulti) window.selectLevel(1); // Default a Nivel 1 en local
+            document.getElementById('mp-info-section').classList.toggle('hidden', !isMulti);
+            if(!isMulti) window.selectLevel(1);
 
             const grid = document.getElementById('categories-grid'); grid.innerHTML = '';
             Object.values(CATS).forEach(c => {
                 grid.innerHTML += `
-                    <button id="cat-btn-${c.id}" onclick="window.toggleCat('${c.id}')" class="py-4 glass-panel rounded-xl flex flex-col items-center gap-2 border-2 border-white/10 transition-all active:scale-95">
-                        <div class="w-10 h-10 rounded-full ${c.color} flex items-center justify-center shadow-lg text-white"><i class="fas ${c.icon}"></i></div>
-                        <span class="font-bold text-white text-xs">${c.name}</span>
+                    <button id="cat-btn-${c.id}" onclick="window.toggleCat('${c.id}')" class="py-5 glass-panel rounded-2xl flex flex-col items-center gap-3 border-2 border-white/5 transition-all active:scale-95 shadow-md">
+                        <div class="w-12 h-12 rounded-full ${c.color} flex items-center justify-center shadow-inner text-white"><i class="fas ${c.icon} text-xl"></i></div>
+                        <span class="font-black text-white text-xs tracking-wider">${c.name}</span>
                     </button>`;
             });
-            selectedCategories = [];
-            document.getElementById('setup-btn-text').innerText = isMulti ? 'GUARDAR Y EMPEZAR' : 'JUGAR AHORA';
-            window.showScreen('screen-setup');
+            selectedCategories = []; document.getElementById('setup-btn-text').innerText = isMulti ? 'GUARDAR Y EMPEZAR' : 'JUGAR AHORA'; window.showScreen('screen-setup');
         };
 
         window.backFromSetup = () => { window.showScreen(isMultiplayerSetup ? 'screen-room' : 'screen-main-menu'); };
 
         window.toggleCat = (id) => {
-            const btn = document.getElementById(`cat-btn-${id}`);
-            const col = CATS[id].border;
-            if(selectedCategories.includes(id)) {
-                selectedCategories = selectedCategories.filter(c => c !== id);
-                btn.classList.replace(col, 'border-white/10');
-                btn.classList.replace('bg-emerald-500/20', 'glass-panel');
-            } else {
-                selectedCategories.push(id);
-                btn.classList.replace('border-white/10', col);
-                btn.classList.replace('glass-panel', 'bg-emerald-500/20');
-            }
+            const btn = document.getElementById(`cat-btn-${id}`); const col = CATS[id].border;
+            if(selectedCategories.includes(id)) { selectedCategories = selectedCategories.filter(c => c !== id); btn.classList.replace(col, 'border-white/5'); btn.classList.replace('bg-white/10', 'glass-panel'); } 
+            else { selectedCategories.push(id); btn.classList.replace('border-white/5', col); btn.classList.replace('glass-panel', 'bg-white/10'); }
         };
 
         window.confirmSetup = async () => {
             if(selectedCategories.length === 0) return showToast("Elige al menos 1 categoría", true);
             window.showScreen('screen-loading');
             
-            // Cantidad de preguntas basadas en el nivel si es 1 Jugador
-            const limitNum = isMultiplayerSetup ? 10 : (selectedLevel * 5 + 5);
+            const limitNum = isMultiplayerSetup ? 15 : (selectedLevel * 5 + 5);
 
             try {
                 const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle");
                 const qQuery = query(qRef, where("cat", "in", selectedCategories));
                 const snap = await getDocs(qQuery);
-                
-                let fetchedQ = [];
-                snap.forEach(doc => fetchedQ.push(doc.data()));
-                
+                let fetchedQ = []; snap.forEach(doc => fetchedQ.push(doc.data()));
                 if(fetchedQ.length === 0) throw new Error("Vacío");
                 activeQuestions = fetchedQ.sort(() => 0.5 - Math.random()).slice(0, limitNum);
             } catch(e) {
-                // Respaldo de seguridad en caso de fallo de permisos o vacio
                 let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat));
                 activeQuestions = (fall.length > 0 ? fall : backupQuestions).sort(() => 0.5 - Math.random()).slice(0, limitNum);
+                showToast("Modo Offline / Respaldo activo");
             }
 
             if(isMultiplayerSetup) {
-                await updateDoc(currentRoomRef, { questions: activeQuestions, status: 'playing' });
+                await updateDoc(currentRoomRef, { questions: activeQuestions, status: 'playing', currentQ: 0, answers: {} });
             } else {
-                localRoomData = { questions: activeQuestions };
-                startLocalGameLoop();
+                localRoomData = { questions: activeQuestions }; startLocalGameLoop();
             }
         };
 
+        // --- SINGLE PLAYER LOGIC ---
         function startLocalGameLoop() {
             score = 0; lives = 3; combo = 1; currentQIndex = 0; correctAnswersCount = 0;
-            updateHUD(); window.showScreen('screen-question');
-            loadNextQuestion();
+            updateSPHUD(); window.showScreen('screen-question'); loadSPQuestion();
         }
 
-        function updateHUD() {
+        function updateSPHUD() {
             document.getElementById('score-display').innerText = score;
             document.getElementById('combo-display').innerText = `x${combo}`;
             const lDiv = document.getElementById('lives-display'); lDiv.innerHTML = '';
-            
-            // Permitir mostrar más de 3 corazones si logran vidas extra
             const totalHeartsToShow = Math.max(3, lives);
-            for(let i=0; i<totalHeartsToShow; i++) {
-                lDiv.innerHTML += i<lives ? '<i class="fas fa-heart text-red-500 drop-shadow-md"></i>' : '<i class="far fa-heart text-slate-600"></i>';
-            }
+            for(let i=0; i<totalHeartsToShow; i++) lDiv.innerHTML += i<lives ? '<i class="fas fa-heart text-red-500 drop-shadow-md"></i>' : '<i class="far fa-heart text-slate-600"></i>';
         }
 
-        function loadNextQuestion() {
+        function loadSPQuestion() {
             if(lives <= 0 || currentQIndex >= localRoomData.questions.length) return finishLocalGame();
-
-            const q = localRoomData.questions[currentQIndex];
-            const catConf = CATS[q.cat] || { name: q.cat, color: 'bg-blue-500' };
-
-            document.getElementById('q-counter').innerText = `${currentQIndex + 1}/${localRoomData.questions.length}`;
-            const badge = document.getElementById('q-category-badge');
-            badge.innerText = catConf.name;
-            badge.className = `px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-md ${catConf.color}`;
-            
-            document.getElementById('question-text').innerText = q.text;
-            
-            const imgC = document.getElementById('q-image-container');
-            const imgEl = document.getElementById('q-image');
-            if(q.img) { imgEl.src = q.img; imgC.classList.remove('hidden'); } 
-            else { imgC.classList.add('hidden'); }
-
-            const opts = document.getElementById('options-container'); opts.innerHTML = '';
-            q.options.forEach((opt, idx) => {
-                const b = document.createElement('button');
-                b.className = 'w-full p-3 glass-panel bg-slate-800/80 hover:bg-slate-700/80 rounded-xl text-center font-bold text-white transition-all border-2 border-white/10 shadow-md active:scale-95 text-sm md:text-base';
-                b.innerText = opt;
-                b.onclick = () => handleAnswer(idx, b, q.correct);
-                opts.appendChild(b);
-            });
-            startTimer();
+            renderQuestionUI(localRoomData.questions[currentQIndex], currentQIndex, localRoomData.questions.length, (idx, btn, corr) => handleSPAnswer(idx, btn, corr));
+            startSPTimer();
         }
 
-        function startTimer() {
-            timeRemaining = 20; // Actualizado a 20s
-            const bar = document.getElementById('timer-bar');
+        function startSPTimer() {
+            timeRemaining = 20; const bar = document.getElementById('timer-bar');
             bar.style.width = '100%'; bar.className = 'h-full bg-blue-500 w-full transition-all duration-100 linear rounded-full shadow-[0_0_10px_rgba(59,130,246,0.6)]';
-
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
-                timeRemaining -= 0.1;
-                bar.style.width = `${(timeRemaining/20)*100}%`;
+                timeRemaining -= 0.1; bar.style.width = `${(timeRemaining/20)*100}%`;
                 if(timeRemaining <= 5) bar.classList.replace('bg-blue-500', 'bg-red-500');
-                if(timeRemaining <= 0) { clearInterval(timerInterval); handleAnswer(-1, null, localRoomData.questions[currentQIndex].correct); }
+                if(timeRemaining <= 0) { clearInterval(timerInterval); handleSPAnswer(-1, null, localRoomData.questions[currentQIndex].correct); }
             }, 100);
         }
 
-        function handleAnswer(selIdx, btnEl, correctIdx) {
-            clearInterval(timerInterval);
+        function handleSPAnswer(selIdx, btnEl, correctIdx) {
+            clearInterval(timerInterval); disableOptions();
             const btns = document.getElementById('options-container').querySelectorAll('button');
-            btns.forEach(b => { b.disabled = true; b.classList.remove('active:scale-95','hover:bg-slate-700/80'); });
-
             if(selIdx === correctIdx) {
-                if(btnEl) btnEl.classList.add('bg-emerald-500', 'border-emerald-400');
-                score += (100 * combo); combo++;
-                correctAnswersCount++; // Sumamos para la vida extra
-                
+                if(btnEl) btnEl.classList.add('bg-emerald-500', 'border-emerald-400', 'shadow-[0_0_15px_rgba(16,185,129,0.5)]');
+                score += (100 * combo); combo++; correctAnswersCount++; 
                 if(isSoundOn) playBeep(800, 'sine', 0.1); 
-
-                // Mecánica: 1 vida extra cada 5 aciertos
-                if(correctAnswersCount % 5 === 0) {
-                    lives++;
-                    showToast("❤️ ¡Buena racha! VIDA EXTRA", false);
-                    if(isSoundOn) setTimeout(() => playBeep(1000, 'square', 0.2), 200);
-                }
-
+                if(correctAnswersCount % 5 === 0) { lives++; showToast("❤️ ¡Buena racha! VIDA EXTRA", false); if(isSoundOn) setTimeout(() => playBeep(1000, 'square', 0.2), 200); }
             } else {
                 if(btnEl) btnEl.classList.add('bg-red-500', 'border-red-400', 'shake');
                 btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400');
                 if(selIdx===-1) document.getElementById('screen-question').classList.add('shake');
-                lives--; combo = 1;
+                lives--; combo = 1; if(isSoundOn) playBeep(200, 'square', 0.3); 
+            }
+            updateSPHUD();
+            setTimeout(() => { document.getElementById('screen-question').classList.remove('shake'); currentQIndex++; loadSPQuestion(); }, 1500);
+        }
+
+        async function finishLocalGame() {
+            window.showScreen('screen-gameover');
+            updateLeaderboardUI({ me: { name: userData ? userData.name : 'Tú', score: score, isDone: true } });
+        }
+
+        // --- MULTIPLAYER SÍNCRONO LOGIC ---
+        function loadMPQuestion() {
+            document.getElementById('screen-question-results').classList.add('hidden');
+            window.showScreen('screen-question');
+            document.getElementById('mp-waiting-overlay').classList.add('hidden');
+            
+            const q = localRoomData.questions[currentQIndex];
+            renderQuestionUI(q, currentQIndex, localRoomData.questions.length, (idx) => handleMPAnswer(idx, q.correct));
+            
+            // Host safety timeout (22s)
+            if(localRoomData.hostId === currentUser.uid) {
+                clearTimeout(hostForceNextTimeout);
+                hostForceNextTimeout = setTimeout(() => {
+                    if (localRoomData.status === 'playing') updateDoc(currentRoomRef, { status: 'results' });
+                }, 22000); 
+            }
+            startMPTimer();
+        }
+
+        function startMPTimer() {
+            questionStartTime = Date.now();
+            timeRemaining = 20; 
+            const bar = document.getElementById('timer-bar');
+            bar.style.width = '100%'; bar.className = 'h-full bg-blue-500 w-full transition-all duration-100 linear rounded-full shadow-[0_0_10px_rgba(59,130,246,0.6)]';
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeRemaining = 20 - ((Date.now() - questionStartTime) / 1000);
+                if(timeRemaining < 0) timeRemaining = 0;
+                bar.style.width = `${(timeRemaining/20)*100}%`;
+                if(timeRemaining <= 5) bar.classList.replace('bg-blue-500', 'bg-red-500');
+                if(timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleMPAnswer(-1, localRoomData.questions[currentQIndex].correct);
+                }
+            }, 100);
+        }
+
+        function handleMPAnswer(selIdx, correctIdx) {
+            clearInterval(timerInterval); disableOptions();
+            const btns = document.getElementById('options-container').querySelectorAll('button');
+            
+            let timeTaken = (Date.now() - questionStartTime) / 1000;
+            if (timeTaken > 20) timeTaken = 20;
+            
+            let isCorrect = (selIdx === correctIdx);
+            let pts = isCorrect ? Math.round(1000 * ((20 - timeTaken) / 20)) : 0;
+            
+            if(isCorrect) {
+                if(selIdx > -1) btns[selIdx].classList.add('bg-emerald-500', 'border-emerald-400');
+                if(isSoundOn) playBeep(800, 'sine', 0.1); 
+            } else {
+                if(selIdx > -1) btns[selIdx].classList.add('bg-red-500', 'border-red-400');
+                btns[correctIdx].classList.add('bg-emerald-500');
                 if(isSoundOn) playBeep(200, 'square', 0.3); 
             }
 
-            updateHUD();
-            if(currentRoomRef && currentUser) updateDoc(currentRoomRef, { [`players.${currentUser.uid}.score`]: score }).catch(()=>{});
-            setTimeout(() => { document.getElementById('screen-question').classList.remove('shake'); currentQIndex++; loadNextQuestion(); }, 1500);
+            document.getElementById('mp-waiting-overlay').classList.remove('hidden');
+
+            const currentScore = localRoomData.players[currentUser.uid].score || 0;
+            updateDoc(currentRoomRef, { 
+                [`answers.${currentUser.uid}`]: { time: timeTaken, correct: isCorrect, points: pts },
+                [`players.${currentUser.uid}.score`]: currentScore + pts
+            }).catch(()=>{});
         }
 
-        window.exitGameConfirm = () => {
-            if(confirm("¿Salir de la partida?")) {
-                clearInterval(timerInterval);
-                if(isLocalMode || !currentRoomRef) window.showScreen('screen-main-menu');
-                else finishLocalGame();
+        function checkHostAdvancement() {
+            if(localRoomData.hostId === currentUser.uid && localRoomData.status === 'playing') {
+                const ansCount = Object.keys(localRoomData.answers || {}).length;
+                const pCount = Object.keys(localRoomData.players || {}).length;
+                if(ansCount >= pCount && ansCount > 0) {
+                    updateDoc(currentRoomRef, { status: 'results' });
+                }
             }
-        };
-
-        async function finishLocalGame() {
-            if(currentRoomRef && currentUser) await updateDoc(currentRoomRef, { [`players.${currentUser.uid}.isDone`]: true });
-            window.showScreen('screen-gameover');
-            if(isLocalMode || !currentRoomRef) updateLeaderboardUI({ me: { name: 'Tú', score: score, isDone: true } });
-            else updateLeaderboardUI(localRoomData.players);
         }
 
-        window.exitGameComplete = () => window.leaveRoom();
+        function showMPResults() {
+            showingResults = true;
+            document.getElementById('screen-question').classList.add('hidden');
+            document.getElementById('screen-question-results').classList.remove('hidden');
+
+            const q = localRoomData.questions[localRoomData.currentQ];
+            document.getElementById('correct-answer-text').innerText = q.options[q.correct];
+
+            const list = document.getElementById('mp-results-list'); list.innerHTML = '';
+            
+            let results = [];
+            const players = localRoomData.players || {};
+            const answers = localRoomData.answers || {};
+
+            Object.keys(players).forEach(uid => {
+                const p = players[uid]; const ans = answers[uid];
+                if(ans) results.push({ name: p.name, ...ans });
+                else results.push({ name: p.name, time: 20, correct: false, points: 0 });
+            });
+
+            results.sort((a, b) => {
+                if(b.points !== a.points) return b.points - a.points;
+                return a.time - b.time;
+            });
+
+            results.forEach((r, i) => {
+                const icon = r.correct ? '<i class="fas fa-check-circle text-emerald-400 text-lg drop-shadow-md"></i>' : '<i class="fas fa-times-circle text-red-500 text-lg"></i>';
+                const ptsColor = r.correct ? 'text-emerald-400' : 'text-slate-500';
+                list.innerHTML += `
+                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-800/80 border border-white/5 shadow-md">
+                        <div class="flex items-center gap-3">
+                            <div class="w-7 h-7 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center text-xs font-black text-white shadow-inner">#${i+1}</div>
+                            <span class="font-black text-white tracking-wide">${r.name}</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-xs font-bold text-slate-400 w-10 text-right">${r.time.toFixed(1)}s</span>
+                            ${icon}
+                            <span class="font-black ${ptsColor} w-16 text-right text-lg">+${r.points}</span>
+                        </div>
+                    </div>`;
+            });
+
+            if (localRoomData.hostId === currentUser.uid) {
+                let count = 5; document.getElementById('mp-countdown-sec').innerText = count;
+                const int = setInterval(() => {
+                    count--; document.getElementById('mp-countdown-sec').innerText = count;
+                    if(count <= 0) {
+                        clearInterval(int);
+                        if(localRoomData.currentQ < 14) updateDoc(currentRoomRef, { status: 'playing', currentQ: localRoomData.currentQ + 1, answers: {} });
+                        else updateDoc(currentRoomRef, { status: 'finished' });
+                    }
+                }, 1000);
+            }
+            
+            document.getElementById('score-display').innerText = localRoomData.players[currentUser.uid].score;
+        }
+
+        // --- UTILIDADES ---
+        function renderQuestionUI(q, qIdx, qTotal, onClickCallback) {
+            const catConf = CATS[q.cat] || { name: q.cat, color: 'bg-blue-500' };
+            document.getElementById('q-counter').innerText = `${qIdx + 1}/${qTotal}`;
+            const badge = document.getElementById('q-category-badge');
+            badge.innerText = catConf.name; badge.className = `px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-md ${catConf.color}`;
+            document.getElementById('question-text').innerText = q.text;
+            const imgC = document.getElementById('q-image-container'); const imgEl = document.getElementById('q-image');
+            if(q.img) { imgEl.src = q.img; imgC.classList.remove('hidden'); } else { imgC.classList.add('hidden'); }
+            const opts = document.getElementById('options-container'); opts.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const b = document.createElement('button');
+                b.className = 'w-full p-3.5 glass-panel bg-slate-800/80 hover:bg-white/10 rounded-2xl text-center font-bold text-white transition-all border border-white/5 shadow-md active:scale-95 text-sm md:text-base';
+                b.innerText = opt;
+                b.onclick = () => onClickCallback(idx, b);
+                opts.appendChild(b);
+            });
+        }
+        function disableOptions() { const btns = document.getElementById('options-container').querySelectorAll('button'); btns.forEach(b => { b.disabled = true; b.classList.remove('active:scale-95','hover:bg-white/10'); }); }
+        
+        window.exitGameConfirm = () => { if(confirm("¿Salir de la partida?")) { clearInterval(timerInterval); if(isLocalMode || !currentRoomRef) window.showScreen('screen-main-menu'); else window.leaveRoom(); } };
+        window.exitGameComplete = () => { if(isLocalMode || !currentRoomRef) window.showScreen('screen-main-menu'); else window.leaveRoom(); };
 
         function updateLeaderboardUI(playersObj) {
             const c = document.getElementById('leaderboard-container'); c.innerHTML = '';
@@ -1173,17 +1202,14 @@
             sorted.forEach((p, i) => {
                 const isMe = p.name === (userData ? userData.name : 'Tú') || p.name === 'Invitado';
                 c.innerHTML += `
-                    <div class="flex items-center justify-between p-4 mb-3 rounded-2xl glass-panel ${isMe ? 'border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'border-white/10'}">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white">#${i+1}</div>
-                            <div class="flex flex-col text-left">
-                                <span class="font-black text-white text-lg">${p.name}</span>
-                                ${p.isDone ? '<span class="text-[10px] text-emerald-400 font-bold">TERMINÓ</span>' : '<span class="text-[10px] text-yellow-400 font-bold">JUGANDO...</span>'}
-                            </div>
+                    <div class="flex items-center justify-between p-4 mb-3 rounded-2xl glass-panel ${isMe ? 'bg-blue-600/20 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-slate-800/80 border-white/5'}">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white text-lg shadow-inner">#${i+1}</div>
+                            <span class="font-black text-white text-xl tracking-wide">${p.name}</span>
                         </div>
                         <div class="text-right">
-                            <span class="text-2xl font-black text-blue-400 drop-shadow-md">${p.score}</span>
-                            <span class="text-[10px] text-slate-400 block -mt-1 font-bold">PTS</span>
+                            <span class="text-3xl font-black text-blue-400 drop-shadow-md">${p.score}</span>
+                            <span class="text-[10px] text-slate-400 block -mt-1 font-bold tracking-widest">PTS</span>
                         </div>
                     </div>`;
             });
