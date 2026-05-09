@@ -369,7 +369,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, query, where, getDocs, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Configuración Firebase Original
         const firebaseConfig = {
@@ -503,12 +503,29 @@
             currentUser = user;
             if (user) {
                 const dName = user.displayName || user.email.split('@')[0];
+                const myTag = dName + '#' + user.uid.substring(0,4).toUpperCase();
+                
                 document.getElementById('main-player-name').innerText = dName;
-                document.getElementById('my-player-id').innerText = dName + '#' + user.uid.substring(0,4).toUpperCase();
+                document.getElementById('my-player-id').innerText = myTag;
                 document.getElementById('btn-friends-modal').classList.remove('hidden');
                 document.getElementById('btn-multiplayer').classList.remove('hidden');
                 document.getElementById('btn-logout').innerHTML = '<i class="fas fa-sign-out-alt mr-1"></i> Cerrar sesión';
                 showScreen('screen-main-menu');
+
+                // NUEVO: Crear perfil en base de datos para sistema de amigos
+                const userRef = doc(db, 'users', user.uid);
+                setDoc(userRef, { uid: user.uid, name: dName, tag: myTag }, { merge: true });
+                
+                // Escuchar solicitudes y amigos en tiempo real
+                onSnapshot(userRef, (snap) => {
+                    if(snap.exists()) {
+                        const data = snap.data();
+                        friendsList = data.friends || [];
+                        inboxRequests = data.inbox || [];
+                        renderFriendsUI();
+                    }
+                });
+
             } else {
                 showScreen('screen-auth-form');
             }
@@ -573,19 +590,82 @@
             renderFriendsUI();
         };
 
-        window.sendFriendRequest = () => {
+        window.sendFriendRequest = async () => {
             const input = document.getElementById('add-friend-id');
             const val = input.value.trim();
             if(!val) return;
-            friendsList.push({ id: 'f_'+Date.now(), name: val });
-            showToast(`¡Añadiste a ${val}!`);
-            input.value = '';
-            renderFriendsUI();
+            if(!currentUser) return;
+            
+            const myTag = document.getElementById('my-player-id').innerText;
+            if(val === myTag) return showToast("No puedes agregarte a ti mismo", true);
+            
+            showToast("Buscando jugador...");
+            try {
+                // Buscar en Firestore por ID o Nombre
+                const usersRef = collection(db, 'users');
+                const qTag = query(usersRef, where('tag', '==', val));
+                const qName = query(usersRef, where('name', '==', val));
+                
+                let targetDoc = null;
+                const snapTag = await getDocs(qTag);
+                
+                if (!snapTag.empty) { targetDoc = snapTag.docs[0]; } 
+                else {
+                    const snapName = await getDocs(qName);
+                    if (!snapName.empty) targetDoc = snapName.docs[0];
+                }
+
+                if (!targetDoc) return showToast("Jugador no encontrado", true);
+                const targetData = targetDoc.data();
+                
+                // Evitar duplicados
+                if (friendsList.find(f => f.uid === targetData.uid)) return showToast("Ya sois amigos", true);
+
+                // Escribir en la bandeja de entrada del otro usuario
+                await updateDoc(doc(db, 'users', targetData.uid), {
+                    inbox: arrayUnion({ uid: currentUser.uid, name: currentUser.displayName })
+                });
+                
+                showToast(`¡Solicitud enviada a ${targetData.name}!`);
+                input.value = '';
+            } catch (error) { 
+                showToast("Error al enviar solicitud", true); 
+            }
         };
 
-        window.deleteFriend = (id) => {
-            friendsList = friendsList.filter(f => f.id !== id);
-            renderFriendsUI();
+        window.acceptRequest = async (reqUid, reqName) => {
+            if(!currentUser) return;
+            // 1. Quitar de mi bandeja y añadir a mis amigos
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                inbox: arrayRemove({ uid: reqUid, name: reqName }),
+                friends: arrayUnion({ uid: reqUid, name: reqName })
+            });
+            // 2. Añadirme a los amigos de la otra persona
+            await updateDoc(doc(db, 'users', reqUid), {
+                friends: arrayUnion({ uid: currentUser.uid, name: currentUser.displayName })
+            });
+            showToast(`¡Aceptaste a ${reqName}!`);
+        };
+
+        window.rejectRequest = async (reqUid, reqName) => {
+            if(!currentUser) return;
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                inbox: arrayRemove({ uid: reqUid, name: reqName })
+            });
+            showToast("Solicitud rechazada");
+        };
+
+        window.deleteFriend = async (fUid, fName) => {
+            if(!currentUser) return;
+            // Borrar de mis amigos
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                friends: arrayRemove({ uid: fUid, name: fName })
+            });
+            // Borrar de sus amigos
+            await updateDoc(doc(db, 'users', fUid), {
+                friends: arrayRemove({ uid: currentUser.uid, name: currentUser.displayName })
+            });
+            showToast(`Eliminaste a ${fName}`);
         };
 
         function renderFriendsUI() {
@@ -594,7 +674,22 @@
             badge.innerText = inboxRequests.length;
 
             const viewInbox = document.getElementById('view-inbox');
-            if(inboxRequests.length === 0) viewInbox.innerHTML = '<p class="text-[11px] text-slate-500 text-center mt-6 font-bold uppercase tracking-wider">Sin solicitudes</p>';
+            if(inboxRequests.length === 0) {
+                viewInbox.innerHTML = '<p class="text-[11px] text-slate-500 text-center mt-6 font-bold uppercase tracking-wider">Sin solicitudes</p>';
+            } else {
+                viewInbox.innerHTML = inboxRequests.map(req => `
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-slate-700/40 border border-slate-600 mb-1 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-lg font-black shadow-inner text-white">${req.name.charAt(0).toUpperCase()}</div>
+                            <span class="text-sm font-bold text-white">${req.name}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="window.acceptRequest('${req.uid}', '${req.name}')" class="w-9 h-9 rounded-full bg-emerald-500 active:scale-95 text-white flex items-center justify-center shadow"><i class="fas fa-check"></i></button>
+                            <button onclick="window.rejectRequest('${req.uid}', '${req.name}')" class="w-9 h-9 rounded-full bg-red-500 active:scale-95 text-white flex items-center justify-center shadow"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
             
             const viewFriends = document.getElementById('view-friends');
             if(friendsList.length === 0) {
@@ -607,8 +702,8 @@
                             <span class="text-sm font-bold text-white">${f.name}</span>
                         </div>
                         <div class="flex gap-2">
-                            <button class="w-9 h-9 rounded-full bg-slate-600 active:bg-blue-600 text-white flex items-center justify-center shadow"><i class="fas fa-gamepad"></i></button>
-                            <button onclick="window.deleteFriend('${f.id}')" class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 hover:text-red-400 border border-slate-600 flex items-center justify-center shadow transition-colors"><i class="fas fa-trash"></i></button>
+                            <button class="w-9 h-9 rounded-full bg-slate-600 active:scale-95 text-white flex items-center justify-center shadow"><i class="fas fa-gamepad"></i></button>
+                            <button onclick="window.deleteFriend('${f.uid}', '${f.name}')" class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 hover:text-red-400 border border-slate-600 flex items-center justify-center shadow transition-colors"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 `).join('');
