@@ -999,6 +999,15 @@
             return catName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         }
 
+        // Función matemática para barajar arrays de forma 100% aleatoria (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
         window.confirmSetup = async () => {
             if(selectedCategories.length === 0) return showToast("Elige al menos 1 categoría", true);
             window.showScreen('screen-loading');
@@ -1061,12 +1070,15 @@
 
                 if(fetchedQ.length === 0) throw new Error("No se encontraron preguntas para estas categorías.");
                 
-                activeQuestions = fetchedQ.sort(() => 0.5 - Math.random()).slice(0, limitNum);
+                // Aplicamos el barajado 100% aleatorio
+                shuffleArray(fetchedQ);
+                activeQuestions = fetchedQ.slice(0, limitNum);
                 
                 // Si faltan preguntas para rellenar el cupo
                 if(activeQuestions.length < limitNum) {
                      let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio'));
-                     let extras = fall.sort(() => 0.5 - Math.random()).slice(0, limitNum - activeQuestions.length);
+                     shuffleArray(fall);
+                     let extras = fall.slice(0, limitNum - activeQuestions.length);
                      activeQuestions = [...activeQuestions, ...extras];
                      if(extras.length > 0) showToast("Faltaban preguntas. Rellenando...", false);
                 }
@@ -1074,7 +1086,9 @@
             } catch(e) {
                 console.error("Error cargando de Firebase:", e);
                 let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio'));
-                activeQuestions = (fall.length > 0 ? fall : backupQuestions).sort(() => 0.5 - Math.random()).slice(0, limitNum);
+                let pool = fall.length > 0 ? [...fall] : [...backupQuestions];
+                shuffleArray(pool);
+                activeQuestions = pool.slice(0, limitNum);
                 showToast("Modo Offline / Respaldo activo");
             }
 
