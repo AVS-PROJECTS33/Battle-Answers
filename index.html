@@ -346,12 +346,12 @@
 
         <!-- 5. SALA DE ESPERA (ROOM) -->
         <div id="screen-room" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-20">
-            <div class="text-center mb-6 mt-8 glass-panel p-6 rounded-3xl shadow-xl">
-                <p class="text-[10px] text-slate-400 font-black tracking-widest mb-2">CÓDIGO DE SALA</p>
-                <h2 id="room-pin-display" class="text-6xl font-black text-blue-400 tracking-widest drop-shadow-[0_0_20px_rgba(59,130,246,0.6)]">----</h2>
-                <div class="flex justify-center gap-3 mt-6">
-                    <button onclick="window.shareRoomCode()" class="flex-1 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm font-bold active:scale-95 transition-all shadow-md"><i class="fas fa-share-alt mr-2"></i>Compartir PIN</button>
-                    <button id="btn-invite-inroom" onclick="window.openInviteModal()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 border border-emerald-400 rounded-xl text-sm font-bold active:scale-95 transition-all hidden shadow-[0_0_15px_rgba(16,185,129,0.4)] text-white"><i class="fas fa-users mr-2"></i>Invitar Amigos</button>
+            <div class="text-center mb-4 mt-4 glass-panel p-4 rounded-3xl shadow-xl shrink-0">
+                <p class="text-[10px] text-slate-400 font-black tracking-widest mb-1">CÓDIGO DE SALA</p>
+                <h2 id="room-pin-display" class="text-4xl font-black text-blue-400 tracking-widest drop-shadow-[0_0_20px_rgba(59,130,246,0.6)]">----</h2>
+                <div class="flex justify-center gap-3 mt-3">
+                    <button onclick="window.shareRoomCode()" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-xs font-bold active:scale-95 transition-all shadow-md"><i class="fas fa-share-alt mr-2"></i>Compartir PIN</button>
+                    <button id="btn-invite-inroom" onclick="window.openInviteModal()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 border border-emerald-400 rounded-xl text-xs font-bold active:scale-95 transition-all hidden shadow-[0_0_15px_rgba(16,185,129,0.4)] text-white"><i class="fas fa-users mr-2"></i>Invitar Amigos</button>
                 </div>
             </div>
 
@@ -863,12 +863,14 @@
 
         // --- SALAS MULTIJUGADOR ---
         window.createRoom = async () => {
+            currentQIndex = -1; // Reset para evitar que se salte la carga de la primera pregunta
             const code = Math.random().toString(36).substring(2, 6).toUpperCase(); currentRoomRef = doc(db, 'rooms', code);
             const initialData = { status: 'waiting', hostId: currentUser.uid, players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false } }, questions: [], currentQ: 0, answers: {}, createdAt: Date.now() };
             try { await setDoc(currentRoomRef, initialData); document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.remove('hidden'); window.showScreen('screen-room'); } 
             catch(e) { showToast("Error de conexión", true); }
         };
         window.joinRoomBtn = async () => {
+            currentQIndex = -1; // Reset para los invitados también
             const code = document.getElementById('room-code-input').value.trim().toUpperCase();
             if(code.length !== 4) return showToast("Código de 4 caracteres", true);
             currentRoomRef = doc(db, 'rooms', code);
@@ -889,7 +891,7 @@
                 if(localRoomData.status === 'waiting') updateRoomWaitingUI(localRoomData);
                 
                 if(localRoomData.status === 'playing') {
-                    if(document.getElementById('screen-room').classList.contains('hidden') === false) {
+                    if(document.getElementById('screen-room').classList.contains('hidden') === false || document.getElementById('screen-loading').classList.contains('hidden') === false) {
                         window.showScreen('screen-question');
                     }
                     if(currentQIndex !== localRoomData.currentQ || showingResults) {
