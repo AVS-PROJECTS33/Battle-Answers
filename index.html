@@ -973,13 +973,46 @@
             const limitNum = isMultiplayerSetup ? 15 : (selectedLevel * 5 + 5);
 
             try {
+                // Buscamos en tu colección específica
                 const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle");
                 const qQuery = query(qRef, where("cat", "in", selectedCategories));
                 const snap = await getDocs(qQuery);
-                let fetchedQ = []; snap.forEach(doc => fetchedQ.push(doc.data()));
-                if(fetchedQ.length === 0) throw new Error("Vacío");
+                let fetchedQ = []; 
+                
+                snap.forEach(doc => {
+                    let qData = doc.data();
+                    
+                    // PARCHE INTELIGENTE PARA CSV:
+                    // Si options es un String (texto) en vez de un Array, lo convertimos.
+                    if (typeof qData.options === 'string') {
+                         // Separa el texto por comas y quita espacios extra en los extremos
+                         qData.options = qData.options.split(',').map(opt => opt.trim());
+                    }
+                    
+                    // Aseguramos que correct sea un número
+                    if (typeof qData.correct === 'string') {
+                        qData.correct = parseInt(qData.correct, 10);
+                    }
+
+                    // Solo añadimos la pregunta si tiene los campos mínimos necesarios
+                    if (qData.text && Array.isArray(qData.options) && qData.options.length >= 2 && typeof qData.correct === 'number') {
+                        fetchedQ.push(qData);
+                    }
+                });
+
+                if(fetchedQ.length === 0) throw new Error("Vacío o formato incorrecto");
                 activeQuestions = fetchedQ.sort(() => 0.5 - Math.random()).slice(0, limitNum);
+                
+                // Si faltan preguntas para rellenar, metemos algunas de respaldo
+                if(activeQuestions.length < limitNum) {
+                     let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat));
+                     let extras = fall.sort(() => 0.5 - Math.random()).slice(0, limitNum - activeQuestions.length);
+                     activeQuestions = [...activeQuestions, ...extras];
+                     if(extras.length > 0) showToast("Faltaban preguntas. Rellenando...", false);
+                }
+
             } catch(e) {
+                console.error("Error cargando de Firebase:", e);
                 let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat));
                 activeQuestions = (fall.length > 0 ? fall : backupQuestions).sort(() => 0.5 - Math.random()).slice(0, limitNum);
                 showToast("Modo Offline / Respaldo activo");
