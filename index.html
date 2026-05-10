@@ -837,6 +837,7 @@
         }
 
         // --- AUTH ---
+        // Firebase se encarga solo de detectar si hay sesión al arrancar la página.
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
