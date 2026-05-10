@@ -83,6 +83,8 @@
 
 <body class="w-screen h-[100dvh] flex justify-center items-center bg-slate-950">
 
+    <audio id="bgm-audio" loop src="https://assets.mixkit.co/active_storage/sfx/135/135-preview.mp3" preload="auto"></audio>
+
     <div id="toast-container" class="fixed top-4 left-0 right-0 z-[100] flex flex-col items-center gap-2 pointer-events-none"></div>
 
     <div id="app-container" class="w-full max-w-md h-full relative overflow-hidden flex flex-col shadow-2xl bg-start transition-all duration-500 sm:border-x sm:border-white/10">
@@ -595,6 +597,9 @@
         let isFXOn = false;
         let askedQuestionsHistory = new Set(); // Memoria global para no repetir preguntas
 
+        const bgm = document.getElementById('bgm-audio');
+        bgm.volume = 0.15; // Volumen de fondo agradable
+
         const CATS = {
             'aleatorio': { id: 'aleatorio', name: 'Aleatorio', icon: 'fa-dice', color: 'bg-pink-500', border: 'border-pink-400' },
             'deportes': { id: 'deportes', name: 'Deportes', icon: 'fa-futbol', color: 'bg-orange-500', border: 'border-orange-400' },
@@ -627,6 +632,41 @@
         };
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Efectos de sonido mejorados (Sintetizador web)
+        function playSoundFX(type) {
+            if(!isSoundOn || audioCtx.state === 'suspended') return;
+            const t = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, t);
+                osc.frequency.exponentialRampToValueAtTime(100, t + 0.05);
+                gain.gain.setValueAtTime(0.3, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
+                osc.start(t); osc.stop(t + 0.05);
+            } else if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, t);
+                osc.frequency.setValueAtTime(554.37, t + 0.1);
+                osc.frequency.setValueAtTime(659.25, t + 0.2);
+                osc.frequency.setValueAtTime(880, t + 0.3);
+                gain.gain.setValueAtTime(0.3, t);
+                gain.gain.linearRampToValueAtTime(0, t + 0.5);
+                osc.start(t); osc.stop(t + 0.5);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, t);
+                osc.frequency.exponentialRampToValueAtTime(50, t + 0.4);
+                gain.gain.setValueAtTime(0.3, t);
+                gain.gain.linearRampToValueAtTime(0, t + 0.4);
+                osc.start(t); osc.stop(t + 0.4);
+            }
+        }
+
         function playBeep(freq = 440, type = 'sine', duration = 0.1) {
             if(!isSoundOn || audioCtx.state === 'suspended') return;
             const osc = audioCtx.createOscillator();
@@ -637,6 +677,17 @@
             gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
             osc.stop(audioCtx.currentTime + duration);
         }
+
+        // Listener global de clics para los botones
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (btn && isSoundOn) {
+                // Evitamos que suene sobre los botones de opciones o en el botón de mutear
+                if (!btn.closest('#options-container') && btn.id !== 'toggle-sound-btn') {
+                    playSoundFX('click');
+                }
+            }
+        });
 
         window.showScreen = (id) => {
             ['screen-intro', 'screen-login', 'screen-main-menu', 'screen-lobby', 'screen-setup', 'screen-setup-mode', 'screen-room', 'screen-question', 'screen-question-results', 'screen-gameover', 'screen-loading'].forEach(s => document.getElementById(s).classList.add('hidden'));
@@ -693,6 +744,9 @@
         window.startFromIntro = () => {
             introSeen = true;
             if(audioCtx.state === 'suspended') audioCtx.resume();
+            if(isSoundOn) {
+                bgm.play().catch(()=>{});
+            }
             window.showScreen(nextScreenAfterIntro);
         };
 
@@ -779,8 +833,18 @@
         window.toggleSound = () => {
             isSoundOn = !isSoundOn;
             const btn = document.getElementById('toggle-sound-btn'); const knob = document.getElementById('toggle-sound-knob');
-            if(isSoundOn) { btn.classList.replace('bg-slate-600', 'bg-emerald-500'); knob.classList.replace('left-1', 'right-1'); showToast("Sonido Activado"); playBeep(600); } 
-            else { btn.classList.replace('bg-emerald-500', 'bg-slate-600'); knob.classList.replace('right-1', 'left-1'); showToast("Sonido Silenciado"); }
+            if(isSoundOn) { 
+                btn.classList.replace('bg-slate-600', 'bg-emerald-500'); 
+                knob.classList.replace('left-1', 'right-1'); 
+                showToast("Sonido Activado"); 
+                playSoundFX('click'); 
+                bgm.play().catch(()=>{});
+            } else { 
+                btn.classList.replace('bg-emerald-500', 'bg-slate-600'); 
+                knob.classList.replace('right-1', 'left-1'); 
+                showToast("Sonido Silenciado"); 
+                bgm.pause();
+            }
         };
         window.toggleFX = () => {
             isFXOn = !isFXOn;
@@ -1304,7 +1368,7 @@
                     btnEl.classList.add('bg-emerald-500', 'border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.8)]', 'text-white', 'scale-105');
                 }
                 score += (100 * combo); combo++; correctAnswersCount++; 
-                if(isSoundOn) playBeep(800, 'sine', 0.1); 
+                if(isSoundOn) playSoundFX('correct'); 
                 if(correctAnswersCount % 5 === 0) { lives++; showToast("❤️ ¡Buena racha! VIDA EXTRA", false); if(isSoundOn) setTimeout(() => playBeep(1000, 'square', 0.2), 200); }
             } else {
                 if(btnEl) {
@@ -1315,7 +1379,7 @@
                 btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
                 
                 if(selIdx===-1) document.getElementById('screen-question').classList.add('shake');
-                lives--; combo = 1; if(isSoundOn) playBeep(200, 'square', 0.3); 
+                lives--; combo = 1; if(isSoundOn) playSoundFX('wrong'); 
             }
             updateSPHUD();
             setTimeout(() => { document.getElementById('screen-question').classList.remove('shake'); currentQIndex++; loadSPQuestion(); }, 1500);
@@ -1378,7 +1442,7 @@
                     btns[selIdx].classList.remove('bg-slate-800/80', 'glass-panel');
                     btns[selIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.8)]', 'text-white', 'scale-105');
                 }
-                if(isSoundOn) playBeep(800, 'sine', 0.1); 
+                if(isSoundOn) playSoundFX('correct'); 
             } else {
                 if(selIdx > -1) {
                     btns[selIdx].classList.remove('bg-slate-800/80', 'glass-panel');
@@ -1386,7 +1450,7 @@
                 }
                 btns[correctIdx].classList.remove('bg-slate-800/80', 'glass-panel');
                 btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
-                if(isSoundOn) playBeep(200, 'square', 0.3); 
+                if(isSoundOn) playSoundFX('wrong'); 
             }
 
             document.getElementById('mp-waiting-overlay').classList.remove('hidden');
