@@ -380,33 +380,34 @@
         </div>
 
         <!-- 5. SALA DE ESPERA (ROOM) -->
-        <div id="screen-room" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-20">
-            <div class="text-center mb-4 mt-4 glass-panel p-4 rounded-3xl shadow-xl shrink-0">
+        <div id="screen-room" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-6">
+            
+            <div class="text-center mb-3 mt-2 glass-panel p-3 rounded-3xl shadow-xl shrink-0">
                 <p class="text-[10px] text-slate-400 font-black tracking-widest mb-1">CÓDIGO DE SALA</p>
-                <h2 id="room-pin-display" class="text-4xl font-black text-blue-400 tracking-widest drop-shadow-[0_0_20px_rgba(59,130,246,0.6)]">----</h2>
-                <div class="flex justify-center gap-3 mt-3">
-                    <button onclick="window.shareRoomCode()" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-xs font-bold active:scale-95 transition-all shadow-md"><i class="fas fa-share-alt mr-2"></i>Compartir PIN</button>
-                    <button id="btn-invite-inroom" onclick="window.openInviteModal()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 border border-emerald-400 rounded-xl text-xs font-bold active:scale-95 transition-all hidden shadow-[0_0_15px_rgba(16,185,129,0.4)] text-white"><i class="fas fa-users mr-2"></i>Invitar Amigos</button>
+                <h2 id="room-pin-display" class="text-2xl font-black text-blue-400 tracking-widest drop-shadow-md">----</h2>
+                <div class="flex justify-center gap-2 mt-2">
+                    <button onclick="window.shareRoomCode()" class="flex-1 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-xl text-[10px] font-bold active:scale-95 transition-all shadow-md"><i class="fas fa-share-alt mr-1"></i>Compartir PIN</button>
+                    <button id="btn-invite-inroom" onclick="window.openInviteModal()" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 border border-emerald-400 rounded-xl text-[10px] font-bold active:scale-95 transition-all hidden shadow-sm text-white"><i class="fas fa-users mr-1"></i>Invitar Amigos</button>
                 </div>
             </div>
 
-            <div class="flex-1 glass-panel rounded-3xl p-5 overflow-y-auto mb-6 shadow-lg border-white/5">
+            <div class="flex-1 glass-panel rounded-3xl p-5 overflow-y-auto mb-4 shadow-lg border-white/5">
                 <h3 class="font-black text-xs text-slate-400 mb-4 text-center tracking-widest border-b border-slate-700 pb-2">JUGADORES (<span id="player-count">1</span>/6)</h3>
                 <div id="room-players-list" class="space-y-3"></div>
             </div>
 
-            <div id="room-host-controls" class="hidden fixed bottom-6 left-6 right-6 z-30 max-w-md mx-auto">
+            <div id="room-host-controls" class="hidden shrink-0 mb-4 w-full">
                 <button onclick="window.goToSetup(true)" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-xl transition-all shadow-[0_10px_30px_rgba(59,130,246,0.5)] active:scale-95 text-white border-2 border-blue-400">
                     CONFIGURAR Y EMPEZAR
                 </button>
             </div>
             
-            <div id="room-guest-controls" class="text-center text-white font-bold hidden glass-panel py-5 rounded-2xl mb-4 shadow-md">
-                <i class="fas fa-circle-notch fa-spin text-3xl text-blue-400 mb-3 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]"></i>
-                <p class="tracking-wide">Esperando al host...</p>
+            <div id="room-guest-controls" class="text-center text-white hidden glass-panel py-3 px-4 rounded-xl mb-4 shadow-sm flex flex-row items-center justify-center gap-3 shrink-0">
+                <i class="fas fa-circle-notch fa-spin text-xl text-blue-400"></i>
+                <p class="tracking-wide text-xs font-bold text-slate-300">Esperando al host para empezar...</p>
             </div>
             
-            <button onclick="window.leaveRoom()" class="glass-panel px-6 py-3 rounded-full text-red-400 hover:bg-red-500/20 font-bold text-xs tracking-wider active:scale-95 transition-all shadow-md self-center mb-16 border-white/5">
+            <button onclick="window.leaveRoom()" class="glass-panel px-6 py-3 rounded-full text-red-400 hover:bg-red-500/20 font-bold text-xs tracking-wider active:scale-95 transition-all shadow-md self-center mt-auto mb-2 border-white/5 shrink-0">
                 ABANDONAR SALA
             </button>
         </div>
@@ -459,6 +460,39 @@
             <div id="mp-next-countdown-container" class="text-center mt-auto pb-4 pt-4 border-t border-slate-700">
                 <p class="text-[10px] font-black text-slate-400 tracking-widest mb-1">PRÓXIMA PREGUNTA EN</p>
                 <div class="text-4xl font-black text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" id="mp-countdown-sec">5</div>
+            </div>
+
+            <!-- NUEVO MODAL DE ATAQUE (Oculto por defecto, aparece sobre los resultados) -->
+            <div id="attack-modal" class="hidden absolute inset-0 z-40 bg-slate-900/95 backdrop-blur-2xl flex flex-col p-6 items-center justify-center">
+                <h2 class="text-3xl font-black text-red-500 mb-2 drop-shadow-md text-center"><i class="fas fa-meteor"></i> ¡TU TURNO DE ATACAR!</h2>
+                <p class="text-sm font-bold text-slate-300 mb-8 text-center">Vas último, pero tienes el poder de fastidiar a un rival.</p>
+                <!-- Poderes -->
+                <div class="grid grid-cols-2 gap-4 w-full max-w-sm mb-6">
+                    <button onclick="window.selectAttackPower('ice')" id="pwr-ice" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all">
+                        <i class="fas fa-snowflake text-4xl text-cyan-400"></i>
+                        <span class="font-black text-sm text-white mt-1">HIELO</span>
+                    </button>
+                    <button onclick="window.selectAttackPower('swap')" id="pwr-swap" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all">
+                        <i class="fas fa-random text-4xl text-purple-400"></i>
+                        <span class="font-black text-sm text-white mt-1">INTERCAMBIO</span>
+                    </button>
+                    <button onclick="window.selectAttackPower('slime')" id="pwr-slime" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all">
+                        <i class="fas fa-fill-drip text-4xl text-green-400"></i>
+                        <span class="font-black text-sm text-white mt-1">LÍQUIDO</span>
+                    </button>
+                    <button onclick="window.selectAttackPower('block')" id="pwr-block" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all">
+                        <i class="fas fa-lock text-4xl text-red-400"></i>
+                        <span class="font-black text-sm text-white mt-1">BLOQUEO</span>
+                    </button>
+                </div>
+                <!-- Targets -->
+                <select id="attack-target-select" class="w-full max-w-sm p-4 rounded-xl bg-slate-800 border-2 border-slate-600 text-white font-bold mb-8 focus:outline-none focus:border-red-500 shadow-inner appearance-none text-center">
+                    <option value="">-- Elige a la víctima --</option>
+                </select>
+
+                <button onclick="window.launchAttack()" class="w-full max-w-sm py-4 bg-red-600 hover:bg-red-500 rounded-2xl font-black text-xl text-white transition-all shadow-[0_0_20px_rgba(239,68,68,0.6)] active:scale-95 border-2 border-red-400">
+                    LANZAR ATAQUE
+                </button>
             </div>
         </div>
 
@@ -541,6 +575,7 @@
         
         let score = 0, lives = 3, combo = 1, currentQIndex = 0, timeRemaining = 20; 
         let timerInterval;
+        let mpResultsInterval = null; // Nuevo control global para el contador de resultados
         let questionStartTime = 0;
         let selectedCategories = [];
         let isMultiplayerSetup = false;
@@ -549,6 +584,8 @@
         
         let selectedLevel = 1;
         let mpGameMode = 'classic'; // Nuevo estado para el modo multijugador
+        let selectedAttackPower = null; // Guardar el poder elegido temporalmente
+        
         let correctAnswersCount = 0;
         let isSoundOn = true;
         let isFXOn = false;
@@ -911,7 +948,7 @@
         window.createRoom = async () => {
             currentQIndex = -1; // Reset para evitar que se salte la carga de la primera pregunta
             const code = Math.random().toString(36).substring(2, 6).toUpperCase(); currentRoomRef = doc(db, 'rooms', code);
-            const initialData = { status: 'waiting', hostId: currentUser.uid, players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false } }, questions: [], currentQ: 0, answers: {}, createdAt: Date.now() };
+            const initialData = { status: 'waiting', hostId: currentUser.uid, players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false } }, questions: [], currentQ: 0, answers: {}, activeAttack: null, createdAt: Date.now() };
             try { await setDoc(currentRoomRef, initialData); document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.remove('hidden'); window.showScreen('screen-room'); } 
             catch(e) { showToast("Error de conexión", true); }
         };
@@ -964,10 +1001,10 @@
             const pArr = Object.values(data.players); document.getElementById('player-count').innerText = pArr.length;
             pArr.forEach(p => {
                 pList.innerHTML += `
-                    <div class="flex items-center gap-3 p-3 glass-panel rounded-xl border border-white/5">
-                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-black text-sm text-white">${p.name.charAt(0).toUpperCase()}</div>
-                        <span class="font-bold text-white">${p.name}</span>
-                        ${data.hostId === p.uid ? '<i class="fas fa-crown text-yellow-400 ml-auto"></i>' : ''}
+                    <div class="flex items-center gap-4 p-4 glass-panel rounded-2xl border border-white/10 shadow-md bg-slate-800/40">
+                        <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center font-black text-xl text-white shadow-inner">${p.name.charAt(0).toUpperCase()}</div>
+                        <span class="font-black text-lg text-white tracking-wide">${p.name}</span>
+                        ${data.hostId === p.uid ? '<i class="fas fa-crown text-2xl text-yellow-400 ml-auto drop-shadow-md"></i>' : ''}
                     </div>`;
             });
             const isHost = data.hostId === currentUser.uid;
@@ -989,11 +1026,22 @@
 
         window.selectMPMode = (mode) => {
             mpGameMode = mode;
+            const btnC = document.getElementById('btn-mode-classic');
+            const btnA = document.getElementById('btn-mode-attacks');
+            
+            if(mode === 'classic') {
+                btnC.className = "glass-panel bg-blue-600/20 border-blue-400/30 hover:bg-blue-600/30 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group shadow-xl";
+                btnA.className = "glass-panel bg-black/40 border-white/10 hover:bg-white/5 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group opacity-60";
+            } else {
+                btnA.className = "glass-panel bg-red-600/20 border-red-400/30 hover:bg-red-600/30 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group shadow-xl";
+                btnC.className = "glass-panel bg-black/40 border-white/10 hover:bg-white/5 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group opacity-60";
+            }
         };
 
         window.goToSetup = async (isMulti) => {
             isMultiplayerSetup = isMulti;
             if(isMulti) {
+                window.selectMPMode('classic'); // Default selection visual
                 window.showScreen('screen-setup-mode');
             } else {
                 window.selectLevel(1);
@@ -1042,13 +1090,11 @@
             else { selectedCategories.push(id); btn.classList.replace('border-white/5', col); btn.classList.replace('glass-panel', 'bg-white/10'); }
         };
 
-        // Función para quitar tildes y mayúsculas
         function normalizarCategoria(catName) {
             if (!catName) return "";
             return catName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         }
 
-        // Función matemática para barajar arrays de forma 100% aleatoria (Fisher-Yates)
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -1065,28 +1111,18 @@
 
             try {
                 const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle");
-                // Como las categorías en tu DB tienen mayúsculas/tildes, traemos todas las preguntas
-                // y las filtramos en el cliente.
                 const snap = await getDocs(qRef);
                 let fetchedQ = []; 
                 
                 snap.forEach(doc => {
                     let rawData = doc.data();
-                    
-                    // --- TRADUCTOR MAGICO ---
-                    // Convierte los campos de tu Firebase al formato del juego
-
-                    // 1. La Categoría
                     let rawCat = rawData["Categoria"] || "";
                     let normalizedCat = normalizarCategoria(rawCat);
 
-                    // Si la pregunta pertenece a las categorías que elegiste...
                     if (selectedCategories.includes(normalizedCat) || selectedCategories.includes('aleatorio')) {
-                        
                         let formattedQ = {
                             cat: normalizedCat,
                             text: rawData["Pregunta"],
-                            // Unimos las 4 opciones en un solo Array
                             options: [
                                 rawData["Opcion 1"],
                                 rawData["Opcion 2"],
@@ -1095,22 +1131,12 @@
                             ]
                         };
 
-                        // 2. La Respuesta Correcta
-                        // Tu Firebase parece tener "1, 2, 3 o 4" (como texto o número).
-                        // Nuestro juego necesita "0, 1, 2 o 3" (índices de Array).
                         let correctVal = rawData["Respuesta Correcta"];
                         if (typeof correctVal === 'string') correctVal = parseInt(correctVal, 10);
-                        
-                        // Si en tu CSV el 1 es la primera opción, le restamos 1 para que empiece en 0.
-                        // Ajusta esto a -1 si tu CSV enumera de 1 a 4. Si enumera de 0 a 3, quita el -1.
                         formattedQ.correct = correctVal - 1; 
 
-                        // 3. Imagen (Opcional, por si añades el campo luego)
-                        if (rawData["Imagen"]) {
-                            formattedQ.img = rawData["Imagen"];
-                        }
+                        if (rawData["Imagen"]) { formattedQ.img = rawData["Imagen"]; }
 
-                        // Verificación de seguridad final
                         if (formattedQ.text && formattedQ.options[0] && formattedQ.options[3] && !isNaN(formattedQ.correct)) {
                             fetchedQ.push(formattedQ);
                         }
@@ -1119,25 +1145,17 @@
 
                 if(fetchedQ.length === 0) throw new Error("No se encontraron preguntas para estas categorías.");
                 
-                // --- SISTEMA INTELIGENTE ANTI-REPETICIÓN ---
-                // Filtramos sacando del saco las preguntas que ya jugaste en esta sesión
                 let freshQuestions = fetchedQ.filter(q => !askedQuestionsHistory.has(q.text));
                 
-                // Si ya te han salido absolutamente todas las preguntas de esta categoría, vaciamos la memoria
                 if(freshQuestions.length < limitNum) {
                     askedQuestionsHistory.clear();
                     freshQuestions = fetchedQ;
                 }
                 
-                // Aplicamos el barajado 100% aleatorio solo a las "preguntas nuevas"
                 shuffleArray(freshQuestions);
                 activeQuestions = freshQuestions.slice(0, limitNum);
-                
-                // Registramos estas preguntas en la memoria para que no vuelvan a salir en la próxima partida
                 activeQuestions.forEach(q => askedQuestionsHistory.add(q.text));
-                // -------------------------------------------
                 
-                // Si faltan preguntas para rellenar el cupo
                 if(activeQuestions.length < limitNum) {
                      let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio'));
                      shuffleArray(fall);
@@ -1151,7 +1169,6 @@
                 let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio'));
                 let pool = fall.length > 0 ? [...fall] : [...backupQuestions];
                 
-                // Anti-repetición también para el modo respaldo
                 let freshQuestions = pool.filter(q => !askedQuestionsHistory.has(q.text));
                 if(freshQuestions.length < limitNum) {
                     askedQuestionsHistory.clear();
@@ -1170,12 +1187,65 @@
                     status: 'playing', 
                     currentQ: 0, 
                     answers: {},
-                    mode: mpGameMode // Guardamos en la sala el modo elegido
+                    mode: mpGameMode,
+                    activeAttack: null
                 });
             } else {
                 localRoomData = { questions: activeQuestions }; startLocalGameLoop();
             }
         };
+
+        // --- LÓGICA DE ATAQUES (NUEVA) ---
+        window.selectAttackPower = (power) => {
+            selectedAttackPower = power;
+            const powers = ['ice', 'swap', 'slime', 'block'];
+            powers.forEach(p => {
+                const btn = document.getElementById(`pwr-${p}`);
+                if(p === power) {
+                    btn.classList.replace('border-slate-600', 'border-red-500');
+                    btn.classList.add('bg-red-500/20');
+                } else {
+                    btn.classList.replace('border-red-500', 'border-slate-600');
+                    btn.classList.remove('bg-red-500/20');
+                }
+            });
+        };
+
+        window.showAttackModal = (opponents) => {
+            selectedAttackPower = null;
+            const sel = document.getElementById('attack-target-select');
+            sel.innerHTML = '<option value="">-- Elige a la víctima --</option>';
+            opponents.forEach(opp => {
+                sel.innerHTML += `<option value="${opp.uid}">${localRoomData.players[opp.uid].name}</option>`;
+            });
+            
+            ['ice', 'swap', 'slime', 'block'].forEach(p => {
+                const btn = document.getElementById(`pwr-${p}`);
+                btn.classList.replace('border-red-500', 'border-slate-600');
+                btn.classList.remove('bg-red-500/20');
+            });
+
+            document.getElementById('attack-modal').classList.remove('hidden');
+        };
+
+        window.launchAttack = async () => {
+            const targetId = document.getElementById('attack-target-select').value;
+            if(!selectedAttackPower) return showToast("Elige un poder", true);
+            if(!targetId) return showToast("Elige una víctima", true);
+            
+            document.getElementById('attack-modal').classList.add('hidden');
+            
+            await updateDoc(currentRoomRef, {
+                activeAttack: {
+                    power: selectedAttackPower,
+                    targetId: targetId,
+                    fromId: currentUser.uid,
+                    forQuestion: localRoomData.currentQ + 1
+                }
+            });
+            showToast("¡Ataque preparado para la siguiente ronda!", false);
+        };
+
 
         // --- SINGLE PLAYER LOGIC ---
         function startLocalGameLoop() {
@@ -1214,7 +1284,6 @@
             const btns = document.getElementById('options-container').querySelectorAll('button');
             
             if(selIdx === correctIdx) {
-                // Relleno COMPLETO verde para respuesta correcta
                 if(btnEl) {
                     btnEl.classList.remove('bg-slate-800/80', 'glass-panel');
                     btnEl.classList.add('bg-emerald-500', 'border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.8)]', 'text-white', 'scale-105');
@@ -1223,12 +1292,10 @@
                 if(isSoundOn) playBeep(800, 'sine', 0.1); 
                 if(correctAnswersCount % 5 === 0) { lives++; showToast("❤️ ¡Buena racha! VIDA EXTRA", false); if(isSoundOn) setTimeout(() => playBeep(1000, 'square', 0.2), 200); }
             } else {
-                // Relleno COMPLETO rojo para respuesta incorrecta
                 if(btnEl) {
                     btnEl.classList.remove('bg-slate-800/80', 'glass-panel');
                     btnEl.classList.add('bg-red-500', 'border-red-400', 'shake', 'text-white');
                 }
-                // Resaltar la correcta en verde
                 btns[correctIdx].classList.remove('bg-slate-800/80', 'glass-panel');
                 btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
                 
@@ -1253,7 +1320,6 @@
             const q = localRoomData.questions[currentQIndex];
             renderQuestionUI(q, currentQIndex, localRoomData.questions.length, (idx) => handleMPAnswer(idx, q.correct));
             
-            // Host safety timeout (22s)
             if(localRoomData.hostId === currentUser.uid) {
                 clearTimeout(hostForceNextTimeout);
                 hostForceNextTimeout = setTimeout(() => {
@@ -1293,19 +1359,16 @@
             let pts = isCorrect ? Math.round(1000 * ((20 - timeTaken) / 20)) : 0;
             
             if(isCorrect) {
-                // Relleno COMPLETO verde
                 if(selIdx > -1) {
                     btns[selIdx].classList.remove('bg-slate-800/80', 'glass-panel');
                     btns[selIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.8)]', 'text-white', 'scale-105');
                 }
                 if(isSoundOn) playBeep(800, 'sine', 0.1); 
             } else {
-                // Relleno COMPLETO rojo
                 if(selIdx > -1) {
                     btns[selIdx].classList.remove('bg-slate-800/80', 'glass-panel');
                     btns[selIdx].classList.add('bg-red-500', 'border-red-400', 'text-white');
                 }
-                // Mostrar correcta en verde
                 btns[correctIdx].classList.remove('bg-slate-800/80', 'glass-panel');
                 btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
                 if(isSoundOn) playBeep(200, 'square', 0.3); 
@@ -1346,10 +1409,15 @@
 
             Object.keys(players).forEach(uid => {
                 const p = players[uid]; const ans = answers[uid];
-                if(ans) results.push({ name: p.name, ...ans });
-                else results.push({ name: p.name, time: 20, correct: false, points: 0 });
+                if(ans) results.push({ uid: uid, name: p.name, score: p.score, ...ans });
+                else results.push({ uid: uid, name: p.name, score: p.score, time: 20, correct: false, points: 0 });
             });
 
+            // Para saber quién va último
+            let playersByScore = [...results].sort((a, b) => a.score - b.score);
+            let lastPlaceUid = playersByScore[0].uid;
+
+            // Para el ranking visual de esta ronda
             results.sort((a, b) => {
                 if(b.points !== a.points) return b.points - a.points;
                 return a.time - b.time;
@@ -1372,14 +1440,46 @@
                     </div>`;
             });
 
-            let count = 5; document.getElementById('mp-countdown-sec').innerText = count;
-            const int = setInterval(() => {
-                count--; document.getElementById('mp-countdown-sec').innerText = count;
+            // --- LÓGICA DEL MENU DE ATAQUE ---
+            let isAttackRound = false;
+            let opponentsArr = [];
+            
+            // Cada 2 preguntas (es decir, en el index 1, 3, 5...) abrimos el ataque. Excepto en la última (14).
+            if (localRoomData.mode === 'attacks' && (localRoomData.currentQ + 1) % 2 === 0 && localRoomData.currentQ < 14) {
+                isAttackRound = true;
+                opponentsArr = playersByScore.filter(p => p.uid !== lastPlaceUid);
+            }
+            
+            // Si eres el último y no has lanzado el ataque aún, te sale el modal
+            if (isAttackRound && currentUser.uid === lastPlaceUid && !localRoomData.activeAttack) {
+                window.showAttackModal(opponentsArr);
+            } else {
+                document.getElementById('attack-modal').classList.add('hidden');
+            }
+
+            // El contador empieza en 15 si es ronda de ataque, sino en 5.
+            let count = isAttackRound ? 15 : 5; 
+            document.getElementById('mp-countdown-sec').innerText = count;
+            
+            clearInterval(mpResultsInterval);
+            mpResultsInterval = setInterval(() => {
+                
+                // Si alguien ha lanzado el ataque y el contador va por encima de 5, lo bajamos de golpe.
+                if (isAttackRound && localRoomData.activeAttack && count > 5) {
+                    count = 5;
+                }
+                
+                count--; 
+                document.getElementById('mp-countdown-sec').innerText = count;
+                
                 if(count <= 0) {
-                    clearInterval(int);
+                    clearInterval(mpResultsInterval);
                     if (localRoomData.hostId === currentUser.uid) {
-                        if(localRoomData.currentQ < 14) updateDoc(currentRoomRef, { status: 'playing', currentQ: localRoomData.currentQ + 1, answers: {} });
-                        else updateDoc(currentRoomRef, { status: 'finished' });
+                        if(localRoomData.currentQ < 14) {
+                            updateDoc(currentRoomRef, { status: 'playing', currentQ: localRoomData.currentQ + 1, answers: {} });
+                        } else {
+                            updateDoc(currentRoomRef, { status: 'finished' });
+                        }
                     }
                 }
             }, 1000);
@@ -1399,24 +1499,20 @@
             
             const imgC = document.getElementById('q-image-container'); const imgEl = document.getElementById('q-image');
             
-            // Vaciamos la imagen al instante para que no se quede el "fantasma" de la pregunta anterior
             imgEl.removeAttribute('src');
             
             if(q.img) { 
                 imgEl.src = q.img; 
                 imgC.classList.remove('hidden'); 
-                // Letra más pequeña porque hay imagen
                 qTextEl.className = "text-base md:text-lg font-black text-center text-white leading-tight drop-shadow-md transition-all";
             } else { 
                 imgC.classList.add('hidden'); 
-                // Letra reducida porque NO hay imagen
                 qTextEl.className = "text-xl md:text-2xl font-black text-center text-white leading-tight drop-shadow-md transition-all";
             }
             
             const opts = document.getElementById('options-container'); opts.innerHTML = '';
             q.options.forEach((opt, idx) => {
                 const b = document.createElement('button');
-                // IMPORTANTE: Cambio 'hover:bg-white/10' por 'active:bg-slate-700' para evitar el efecto de "botón pulsado" fantasma en pantallas móviles
                 b.className = 'w-full py-3 px-4 glass-panel bg-slate-800/80 active:bg-slate-700 rounded-xl text-center font-bold text-white transition-all border border-white/5 shadow-md active:scale-95 text-base md:text-lg';
                 b.innerText = opt;
                 b.onclick = () => onClickCallback(idx, b);
@@ -1439,7 +1535,7 @@
                 window.showScreen('screen-main-menu'); 
             } else {
                 if (localRoomData.hostId === currentUser.uid) {
-                    let updates = { status: 'waiting', currentQ: 0, answers: {}, questions: [] };
+                    let updates = { status: 'waiting', currentQ: 0, answers: {}, questions: [], activeAttack: null };
                     for (let pid in localRoomData.players) { updates[`players.${pid}.score`] = 0; }
                     updateDoc(currentRoomRef, updates);
                 }
