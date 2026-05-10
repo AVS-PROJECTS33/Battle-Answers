@@ -304,6 +304,37 @@
             </div>
         </div>
 
+        <!-- PANTALLA 4.1: SETUP MODO (Sólo Multijugador) -->
+        <div id="screen-setup-mode" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-24">
+            <div class="flex justify-between items-center mb-4 mt-0 shrink-0">
+                <button onclick="window.backFromModeSelection()" class="glass-panel px-4 py-1.5 rounded-full text-slate-200 hover:text-white flex items-center gap-1.5 font-black text-[10px] tracking-wider active:scale-95 transition-all shadow-lg border-white/10">
+                    <i class="fas fa-arrow-left text-[10px]"></i> ATRÁS
+                </button>
+            </div>
+
+            <div class="flex-1 flex flex-col justify-center gap-6 pb-10">
+                <div class="text-center mb-2">
+                    <p class="text-[10px] text-slate-400 font-black tracking-widest border-b border-slate-700 pb-2 inline-block px-4">SELECCIONA EL MODO DE JUEGO</p>
+                </div>
+                
+                <button id="btn-mode-classic" onclick="window.selectMPMode('classic'); window.goToCategories()" class="glass-panel bg-blue-600/20 border-blue-400/30 hover:bg-blue-600/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all group shadow-2xl">
+                    <div class="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.6)] group-hover:scale-110 transition-transform">
+                        <i class="fas fa-bolt text-3xl text-white"></i>
+                    </div>
+                    <span class="font-black text-3xl text-white tracking-widest drop-shadow-md">CLÁSICO</span>
+                    <p class="text-xs text-blue-200 px-6 text-center">15 Preguntas. ¡El más rápido gana más puntos!</p>
+                </button>
+
+                <button id="btn-mode-attacks" onclick="window.selectMPMode('attacks'); window.goToCategories()" class="glass-panel bg-red-600/20 border-red-400/30 hover:bg-red-600/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all group shadow-2xl">
+                    <div class="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.6)] group-hover:scale-110 transition-transform">
+                        <i class="fas fa-meteor text-3xl text-white"></i>
+                    </div>
+                    <span class="font-black text-3xl text-white tracking-widest drop-shadow-md">SUPERATAQUES</span>
+                    <p class="text-xs text-red-200 px-6 text-center">Cada 2 preguntas, el último lanza ataques (Hielo, Intercambio...)</p>
+                </button>
+            </div>
+        </div>
+
         <!-- 4. SETUP (Niveles y Categorías) -->
         <div id="screen-setup" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 overflow-y-auto pb-24">
             <div class="flex justify-between items-center mb-4 mt-0 shrink-0">
@@ -329,11 +360,6 @@
                     <button id="btn-lvl-4" onclick="window.selectLevel(4)" class="flex-1 py-3 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95 hover:bg-white/5">4</button>
                     <button id="btn-lvl-5" onclick="window.selectLevel(5)" class="flex-1 py-3 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95 hover:bg-white/5">5</button>
                 </div>
-            </div>
-            
-            <div id="mp-info-section" class="glass-panel p-4 rounded-2xl mb-6 shrink-0 bg-blue-600/20 border border-blue-500/30 text-center hidden">
-                <p class="text-xs font-bold text-blue-300 mb-1"><i class="fas fa-bolt text-yellow-400 mr-1"></i> MODO BATALLA SÍNCRONA</p>
-                <p class="text-[10px] text-slate-300">15 Preguntas. ¡El más rápido gana más puntos!</p>
             </div>
 
             <div class="glass-panel p-5 rounded-3xl mb-6 shrink-0 shadow-xl">
@@ -519,6 +545,7 @@
         let pendingInviteCode = null;
         
         let selectedLevel = 1;
+        let mpGameMode = 'classic'; // Nuevo estado para el modo multijugador
         let correctAnswersCount = 0;
         let isSoundOn = true;
         let isFXOn = false;
@@ -568,7 +595,7 @@
         }
 
         window.showScreen = (id) => {
-            ['screen-intro', 'screen-login', 'screen-main-menu', 'screen-lobby', 'screen-setup', 'screen-room', 'screen-question', 'screen-question-results', 'screen-gameover', 'screen-loading'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['screen-intro', 'screen-login', 'screen-main-menu', 'screen-lobby', 'screen-setup', 'screen-setup-mode', 'screen-room', 'screen-question', 'screen-question-results', 'screen-gameover', 'screen-loading'].forEach(s => document.getElementById(s).classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             
             const inGame = id === 'screen-question' || id === 'screen-question-results';
@@ -957,11 +984,22 @@
             }
         };
 
+        window.selectMPMode = (mode) => {
+            mpGameMode = mode;
+        };
+
         window.goToSetup = async (isMulti) => {
             isMultiplayerSetup = isMulti;
-            document.getElementById('sp-level-section').classList.toggle('hidden', isMulti);
-            document.getElementById('mp-info-section').classList.toggle('hidden', !isMulti);
-            if(!isMulti) window.selectLevel(1);
+            if(isMulti) {
+                window.showScreen('screen-setup-mode');
+            } else {
+                window.selectLevel(1);
+                window.goToCategories();
+            }
+        };
+
+        window.goToCategories = async () => {
+            document.getElementById('sp-level-section').classList.toggle('hidden', isMultiplayerSetup);
 
             const grid = document.getElementById('categories-grid'); grid.innerHTML = '';
             Object.values(CATS).forEach(c => {
@@ -971,7 +1009,7 @@
                         <span class="font-black text-white text-xs tracking-wider">${c.name}</span>
                     </button>`;
             });
-            selectedCategories = []; document.getElementById('setup-btn-text').innerText = isMulti ? 'GUARDAR Y EMPEZAR' : 'JUGAR AHORA'; window.showScreen('screen-setup');
+            selectedCategories = []; document.getElementById('setup-btn-text').innerText = isMultiplayerSetup ? 'GUARDAR Y EMPEZAR' : 'JUGAR AHORA'; window.showScreen('screen-setup');
 
             const countEl = document.getElementById('db-question-count');
             if(countEl) {
@@ -986,7 +1024,14 @@
             }
         };
 
-        window.backFromSetup = () => { window.showScreen(isMultiplayerSetup ? 'screen-room' : 'screen-main-menu'); };
+        window.backFromSetup = () => { 
+            if(isMultiplayerSetup) window.showScreen('screen-setup-mode'); 
+            else window.showScreen('screen-main-menu'); 
+        };
+
+        window.backFromModeSelection = () => {
+            window.showScreen('screen-room');
+        };
 
         window.toggleCat = (id) => {
             const btn = document.getElementById(`cat-btn-${id}`); const col = CATS[id].border;
@@ -1117,7 +1162,13 @@
             }
 
             if(isMultiplayerSetup) {
-                await updateDoc(currentRoomRef, { questions: activeQuestions, status: 'playing', currentQ: 0, answers: {} });
+                await updateDoc(currentRoomRef, { 
+                    questions: activeQuestions, 
+                    status: 'playing', 
+                    currentQ: 0, 
+                    answers: {},
+                    mode: mpGameMode // Guardamos en la sala el modo elegido
+                });
             } else {
                 localRoomData = { questions: activeQuestions }; startLocalGameLoop();
             }
