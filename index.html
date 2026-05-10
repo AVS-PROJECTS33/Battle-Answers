@@ -638,7 +638,7 @@
         let unsubMyData = null;
         
         window.addEventListener('beforeunload', () => {
-            if(currentUser && !isLocalMode && !currentUser.isAnonymous) {
+            if(currentUser && !isLocalMode) {
                 updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
             }
         });
