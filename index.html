@@ -626,6 +626,7 @@
 
         let friendUnsubs = {};
         let friendsOnlineStatus = {};
+        let unsubMyData = null;
         
         window.addEventListener('beforeunload', () => {
             if(currentUser && !isLocalMode) {
