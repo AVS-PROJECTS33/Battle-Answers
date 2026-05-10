@@ -316,7 +316,7 @@
             </div>
 
             <div class="flex-1 flex flex-col justify-center gap-4 pb-10">
-                <button id="btn-mode-classic" onclick="window.selectMPMode('classic'); window.goToCategories()" class="glass-panel bg-blue-600/20 border-blue-400/30 hover:bg-blue-600/30 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group shadow-xl">
+                <button id="btn-mode-classic" onclick="window.selectMPMode('classic'); window.goToCategories()" class="glass-panel bg-black/40 border-white/10 hover:bg-white/5 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group">
                     <div class="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.6)] group-hover:scale-110 transition-transform">
                         <i class="fas fa-bolt text-2xl text-white"></i>
                     </div>
@@ -326,7 +326,7 @@
                     </div>
                 </button>
 
-                <button id="btn-mode-attacks" onclick="window.selectMPMode('attacks'); window.goToCategories()" class="glass-panel bg-red-600/20 border-red-400/30 hover:bg-red-600/30 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group shadow-xl">
+                <button id="btn-mode-attacks" onclick="window.selectMPMode('attacks'); window.goToCategories()" class="glass-panel bg-black/40 border-white/10 hover:bg-white/5 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group">
                     <div class="w-14 h-14 rounded-full bg-red-500 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(239,68,68,0.6)] group-hover:scale-110 transition-transform">
                         <i class="fas fa-meteor text-2xl text-white"></i>
                     </div>
@@ -462,10 +462,11 @@
                 <div class="text-4xl font-black text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" id="mp-countdown-sec">5</div>
             </div>
 
-            <!-- NUEVO MODAL DE ATAQUE (Oculto por defecto, aparece sobre los resultados) -->
+            <!-- NUEVO MODAL DE ATAQUE -->
             <div id="attack-modal" class="hidden absolute inset-0 z-40 bg-slate-900/95 backdrop-blur-2xl flex flex-col p-6 items-center justify-center">
                 <h2 class="text-3xl font-black text-red-500 mb-2 drop-shadow-md text-center"><i class="fas fa-meteor"></i> ¡TU TURNO DE ATACAR!</h2>
                 <p class="text-sm font-bold text-slate-300 mb-8 text-center">Vas último, pero tienes el poder de fastidiar a un rival.</p>
+                
                 <!-- Poderes -->
                 <div class="grid grid-cols-2 gap-4 w-full max-w-sm mb-6">
                     <button onclick="window.selectAttackPower('ice')" id="pwr-ice" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all">
@@ -485,14 +486,17 @@
                         <span class="font-black text-sm text-white mt-1">BLOQUEO</span>
                     </button>
                 </div>
-                <!-- Targets -->
-                <select id="attack-target-select" class="w-full max-w-sm p-4 rounded-xl bg-slate-800 border-2 border-slate-600 text-white font-bold mb-8 focus:outline-none focus:border-red-500 shadow-inner appearance-none text-center">
-                    <option value="">-- Elige a la víctima --</option>
-                </select>
 
-                <button onclick="window.launchAttack()" class="w-full max-w-sm py-4 bg-red-600 hover:bg-red-500 rounded-2xl font-black text-xl text-white transition-all shadow-[0_0_20px_rgba(239,68,68,0.6)] active:scale-95 border-2 border-red-400">
-                    LANZAR ATAQUE
-                </button>
+                <!-- Targets (oculto por defecto hasta elegir poder) -->
+                <div id="attack-target-container" class="hidden w-full max-w-sm flex-col items-center">
+                    <select id="attack-target-select" class="w-full p-4 rounded-xl bg-slate-800 border-2 border-slate-600 text-white font-bold mb-6 focus:outline-none focus:border-red-500 shadow-inner appearance-none text-center">
+                        <option value="">-- Elige a la víctima --</option>
+                    </select>
+
+                    <button onclick="window.launchAttack()" class="w-full py-4 bg-red-600 hover:bg-red-500 rounded-2xl font-black text-xl text-white transition-all shadow-[0_0_20px_rgba(239,68,68,0.6)] active:scale-95 border-2 border-red-400">
+                        LANZAR ATAQUE
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1030,11 +1034,11 @@
             const btnA = document.getElementById('btn-mode-attacks');
             
             if(mode === 'classic') {
-                btnC.className = "glass-panel bg-blue-600/20 border-blue-400/30 hover:bg-blue-600/30 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group shadow-xl";
-                btnA.className = "glass-panel bg-black/40 border-white/10 hover:bg-white/5 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group opacity-60";
+                btnC.className = "glass-panel bg-blue-600/30 border-blue-400 hover:bg-blue-600/40 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all shadow-xl";
+                btnA.className = "glass-panel bg-black/40 border-white/10 hover:bg-white/5 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group";
             } else {
-                btnA.className = "glass-panel bg-red-600/20 border-red-400/30 hover:bg-red-600/30 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group shadow-xl";
-                btnC.className = "glass-panel bg-black/40 border-white/10 hover:bg-white/5 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group opacity-60";
+                btnA.className = "glass-panel bg-red-600/30 border-red-400 hover:bg-red-600/40 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all shadow-xl";
+                btnC.className = "glass-panel bg-black/40 border-white/10 hover:bg-white/5 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group";
             }
         };
 
@@ -1209,10 +1213,21 @@
                     btn.classList.remove('bg-red-500/20');
                 }
             });
+            
+            // Mostrar la selección del objetivo una vez se pulsa el poder
+            const targetContainer = document.getElementById('attack-target-container');
+            targetContainer.classList.remove('hidden');
+            targetContainer.classList.add('flex');
         };
 
         window.showAttackModal = (opponents) => {
             selectedAttackPower = null;
+            
+            // Ocultar destino y botón de lanzar hasta que pulse un poder
+            const targetContainer = document.getElementById('attack-target-container');
+            targetContainer.classList.add('hidden');
+            targetContainer.classList.remove('flex');
+
             const sel = document.getElementById('attack-target-select');
             sel.innerHTML = '<option value="">-- Elige a la víctima --</option>';
             opponents.forEach(opp => {
@@ -1521,11 +1536,67 @@
             }
             
             const opts = document.getElementById('options-container'); opts.innerHTML = '';
+            
+            // --- DETECTAR SI HAY UN ATAQUE DE HIELO ACTIVO HACIA ESTE JUGADOR ---
+            let isFrozen = false;
+            let iceTaps = 0;
+            if(localRoomData && localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === qIdx && localRoomData.activeAttack.targetId === currentUser.uid) {
+                if(localRoomData.activeAttack.power === 'ice') {
+                    isFrozen = true;
+                    iceTaps = 5; // Hay que pulsar 5 veces para romperlo
+                    showToast("🥶 ¡ESTÁS CONGELADO! Pulsa los botones rápido para romper el hielo.", true);
+                }
+            }
+            
             q.options.forEach((opt, idx) => {
                 const b = document.createElement('button');
-                b.className = 'w-full py-3 px-4 glass-panel bg-slate-800/80 active:bg-slate-700 rounded-xl text-center font-bold text-white transition-all border border-white/5 shadow-md active:scale-95 text-base md:text-lg';
-                b.innerText = opt;
-                b.onclick = () => onClickCallback(idx, b);
+                b.className = 'relative w-full py-3 px-4 glass-panel bg-slate-800/80 active:bg-slate-700 rounded-xl text-center font-bold text-white transition-all border border-white/5 shadow-md active:scale-95 text-base md:text-lg overflow-hidden';
+                
+                // Texto de la respuesta (aislado para que no se toque con el hielo)
+                const tSpan = document.createElement('span');
+                tSpan.innerText = opt;
+                tSpan.className = 'relative z-10 pointer-events-none';
+                b.appendChild(tSpan);
+
+                // Si está congelado, añadimos la capa de hielo encima del botón
+                if(isFrozen) {
+                    const iceLayer = document.createElement('div');
+                    iceLayer.className = 'absolute inset-0 bg-cyan-300/40 backdrop-blur-md border-[3px] border-cyan-400 rounded-xl z-20 flex items-center justify-center transition-opacity pointer-events-none';
+                    iceLayer.id = `ice-layer-${idx}`;
+                    iceLayer.innerHTML = '<i class="fas fa-snowflake text-cyan-100 text-2xl animate-pulse"></i>';
+                    b.appendChild(iceLayer);
+                }
+
+                b.onclick = () => {
+                    if(isFrozen) {
+                        iceTaps--;
+                        
+                        // Efecto visual: hace temblar TODOS los botones para que se note el golpe
+                        const allBtns = opts.querySelectorAll('button');
+                        allBtns.forEach(btn => {
+                            btn.classList.add('shake');
+                            setTimeout(() => btn.classList.remove('shake'), 200);
+                        });
+                        
+                        if(isSoundOn) playBeep(800, 'square', 0.05);
+
+                        // Hacer el hielo más transparente con cada toque
+                        const iceElements = document.querySelectorAll('[id^="ice-layer-"]');
+                        iceElements.forEach(ice => {
+                            ice.style.opacity = iceTaps / 5;
+                        });
+
+                        // Cuando los toques llegan a 0, se rompe el hielo y ya puede jugar
+                        if(iceTaps <= 0) {
+                            isFrozen = false;
+                            if(isSoundOn) playBeep(1200, 'sine', 0.2); // Sonido de cristal roto
+                            iceElements.forEach(ice => ice.remove());
+                        }
+                    } else {
+                        // Si no está congelado (o ya se rompió), elige la respuesta normal
+                        onClickCallback(idx, b);
+                    }
+                };
                 opts.appendChild(b);
             });
         }
