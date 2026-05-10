@@ -198,7 +198,7 @@
                         <i class="fas fa-users text-2xl text-white"></i>
                     </div>
                     <span class="font-black text-2xl text-white tracking-widest drop-shadow-md">CON AMIGOS</span>
-                    <span class="absolute bottom-4 right-6 text-[10px] text-emerald-200 font-bold tracking-widest opacity-80">(1 - 6 JUGADORES)</span>
+                    <span class="absolute bottom-4 right-6 text-[10px] text-emerald-200 font-bold tracking-widest opacity-80">(1 - 6)</span>
                 </button>
             </div>
         </div>
@@ -470,22 +470,30 @@
             </div>
         </div>
 
-        <!-- PANTALLA DE RESULTADOS MP (RANKING POR PREGUNTA) -->
+        <!-- PANTALLA DE RESULTADOS MP (RANKING POR PREGUNTA Y TOTAL) -->
         <div id="screen-question-results" class="hidden flex-1 flex flex-col p-6 z-30 absolute inset-0 glass-panel bg-slate-900/95 backdrop-blur-xl">
-            <h2 class="text-3xl font-black text-white text-center mb-6 mt-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] tracking-widest">RESULTADOS</h2>
+            <h2 id="mp-results-title" class="text-3xl font-black text-white text-center mb-6 mt-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] tracking-widest">RESULTADOS</h2>
             
-            <div class="glass-panel p-4 rounded-2xl mb-6 bg-slate-800/80 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
-                <p class="text-[10px] font-black text-slate-400 text-center tracking-widest mb-1">LA RESPUESTA CORRECTA ERA:</p>
-                <p id="correct-answer-text" class="text-xl font-black text-emerald-400 text-center drop-shadow-md"></p>
+            <!-- Vista de la ronda actual -->
+            <div id="mp-round-view" class="flex-1 flex flex-col overflow-hidden">
+                <div class="glass-panel p-4 rounded-2xl mb-6 bg-slate-800/80 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)] shrink-0">
+                    <p class="text-[10px] font-black text-slate-400 text-center tracking-widest mb-1">LA RESPUESTA CORRECTA ERA:</p>
+                    <p id="correct-answer-text" class="text-xl font-black text-emerald-400 text-center drop-shadow-md"></p>
+                </div>
+                
+                <div id="mp-results-list" class="flex-1 overflow-y-auto space-y-3 pb-4 pr-1">
+                    <!-- Rankings de la ronda -->
+                </div>
+            </div>
+
+            <!-- Vista del ranking total -->
+            <div id="mp-total-view" class="hidden flex-1 overflow-y-auto space-y-3 pb-4 pr-1">
+                <!-- Ranking global -->
             </div>
             
-            <div id="mp-results-list" class="flex-1 overflow-y-auto space-y-3 pb-4 pr-1">
-                <!-- Rankings -->
-            </div>
-            
-            <div id="mp-next-countdown-container" class="text-center mt-auto pb-4 pt-4 border-t border-slate-700">
+            <div id="mp-next-countdown-container" class="text-center mt-auto pb-4 pt-4 border-t border-slate-700 shrink-0">
                 <p class="text-[10px] font-black text-slate-400 tracking-widest mb-1">PRÓXIMA PREGUNTA EN</p>
-                <div class="text-4xl font-black text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" id="mp-countdown-sec">5</div>
+                <div class="text-4xl font-black text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" id="mp-countdown-sec">8</div>
             </div>
 
             <!-- NUEVO MODAL DE ATAQUE -->
@@ -1701,6 +1709,11 @@
             document.getElementById('screen-question').classList.add('hidden');
             document.getElementById('screen-question-results').classList.remove('hidden');
 
+            // --- Resetear vistas al estado "Ronda" ---
+            document.getElementById('mp-results-title').innerText = "RESULTADOS";
+            document.getElementById('mp-round-view').classList.remove('hidden');
+            document.getElementById('mp-total-view').classList.add('hidden');
+
             const q = localRoomData.questions[localRoomData.currentQ];
             document.getElementById('correct-answer-text').innerText = q.options[q.correct];
 
@@ -1720,6 +1733,26 @@
             let playersByScore = [...results].sort((a, b) => a.score - b.score);
             let lastPlaceUid = playersByScore[0].uid;
 
+            // --- VISTA TOTAL (RANKING GLOBAL) ---
+            const totalList = document.getElementById('mp-total-view');
+            totalList.innerHTML = '';
+            let totalSorted = [...playersByScore].reverse(); // De mayor a menor puntuación
+            totalSorted.forEach((p, i) => {
+                const isMe = p.uid === currentUser.uid;
+                totalList.innerHTML += `
+                    <div class="flex items-center justify-between p-4 mb-3 rounded-2xl glass-panel ${isMe ? 'bg-blue-600/20 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-slate-800/80 border-white/5'} shadow-md">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white text-lg shadow-inner">#${i+1}</div>
+                            <span class="font-black text-white text-xl tracking-wide">${p.name}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-3xl font-black text-blue-400 drop-shadow-md">${p.score}</span>
+                            <span class="text-[10px] text-slate-400 block -mt-1 font-bold tracking-widest">PTS</span>
+                        </div>
+                    </div>`;
+            });
+
+            // --- VISTA RONDA ---
             // Para el ranking visual de esta ronda
             results.sort((a, b) => {
                 if(b.points !== a.points) return b.points - a.points;
@@ -1776,7 +1809,8 @@
                 document.getElementById('attack-modal').classList.add('hidden');
             }
 
-            let count = (isAttackRound && !attackLaunchedThisRound) ? 15 : 5; 
+            // --- CONTROL DE TIEMPO (8 Segundos en total, partido 4 y 4) ---
+            let count = (isAttackRound && !attackLaunchedThisRound) ? 15 : 8; 
             document.getElementById('mp-countdown-sec').innerText = count;
             
             clearInterval(mpResultsInterval);
@@ -1784,8 +1818,16 @@
                 
                 let currentAttackLaunched = localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === (localRoomData.currentQ + 1);
                 
-                if (isAttackRound && currentAttackLaunched && count > 5) {
-                    count = 5;
+                // Si alguien lanza el ataque y el contador va por encima de 4, lo bajamos de golpe a 4.
+                if (isAttackRound && currentAttackLaunched && count > 4) {
+                    count = 4;
+                }
+                
+                // CAMBIO DE VISTA EN LOS ÚLTIMOS 4 SEGUNDOS
+                if (count <= 4) {
+                    document.getElementById('mp-round-view').classList.add('hidden');
+                    document.getElementById('mp-total-view').classList.remove('hidden');
+                    document.getElementById('mp-results-title').innerText = "RANKING TOTAL";
                 }
                 
                 count--; 
