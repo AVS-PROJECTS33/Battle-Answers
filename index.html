@@ -578,7 +578,7 @@
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -591,6 +591,12 @@
         };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        
+        // Forzamos que la sesión no se borre al cerrar el navegador
+        setPersistence(auth, browserLocalPersistence).catch((err) => {
+            console.error("Error setting persistence:", err);
+        });
+
         const db = getFirestore(app);
 
         // --- GLOBAL STATE ---
@@ -632,7 +638,7 @@
         let unsubMyData = null;
         
         window.addEventListener('beforeunload', () => {
-            if(currentUser && !isLocalMode) {
+            if(currentUser && !isLocalMode && !currentUser.isAnonymous) {
                 updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
             }
         });
@@ -675,7 +681,7 @@
             'ciencia': { id: 'ciencia', name: 'Ciencia', icon: 'fa-flask', color: 'bg-emerald-500', border: 'border-emerald-400' },
             'musica': { id: 'musica', name: 'Música', icon: 'fa-music', color: 'bg-purple-500', border: 'border-purple-400' },
             'historia': { id: 'historia', name: 'Historia', icon: 'fa-landmark', color: 'bg-amber-600', border: 'border-amber-500' },
-            'tecnologia': { id: 'tecnologia', name: 'Tecnología', icon: 'fa-microchip', color: 'bg-indigo-500', border: 'border-indigo-400' },
+            'tecnologia': { id: 'tecnologia', name: 'Tecnología', icon: 'fa-microchip', color: 'bg-indigo-500', border: 'indigo-400' },
             'cine': { id: 'cine', name: 'Cine', icon: 'fa-film', color: 'bg-rose-500', border: 'border-rose-400' },
             'literatura': { id: 'literatura', name: 'Literatura', icon: 'fa-book', color: 'bg-teal-500', border: 'border-teal-400' },
             'arte': { id: 'arte', name: 'Arte', icon: 'fa-palette', color: 'bg-fuchsia-500', border: 'border-fuchsia-400' }
