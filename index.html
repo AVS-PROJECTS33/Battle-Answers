@@ -128,7 +128,7 @@
             <h2 class="text-xl font-bold text-white drop-shadow-md">Cargando...</h2>
         </div>
 
-        <!-- 1. LOGIN -->
+        <!-- 1. LOGIN CON PESTAÑAS (CORREO Y CONTRASEÑA) -->
         <div id="screen-login" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center z-20 absolute inset-0">
             <div class="w-full max-w-sm glass-panel rounded-3xl p-6 flex flex-col gap-4">
                 <h1 id="auth-title" class="text-3xl font-black mb-2 text-white tracking-wider drop-shadow-lg">INICIAR SESIÓN</h1>
@@ -578,7 +578,7 @@
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -591,12 +591,6 @@
         };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        
-        // Forzamos que la sesión no se borre al cerrar el navegador
-        setPersistence(auth, browserLocalPersistence).catch((err) => {
-            console.error("Error setting persistence:", err);
-        });
-
         const db = getFirestore(app);
 
         // --- GLOBAL STATE ---
