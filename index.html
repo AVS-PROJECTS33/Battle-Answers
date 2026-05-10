@@ -128,15 +128,24 @@
             <h2 class="text-xl font-bold text-white drop-shadow-md">Cargando...</h2>
         </div>
 
-        <!-- 1. LOGIN SIMPLIFICADO -->
+        <!-- 1. LOGIN -->
         <div id="screen-login" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center z-20 absolute inset-0">
             <div class="w-full max-w-sm glass-panel rounded-3xl p-6 flex flex-col gap-4">
-                <h1 class="text-2xl font-black mb-4 text-white tracking-wider drop-shadow-lg leading-tight">CREA O INICIA SESIÓN<br><span class="text-lg text-emerald-400">CON TU PERFIL</span></h1>
+                <h1 id="auth-title" class="text-3xl font-black mb-2 text-white tracking-wider drop-shadow-lg">INICIAR SESIÓN</h1>
                 
-                <input type="text" id="auth-username" placeholder="Nombre de jugador" class="w-full px-4 py-4 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-lg">
-                <input type="password" id="auth-pin" placeholder="PIN secreto (4 dígitos o más)" class="w-full px-4 py-4 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-lg">
+                <!-- Pestañas de Modo -->
+                <div class="flex bg-slate-800/50 p-1 rounded-xl mb-2 shadow-inner">
+                    <button id="btn-tab-login" onclick="window.setAuthMode('login')" class="flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white text-sm transition-all shadow-md">ENTRAR</button>
+                    <button id="btn-tab-register" onclick="window.setAuthMode('register')" class="flex-1 py-2 rounded-lg font-bold text-slate-400 text-sm hover:text-white transition-all">REGISTRO</button>
+                </div>
+
+                <input type="text" id="auth-username" placeholder="Nombre de jugador" class="hidden w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
+                <input type="email" id="auth-email" placeholder="Correo electrónico" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
+                <input type="password" id="auth-password" placeholder="Contraseña" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
                 
-                <button onclick="window.loginSimple()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-white transition-all shadow-lg shadow-blue-500/30 active:scale-95 text-xl mt-2 border border-blue-400">
+                <button id="auth-reset-btn" onclick="window.resetPassword()" class="text-xs text-blue-400 hover:text-blue-300 transition-colors w-full text-right -mt-2 font-bold drop-shadow-md">¿Has olvidado la contraseña?</button>
+
+                <button id="auth-submit-btn" onclick="window.submitAuth()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-white transition-all shadow-lg shadow-blue-500/30 active:scale-95 text-xl mt-2 border border-blue-400">
                     ENTRAR
                 </button>
             </div>
@@ -183,7 +192,7 @@
                     <span class="absolute bottom-4 right-6 text-[10px] text-blue-200 font-bold tracking-widest opacity-80">(SOLITARIO)</span>
                 </button>
 
-                <button id="btn-menu-duel" onclick="window.enterLobby('duel')" class="relative hidden glass-panel bg-purple-600/20 border-purple-400/30 hover:bg-purple-600/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
+                <button id="btn-menu-duel" onclick="window.enterLobby('duel')" class="relative glass-panel bg-purple-600/20 border-purple-400/30 hover:bg-purple-600/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
                     <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.6)] group-hover:scale-110 transition-transform">
                         <i class="fas fa-khanda text-2xl text-white"></i>
                     </div>
@@ -191,7 +200,7 @@
                     <span class="absolute bottom-4 right-6 text-[10px] text-purple-200 font-bold tracking-widest opacity-80">(1 VS 1)</span>
                 </button>
 
-                <button id="btn-menu-multi" onclick="window.enterLobby('multi')" class="relative hidden glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
+                <button id="btn-menu-multi" onclick="window.enterLobby('multi')" class="relative glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
                     <div class="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.6)] group-hover:scale-110 transition-transform">
                         <i class="fas fa-users text-2xl text-white"></i>
                     </div>
@@ -569,7 +578,7 @@
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -583,18 +592,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-
-        // Ya NO intentamos acceder con un token de entorno inyectado porque genera conflicto con tus credenciales.
-        // Si no hay usuario activo, entramos como anónimos o esperamos que se inicie sesión.
-        const initAuth = async () => {
-            try {
-                if(!auth.currentUser) {
-                    await signInAnonymously(auth);
-                }
-            } catch (err) {
-                console.error("Firebase Auth bloqueado o deshabilitado en la consola:", err);
-            }
-        };
 
         // --- GLOBAL STATE ---
         let introSeen = false;
@@ -635,7 +632,7 @@
         let unsubMyData = null;
         
         window.addEventListener('beforeunload', () => {
-            if(currentUser && !isLocalMode && !currentUser.isAnonymous) {
+            if(currentUser && !isLocalMode) {
                 updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
             }
         });
@@ -833,9 +830,9 @@
             });
         }
 
-        // --- AUTH SIMPLIFICADA ---
+        // --- AUTH ---
         onAuthStateChanged(auth, async (user) => {
-            if (user && !user.isAnonymous) {
+            if (user) {
                 currentUser = user;
                 try {
                     const docSnap = await getDoc(doc(db, 'users', user.uid));
@@ -847,8 +844,6 @@
                         document.getElementById('my-player-id').innerText = userData?.playerId || '---';
                         document.getElementById('settings-name-input').value = userData?.name || currentUser.displayName || '';
                         
-                        document.getElementById('btn-menu-multi').classList.remove('hidden');
-                        document.getElementById('btn-menu-duel').classList.remove('hidden');
                         listenToMyData();
                         nextScreenAfterIntro = 'screen-main-menu';
                         
@@ -878,10 +873,6 @@
             if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             if(isSoundOn) {
                 playBGM();
-            }
-            
-            if(nextScreenAfterIntro === 'screen-loading') {
-               initAuth(); 
             }
             window.showScreen(nextScreenAfterIntro);
         };
@@ -981,7 +972,7 @@
         };
 
         window.logout = async () => {
-            if(currentUser && !currentUser.isAnonymous) { 
+            if(currentUser) { 
                 await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
             }
             await signOut(auth); 
@@ -995,7 +986,6 @@
             document.getElementById('auth-password').value = '';
             
             window.showScreen('screen-login');
-            initAuth(); // Regenerar usuario anónimo base al salir
         };
 
         window.enterLobby = (type) => {
@@ -1016,7 +1006,7 @@
         window.changeUsername = async () => {
             const newName = document.getElementById('settings-name-input').value.trim();
             if(!newName) return showToast("Escribe un nombre válido", true);
-            if(!currentUser || isLocalMode || currentUser.isAnonymous) {
+            if(!currentUser || isLocalMode) {
                 document.getElementById('menu-player-name').innerText = newName;
                 showToast("Nombre cambiado (Local)"); return window.closeSettingsModal();
             }
@@ -1034,7 +1024,7 @@
 
         // --- AMIGOS Y BANDEJA ---
         function listenToMyData() {
-            if(!currentUser || currentUser.isAnonymous) return;
+            if(!currentUser) return;
             if(unsubMyData) unsubMyData();
             unsubMyData = onSnapshot(doc(db, 'users', currentUser.uid), (docS) => {
                 if(docS.exists()) { 
