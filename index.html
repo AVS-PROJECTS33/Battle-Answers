@@ -522,6 +522,7 @@
         let correctAnswersCount = 0;
         let isSoundOn = true;
         let isFXOn = false;
+        let askedQuestionsHistory = new Set(); // Memoria global para no repetir preguntas
 
         const CATS = {
             'aleatorio': { id: 'aleatorio', name: 'Aleatorio', icon: 'fa-dice', color: 'bg-pink-500', border: 'border-pink-400' },
@@ -1070,9 +1071,23 @@
 
                 if(fetchedQ.length === 0) throw new Error("No se encontraron preguntas para estas categorías.");
                 
-                // Aplicamos el barajado 100% aleatorio
-                shuffleArray(fetchedQ);
-                activeQuestions = fetchedQ.slice(0, limitNum);
+                // --- SISTEMA INTELIGENTE ANTI-REPETICIÓN ---
+                // Filtramos sacando del saco las preguntas que ya jugaste en esta sesión
+                let freshQuestions = fetchedQ.filter(q => !askedQuestionsHistory.has(q.text));
+                
+                // Si ya te han salido absolutamente todas las preguntas de esta categoría, vaciamos la memoria
+                if(freshQuestions.length < limitNum) {
+                    askedQuestionsHistory.clear();
+                    freshQuestions = fetchedQ;
+                }
+                
+                // Aplicamos el barajado 100% aleatorio solo a las "preguntas nuevas"
+                shuffleArray(freshQuestions);
+                activeQuestions = freshQuestions.slice(0, limitNum);
+                
+                // Registramos estas preguntas en la memoria para que no vuelvan a salir en la próxima partida
+                activeQuestions.forEach(q => askedQuestionsHistory.add(q.text));
+                // -------------------------------------------
                 
                 // Si faltan preguntas para rellenar el cupo
                 if(activeQuestions.length < limitNum) {
@@ -1087,8 +1102,17 @@
                 console.error("Error cargando de Firebase:", e);
                 let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio'));
                 let pool = fall.length > 0 ? [...fall] : [...backupQuestions];
-                shuffleArray(pool);
-                activeQuestions = pool.slice(0, limitNum);
+                
+                // Anti-repetición también para el modo respaldo
+                let freshQuestions = pool.filter(q => !askedQuestionsHistory.has(q.text));
+                if(freshQuestions.length < limitNum) {
+                    askedQuestionsHistory.clear();
+                    freshQuestions = pool;
+                }
+                shuffleArray(freshQuestions);
+                activeQuestions = freshQuestions.slice(0, limitNum);
+                activeQuestions.forEach(q => askedQuestionsHistory.add(q.text));
+                
                 showToast("Modo Offline / Respaldo activo");
             }
 
@@ -1320,6 +1344,10 @@
             qTextEl.innerText = q.text;
             
             const imgC = document.getElementById('q-image-container'); const imgEl = document.getElementById('q-image');
+            
+            // Vaciamos la imagen al instante para que no se quede el "fantasma" de la pregunta anterior
+            imgEl.removeAttribute('src');
+            
             if(q.img) { 
                 imgEl.src = q.img; 
                 imgC.classList.remove('hidden'); 
