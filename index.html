@@ -1450,22 +1450,32 @@
                 opponentsArr = playersByScore.filter(p => p.uid !== lastPlaceUid);
             }
             
+            // Verificamos si en esta ronda específica ya se ha lanzado el ataque
+            // El ataque lanzado AHORA es para la siguiente pregunta (currentQ + 1)
+            let attackLaunchedThisRound = false;
+            if (localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === (localRoomData.currentQ + 1)) {
+                attackLaunchedThisRound = true;
+            }
+            
             // Si eres el último y no has lanzado el ataque aún, te sale el modal
-            if (isAttackRound && currentUser.uid === lastPlaceUid && !localRoomData.activeAttack) {
+            if (isAttackRound && currentUser.uid === lastPlaceUid && !attackLaunchedThisRound) {
                 window.showAttackModal(opponentsArr);
             } else {
                 document.getElementById('attack-modal').classList.add('hidden');
             }
 
-            // El contador empieza en 15 si es ronda de ataque, sino en 5.
-            let count = isAttackRound ? 15 : 5; 
+            // El contador empieza en 15 si es ronda de ataque y NO se ha lanzado ya. Sino en 5.
+            let count = (isAttackRound && !attackLaunchedThisRound) ? 15 : 5; 
             document.getElementById('mp-countdown-sec').innerText = count;
             
             clearInterval(mpResultsInterval);
             mpResultsInterval = setInterval(() => {
                 
-                // Si alguien ha lanzado el ataque y el contador va por encima de 5, lo bajamos de golpe.
-                if (isAttackRound && localRoomData.activeAttack && count > 5) {
+                // Comprobación dinámica cada segundo: miramos si el ataque se acaba de lanzar ahora
+                let currentAttackLaunched = localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === (localRoomData.currentQ + 1);
+                
+                // Si alguien lanza el ataque y el contador va por encima de 5, lo bajamos de golpe a 5.
+                if (isAttackRound && currentAttackLaunched && count > 5) {
                     count = 5;
                 }
                 
@@ -1476,7 +1486,7 @@
                     clearInterval(mpResultsInterval);
                     if (localRoomData.hostId === currentUser.uid) {
                         if(localRoomData.currentQ < 14) {
-                            updateDoc(currentRoomRef, { status: 'playing', currentQ: localRoomData.currentQ + 1, answers: {} });
+                            updateDoc(currentRoomRef, { status: 'playing', currentQ: localRoomData.currentQ + 1, answers: {}, activeAttack: localRoomData.activeAttack });
                         } else {
                             updateDoc(currentRoomRef, { status: 'finished' });
                         }
