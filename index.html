@@ -83,8 +83,6 @@
 
 <body class="w-screen h-[100dvh] flex justify-center items-center bg-slate-950">
 
-    <audio id="bgm-audio" loop src="https://assets.mixkit.co/active_storage/sfx/135/135-preview.mp3" preload="auto"></audio>
-
     <div id="toast-container" class="fixed top-4 left-0 right-0 z-[100] flex flex-col items-center gap-2 pointer-events-none"></div>
 
     <div id="app-container" class="w-full max-w-md h-full relative overflow-hidden flex flex-col shadow-2xl bg-start transition-all duration-500 sm:border-x sm:border-white/10">
@@ -440,7 +438,7 @@
                     </div>
                 </div>
 
-                <div id="options-container" class="flex flex-col gap-3 w-full shrink-0">
+                <div id="options-container" class="flex flex-col gap-3 w-full shrink-0 relative">
                     <!-- Respuestas -->
                 </div>
             </div>
@@ -467,37 +465,31 @@
             <!-- NUEVO MODAL DE ATAQUE -->
             <div id="attack-modal" class="hidden absolute inset-0 z-40 bg-slate-900/95 backdrop-blur-2xl flex flex-col p-6 items-center justify-center">
                 <h2 class="text-3xl font-black text-red-500 mb-2 drop-shadow-md text-center"><i class="fas fa-meteor"></i> ¡TU TURNO DE ATACAR!</h2>
-                <p class="text-sm font-bold text-slate-300 mb-8 text-center">Vas último, pero tienes el poder de fastidiar a un rival.</p>
+                <p id="attack-modal-desc" class="text-sm font-bold text-slate-300 mb-8 text-center">Vas último, elige un poder para fastidiar a un rival.</p>
                 
                 <!-- Poderes -->
-                <div class="grid grid-cols-2 gap-4 w-full max-w-sm mb-6">
-                    <button onclick="window.selectAttackPower('ice')" id="pwr-ice" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all">
+                <div id="attack-powers-container" class="grid grid-cols-2 gap-4 w-full max-w-sm mb-6">
+                    <button onclick="window.selectAttackPower('ice')" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all hover:bg-slate-800">
                         <i class="fas fa-snowflake text-4xl text-cyan-400"></i>
                         <span class="font-black text-sm text-white mt-1">HIELO</span>
                     </button>
-                    <button onclick="window.selectAttackPower('swap')" id="pwr-swap" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all">
+                    <button onclick="window.selectAttackPower('swap')" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all hover:bg-slate-800">
                         <i class="fas fa-random text-4xl text-purple-400"></i>
                         <span class="font-black text-sm text-white mt-1">INTERCAMBIO</span>
                     </button>
-                    <button onclick="window.selectAttackPower('slime')" id="pwr-slime" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all">
+                    <button onclick="window.selectAttackPower('slime')" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all hover:bg-slate-800">
                         <i class="fas fa-fill-drip text-4xl text-green-400"></i>
                         <span class="font-black text-sm text-white mt-1">LÍQUIDO</span>
                     </button>
-                    <button onclick="window.selectAttackPower('block')" id="pwr-block" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all">
+                    <button onclick="window.selectAttackPower('block')" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all hover:bg-slate-800">
                         <i class="fas fa-lock text-4xl text-red-400"></i>
                         <span class="font-black text-sm text-white mt-1">BLOQUEO</span>
                     </button>
                 </div>
 
-                <!-- Targets (oculto por defecto hasta elegir poder) -->
-                <div id="attack-target-container" class="hidden w-full max-w-sm flex-col items-center">
-                    <select id="attack-target-select" class="w-full p-4 rounded-xl bg-slate-800 border-2 border-slate-600 text-white font-bold mb-6 focus:outline-none focus:border-red-500 shadow-inner appearance-none text-center">
-                        <option value="">-- Elige a la víctima --</option>
-                    </select>
-
-                    <button onclick="window.launchAttack()" class="w-full py-4 bg-red-600 hover:bg-red-500 rounded-2xl font-black text-xl text-white transition-all shadow-[0_0_20px_rgba(239,68,68,0.6)] active:scale-95 border-2 border-red-400">
-                        LANZAR ATAQUE
-                    </button>
+                <!-- Targets (oculto por defecto) -->
+                <div id="attack-targets-container" class="hidden w-full max-w-sm flex-col items-center gap-3">
+                    <!-- Dinámico -->
                 </div>
             </div>
         </div>
@@ -581,7 +573,8 @@
         
         let score = 0, lives = 3, combo = 1, currentQIndex = 0, timeRemaining = 20; 
         let timerInterval;
-        let mpResultsInterval = null; // Nuevo control global para el contador de resultados
+        let mpResultsInterval = null; 
+        let activeAttackIntervals = []; // Para limpiar los intervalos de los ataques entre preguntas
         let questionStartTime = 0;
         let selectedCategories = [];
         let isMultiplayerSetup = false;
@@ -589,16 +582,13 @@
         let pendingInviteCode = null;
         
         let selectedLevel = 1;
-        let mpGameMode = 'classic'; // Nuevo estado para el modo multijugador
-        let selectedAttackPower = null; // Guardar el poder elegido temporalmente
+        let mpGameMode = 'classic'; 
+        let selectedAttackPower = null; 
         
         let correctAnswersCount = 0;
         let isSoundOn = true;
         let isFXOn = false;
-        let askedQuestionsHistory = new Set(); // Memoria global para no repetir preguntas
-
-        const bgm = document.getElementById('bgm-audio');
-        bgm.volume = 0.15; // Volumen de fondo agradable
+        let askedQuestionsHistory = new Set(); 
 
         const CATS = {
             'aleatorio': { id: 'aleatorio', name: 'Aleatorio', icon: 'fa-dice', color: 'bg-pink-500', border: 'border-pink-400' },
@@ -633,7 +623,6 @@
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        // Efectos de sonido mejorados (Sintetizador web)
         function playSoundFX(type) {
             if(!isSoundOn || audioCtx.state === 'suspended') return;
             const t = audioCtx.currentTime;
@@ -678,11 +667,9 @@
             osc.stop(audioCtx.currentTime + duration);
         }
 
-        // Listener global de clics para los botones
         document.addEventListener('click', (e) => {
             const btn = e.target.closest('button');
             if (btn && isSoundOn) {
-                // Evitamos que suene sobre los botones de opciones o en el botón de mutear
                 if (!btn.closest('#options-container') && btn.id !== 'toggle-sound-btn') {
                     playSoundFX('click');
                 }
@@ -697,7 +684,6 @@
             document.getElementById('game-header').classList.toggle('hidden', !inGame);
             document.getElementById('timer-bar-container').classList.toggle('hidden', id !== 'screen-question');
             
-            // Si es multi, esconder elementos de SP del HUD
             if(isMultiplayerSetup && inGame) {
                 document.getElementById('lives-display').classList.add('hidden');
                 document.getElementById('combo-container').classList.add('hidden');
@@ -744,9 +730,6 @@
         window.startFromIntro = () => {
             introSeen = true;
             if(audioCtx.state === 'suspended') audioCtx.resume();
-            if(isSoundOn) {
-                bgm.play().catch(()=>{});
-            }
             window.showScreen(nextScreenAfterIntro);
         };
 
@@ -761,7 +744,6 @@
                 const cred = await signInWithEmailAndPassword(auth, e, p);
                 currentUser = cred.user;
                 showToast("¡Sesión iniciada!");
-                // onAuthStateChanged lo llevará al menú principal
             } catch (err) {
                 if(err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
                     if(!u) { window.showScreen('screen-login'); return showToast("Pon un Usuario para registrarte", true); }
@@ -838,12 +820,10 @@
                 knob.classList.replace('left-1', 'right-1'); 
                 showToast("Sonido Activado"); 
                 playSoundFX('click'); 
-                bgm.play().catch(()=>{});
             } else { 
                 btn.classList.replace('bg-emerald-500', 'bg-slate-600'); 
                 knob.classList.replace('right-1', 'left-1'); 
                 showToast("Sonido Silenciado"); 
-                bgm.pause();
             }
         };
         window.toggleFX = () => {
@@ -1014,14 +994,14 @@
 
         // --- SALAS MULTIJUGADOR ---
         window.createRoom = async () => {
-            currentQIndex = -1; // Reset para evitar que se salte la carga de la primera pregunta
+            currentQIndex = -1; 
             const code = Math.random().toString(36).substring(2, 6).toUpperCase(); currentRoomRef = doc(db, 'rooms', code);
             const initialData = { status: 'waiting', hostId: currentUser.uid, players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false } }, questions: [], currentQ: 0, answers: {}, activeAttack: null, createdAt: Date.now() };
             try { await setDoc(currentRoomRef, initialData); document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.remove('hidden'); window.showScreen('screen-room'); } 
             catch(e) { showToast("Error de conexión", true); }
         };
         window.joinRoomBtn = async () => {
-            currentQIndex = -1; // Reset para los invitados también
+            currentQIndex = -1; 
             const code = document.getElementById('room-code-input').value.trim().toUpperCase();
             if(code.length !== 4) return showToast("Código de 4 caracteres", true);
             currentRoomRef = doc(db, 'rooms', code);
@@ -1109,7 +1089,7 @@
         window.goToSetup = async (isMulti) => {
             isMultiplayerSetup = isMulti;
             if(isMulti) {
-                window.selectMPMode('classic'); // Default selection visual
+                window.selectMPMode('classic'); 
                 window.showScreen('screen-setup-mode');
             } else {
                 window.selectLevel(1);
@@ -1264,53 +1244,49 @@
         };
 
         // --- LÓGICA DE ATAQUES (NUEVA) ---
-        window.selectAttackPower = (power) => {
-            selectedAttackPower = power;
-            const powers = ['ice', 'swap', 'slime', 'block'];
-            powers.forEach(p => {
-                const btn = document.getElementById(`pwr-${p}`);
-                if(p === power) {
-                    btn.classList.replace('border-slate-600', 'border-red-500');
-                    btn.classList.add('bg-red-500/20');
-                } else {
-                    btn.classList.replace('border-red-500', 'border-slate-600');
-                    btn.classList.remove('bg-red-500/20');
-                }
-            });
-            
-            // Mostrar la selección del objetivo una vez se pulsa el poder
-            const targetContainer = document.getElementById('attack-target-container');
-            targetContainer.classList.remove('hidden');
-            targetContainer.classList.add('flex');
-        };
+        let currentOpponents = []; 
 
         window.showAttackModal = (opponents) => {
             selectedAttackPower = null;
+            currentOpponents = opponents;
             
-            // Ocultar destino y botón de lanzar hasta que pulse un poder
-            const targetContainer = document.getElementById('attack-target-container');
+            document.getElementById('attack-powers-container').classList.remove('hidden');
+            const targetContainer = document.getElementById('attack-targets-container');
             targetContainer.classList.add('hidden');
             targetContainer.classList.remove('flex');
-
-            const sel = document.getElementById('attack-target-select');
-            sel.innerHTML = '<option value="">-- Elige a la víctima --</option>';
-            opponents.forEach(opp => {
-                sel.innerHTML += `<option value="${opp.uid}">${localRoomData.players[opp.uid].name}</option>`;
-            });
+            document.getElementById('attack-modal-desc').innerText = "Vas último, elige un poder para fastidiar a un rival.";
             
-            ['ice', 'swap', 'slime', 'block'].forEach(p => {
-                const btn = document.getElementById(`pwr-${p}`);
-                btn.classList.replace('border-red-500', 'border-slate-600');
-                btn.classList.remove('bg-red-500/20');
-            });
-
             document.getElementById('attack-modal').classList.remove('hidden');
         };
 
-        window.launchAttack = async () => {
-            const targetId = document.getElementById('attack-target-select').value;
-            if(!selectedAttackPower) return showToast("Elige un poder", true);
-            if(!targetId) return showToast("Elige una víctima", true);
+        window.selectAttackPower = (power) => {
+            selectedAttackPower = power;
+            
+            document.getElementById('attack-powers-container').classList.add('hidden');
+            const targetContainer = document.getElementById('attack-targets-container');
+            targetContainer.classList.remove('hidden');
+            targetContainer.classList.add('flex');
+            
+            document.getElementById('attack-modal-desc').innerText = "Selecciona a quién quieres lanzar el ataque.";
+            
+            targetContainer.innerHTML = '';
+            currentOpponents.forEach(opp => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full py-4 glass-panel bg-slate-800/80 hover:bg-slate-700 active:bg-slate-600 rounded-xl font-black text-white transition-all shadow-md active:scale-95 text-lg flex items-center justify-center gap-3 border border-slate-600';
+                btn.innerHTML = `<div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-sm shadow-inner">${localRoomData.players[opp.uid].name.charAt(0).toUpperCase()}</div> <span>${localRoomData.players[opp.uid].name}</span>`;
+                btn.onclick = () => window.launchAttack(opp.uid);
+                targetContainer.appendChild(btn);
+            });
+            
+            const backBtn = document.createElement('button');
+            backBtn.className = 'mt-4 px-6 py-2 rounded-full glass-panel text-slate-400 hover:text-white text-xs font-bold active:scale-95 transition-all border border-white/5';
+            backBtn.innerHTML = '<i class="fas fa-arrow-left mr-2"></i> Cambiar poder';
+            backBtn.onclick = () => window.showAttackModal(currentOpponents);
+            targetContainer.appendChild(backBtn);
+        };
+
+        window.launchAttack = async (targetId) => {
+            if(!selectedAttackPower || !targetId) return;
             
             document.getElementById('attack-modal').classList.add('hidden');
             
@@ -1322,7 +1298,7 @@
                     forQuestion: localRoomData.currentQ + 1
                 }
             });
-            showToast("¡Ataque preparado para la siguiente ronda!", false);
+            showToast("¡Ataque lanzado!", false);
         };
 
 
@@ -1505,11 +1481,24 @@
             results.forEach((r, i) => {
                 const icon = r.correct ? '<i class="fas fa-check-circle text-emerald-400 text-lg drop-shadow-md"></i>' : '<i class="fas fa-times-circle text-red-500 text-lg"></i>';
                 const ptsColor = r.correct ? 'text-emerald-400' : 'text-slate-500';
+                
+                // Mostrar el icono del ataque junto al nombre si fue atacado y está activo para la ronda que viene
+                let attackIconHTML = '';
+                if (localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === (localRoomData.currentQ + 1) && localRoomData.activeAttack.targetId === r.uid) {
+                    const pwrIcons = {
+                        'ice': '<i class="fas fa-snowflake text-cyan-400 ml-2 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] animate-pulse"></i>',
+                        'swap': '<i class="fas fa-random text-purple-400 ml-2 drop-shadow-[0_0_8px_rgba(192,132,252,0.8)] animate-pulse"></i>',
+                        'slime': '<i class="fas fa-fill-drip text-green-400 ml-2 drop-shadow-[0_0_8px_rgba(74,222,128,0.8)] animate-pulse"></i>',
+                        'block': '<i class="fas fa-lock text-red-400 ml-2 drop-shadow-[0_0_8px_rgba(248,113,113,0.8)] animate-pulse"></i>'
+                    };
+                    attackIconHTML = pwrIcons[localRoomData.activeAttack.power] || '';
+                }
+
                 list.innerHTML += `
                     <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-800/80 border border-white/5 shadow-md">
                         <div class="flex items-center gap-3">
                             <div class="w-7 h-7 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center text-xs font-black text-white shadow-inner">#${i+1}</div>
-                            <span class="font-black text-white tracking-wide">${r.name}</span>
+                            <span class="font-black text-white tracking-wide">${r.name}${attackIconHTML}</span>
                         </div>
                         <div class="flex items-center gap-4">
                             <span class="text-xs font-bold text-slate-400 w-10 text-right">${r.time.toFixed(1)}s</span>
@@ -1523,37 +1512,30 @@
             let isAttackRound = false;
             let opponentsArr = [];
             
-            // Cada 2 preguntas (es decir, en el index 1, 3, 5...) abrimos el ataque. Excepto en la última (14).
             if (localRoomData.mode === 'attacks' && (localRoomData.currentQ + 1) % 2 === 0 && localRoomData.currentQ < 14) {
                 isAttackRound = true;
                 opponentsArr = playersByScore.filter(p => p.uid !== lastPlaceUid);
             }
             
-            // Verificamos si en esta ronda específica ya se ha lanzado el ataque
-            // El ataque lanzado AHORA es para la siguiente pregunta (currentQ + 1)
             let attackLaunchedThisRound = false;
             if (localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === (localRoomData.currentQ + 1)) {
                 attackLaunchedThisRound = true;
             }
             
-            // Si eres el último y no has lanzado el ataque aún, te sale el modal
             if (isAttackRound && currentUser.uid === lastPlaceUid && !attackLaunchedThisRound) {
                 window.showAttackModal(opponentsArr);
             } else {
                 document.getElementById('attack-modal').classList.add('hidden');
             }
 
-            // El contador empieza en 15 si es ronda de ataque y NO se ha lanzado ya. Sino en 5.
             let count = (isAttackRound && !attackLaunchedThisRound) ? 15 : 5; 
             document.getElementById('mp-countdown-sec').innerText = count;
             
             clearInterval(mpResultsInterval);
             mpResultsInterval = setInterval(() => {
                 
-                // Comprobación dinámica cada segundo: miramos si el ataque se acaba de lanzar ahora
                 let currentAttackLaunched = localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === (localRoomData.currentQ + 1);
                 
-                // Si alguien lanza el ataque y el contador va por encima de 5, lo bajamos de golpe a 5.
                 if (isAttackRound && currentAttackLaunched && count > 5) {
                     count = 5;
                 }
@@ -1578,6 +1560,14 @@
 
         // --- UTILIDADES ---
         function renderQuestionUI(q, qIdx, qTotal, onClickCallback) {
+            // Limpiamos los intervalos de ataques anteriores si los hubiera
+            activeAttackIntervals.forEach(clearInterval);
+            activeAttackIntervals = [];
+
+            // Limpiamos el aviso antiguo de intercambio si se quedó colgando
+            const oldWarning = document.getElementById('swap-warning');
+            if(oldWarning) oldWarning.remove();
+
             const catConf = CATS[q.cat] || { name: q.cat, color: 'bg-blue-500' };
             document.getElementById('q-counter').innerText = `${qIdx + 1}/${qTotal}`;
             const badge = document.getElementById('q-category-badge');
@@ -1586,14 +1576,20 @@
             const qTextEl = document.getElementById('question-text');
             qTextEl.innerText = q.text;
             
-            const imgC = document.getElementById('q-image-container'); const imgEl = document.getElementById('q-image');
+            const imgC = document.getElementById('q-image-container'); 
+            const imgEl = document.getElementById('q-image');
             
+            // Solución de bug de imágenes: detectamos si carga bien o da error.
+            imgEl.onerror = function() {
+                imgC.classList.add('hidden');
+                qTextEl.className = "text-xl md:text-2xl font-black text-center text-white leading-tight drop-shadow-md transition-all";
+            };
             imgEl.removeAttribute('src');
             
-            if(q.img) { 
-                imgEl.src = q.img; 
+            if(q.img && q.img.trim() !== '') { 
                 imgC.classList.remove('hidden'); 
                 qTextEl.className = "text-base md:text-lg font-black text-center text-white leading-tight drop-shadow-md transition-all";
+                imgEl.src = q.img.trim(); 
             } else { 
                 imgC.classList.add('hidden'); 
                 qTextEl.className = "text-xl md:text-2xl font-black text-center text-white leading-tight drop-shadow-md transition-all";
@@ -1601,28 +1597,69 @@
             
             const opts = document.getElementById('options-container'); opts.innerHTML = '';
             
-            // --- DETECTAR SI HAY UN ATAQUE DE HIELO ACTIVO HACIA ESTE JUGADOR ---
-            let isFrozen = false;
-            let iceTaps = 0;
+            // --- DETECCIÓN DE ATAQUES ---
+            let activePower = null;
             if(localRoomData && localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === qIdx && localRoomData.activeAttack.targetId === currentUser.uid) {
-                if(localRoomData.activeAttack.power === 'ice') {
-                    isFrozen = true;
-                    iceTaps = 5; // Hay que pulsar 5 veces para romperlo
-                    showToast("🥶 ¡ESTÁS CONGELADO! Pulsa los botones rápido para romper el hielo.", true);
-                }
+                activePower = localRoomData.activeAttack.power;
             }
-            
+
+            let isFrozen = activePower === 'ice';
+            let iceTaps = isFrozen ? 5 : 0;
+            if(isFrozen) showToast("🥶 ¡ESTÁS CONGELADO! Pulsa los botones rápido para romper el hielo.", true);
+
+            let isBlocked = activePower === 'block';
+            let blockTimeLeft = 5;
+            if(isBlocked) {
+                showToast("🔒 ¡BLOQUEADO! Tus respuestas están cerradas 5 segundos.", true);
+                let bInt = setInterval(() => {
+                    blockTimeLeft--;
+                    document.querySelectorAll('.block-timer').forEach(el => el.innerText = blockTimeLeft + 's');
+                    if(blockTimeLeft <= 0) {
+                        clearInterval(bInt);
+                        isBlocked = false;
+                        document.querySelectorAll('[id^="block-layer-"]').forEach(el => el.remove());
+                        if(isSoundOn) playSoundFX('click');
+                    }
+                }, 1000);
+                activeAttackIntervals.push(bInt);
+            }
+
+            if(activePower === 'swap') {
+                showToast("🔀 ¡INTERCAMBIO! Las respuestas cambian de lugar.", true);
+                const warningEl = document.createElement('div');
+                warningEl.className = 'w-full text-center text-purple-400 font-black text-sm mb-2 drop-shadow-md animate-pulse';
+                warningEl.id = 'swap-warning';
+                warningEl.innerHTML = '<i class="fas fa-random"></i> Cambian en: <span id="swap-timer">2</span>s';
+                opts.parentNode.insertBefore(warningEl, opts);
+
+                let swapTime = 2;
+                let sInt = setInterval(() => {
+                    swapTime--;
+                    let stEl = document.getElementById('swap-timer');
+                    if(stEl) stEl.innerText = swapTime;
+                    
+                    if(swapTime <= 0) {
+                        swapTime = 2;
+                        if(stEl) stEl.innerText = swapTime;
+                        const btns = Array.from(opts.querySelectorAll('button'));
+                        btns.forEach(btn => btn.style.order = Math.floor(Math.random() * 10));
+                        if(isSoundOn) playBeep(300, 'triangle', 0.1);
+                    }
+                }, 1000);
+                activeAttackIntervals.push(sInt);
+            }
+
             q.options.forEach((opt, idx) => {
                 const b = document.createElement('button');
-                b.className = 'relative w-full py-3 px-4 glass-panel bg-slate-800/80 active:bg-slate-700 rounded-xl text-center font-bold text-white transition-all border border-white/5 shadow-md active:scale-95 text-base md:text-lg overflow-hidden';
+                b.style.order = idx; // Respetado por flex para el swap
+                b.className = 'relative w-full py-3 px-4 glass-panel bg-slate-800/80 active:bg-slate-700 rounded-xl text-center font-bold text-white transition-all border border-white/5 shadow-md active:scale-95 text-base md:text-lg overflow-hidden flex-shrink-0';
                 
-                // Texto de la respuesta (aislado para que no se toque con el hielo)
                 const tSpan = document.createElement('span');
                 tSpan.innerText = opt;
                 tSpan.className = 'relative z-10 pointer-events-none';
                 b.appendChild(tSpan);
 
-                // Si está congelado, añadimos la capa de hielo encima del botón
+                // Capa visual de HIELO
                 if(isFrozen) {
                     const iceLayer = document.createElement('div');
                     iceLayer.className = 'absolute inset-0 bg-cyan-300/40 backdrop-blur-md border-[3px] border-cyan-400 rounded-xl z-20 flex items-center justify-center transition-opacity pointer-events-none';
@@ -1631,33 +1668,67 @@
                     b.appendChild(iceLayer);
                 }
 
+                // Capa visual de BLOQUEO
+                if(isBlocked) {
+                    const blockLayer = document.createElement('div');
+                    blockLayer.className = 'absolute inset-0 bg-slate-900/80 backdrop-blur-sm border-[3px] border-red-500 rounded-xl z-20 flex items-center justify-center transition-opacity pointer-events-none';
+                    blockLayer.id = `block-layer-${idx}`;
+                    blockLayer.innerHTML = `<div class="text-center"><i class="fas fa-lock text-red-500 text-2xl mb-1"></i><div class="font-black text-white text-xs block-timer">5s</div></div>`;
+                    b.appendChild(blockLayer);
+                }
+
+                // Capa visual y lógica de LÍQUIDO VISCOSO
+                let isSlime = activePower === 'slime';
+                let slimeRemoved = false;
+                if(isSlime) {
+                    if(idx === 0) showToast("🤢 ¡LÍQUIDO VISCOSO! Desliza y frota para limpiarlo.", true);
+                    const slimeLayer = document.createElement('div');
+                    slimeLayer.className = 'absolute inset-0 bg-green-500/90 backdrop-blur-md border-[3px] border-green-600 rounded-xl z-30 flex items-center justify-center transition-opacity touch-none';
+                    slimeLayer.id = `slime-layer-${idx}`;
+                    slimeLayer.innerHTML = '<i class="fas fa-fill-drip text-green-200 text-2xl animate-pulse"></i>';
+                    b.appendChild(slimeLayer);
+
+                    let swipeCount = 0;
+                    const handleSwipe = () => {
+                        if (slimeRemoved) return;
+                        swipeCount++;
+                        slimeLayer.style.opacity = 1 - (swipeCount / 10);
+                        if (swipeCount >= 10) {
+                            slimeRemoved = true;
+                            slimeLayer.remove();
+                            if(isSoundOn) playBeep(500, 'sawtooth', 0.1);
+                        }
+                    };
+                    slimeLayer.addEventListener('touchmove', handleSwipe, {passive: true});
+                    slimeLayer.addEventListener('mousemove', handleSwipe);
+                }
+
+                // Clic final integrando todos los bloqueadores
                 b.onclick = () => {
+                    if(isBlocked) return;
+                    if(isSlime && !slimeRemoved) return;
+                    
                     if(isFrozen) {
                         iceTaps--;
-                        
-                        // Efecto visual: hace temblar TODOS los botones para que se note el golpe
                         const allBtns = opts.querySelectorAll('button');
                         allBtns.forEach(btn => {
                             btn.classList.add('shake');
                             setTimeout(() => btn.classList.remove('shake'), 200);
                         });
                         
-                        if(isSoundOn) playBeep(800, 'square', 0.05);
+                        if(isSoundOn) playSoundFX('click');
 
-                        // Hacer el hielo más transparente con cada toque
                         const iceElements = document.querySelectorAll('[id^="ice-layer-"]');
                         iceElements.forEach(ice => {
                             ice.style.opacity = iceTaps / 5;
                         });
 
-                        // Cuando los toques llegan a 0, se rompe el hielo y ya puede jugar
                         if(iceTaps <= 0) {
                             isFrozen = false;
-                            if(isSoundOn) playBeep(1200, 'sine', 0.2); // Sonido de cristal roto
+                            if(isSoundOn) playSoundFX('click');
                             iceElements.forEach(ice => ice.remove());
                         }
                     } else {
-                        // Si no está congelado (o ya se rompió), elige la respuesta normal
                         onClickCallback(idx, b);
                     }
                 };
