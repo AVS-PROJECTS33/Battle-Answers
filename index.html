@@ -83,6 +83,8 @@
 
 <body class="w-screen h-[100dvh] flex justify-center items-center bg-slate-950">
 
+    <audio id="bgm-audio" loop src="https://raw.githubusercontent.com/AVS-PROJECTS33/Battle-Answers/main/Patterns_of_Play.mp3" preload="auto"></audio>
+
     <div id="toast-container" class="fixed top-4 left-0 right-0 z-[100] flex flex-col items-center gap-2 pointer-events-none"></div>
 
     <div id="app-container" class="w-full max-w-md h-full relative overflow-hidden flex flex-col shadow-2xl bg-start transition-all duration-500 sm:border-x sm:border-white/10">
@@ -597,6 +599,9 @@
         let isFXOn = false;
         let askedQuestionsHistory = new Set(); 
 
+        const bgm = document.getElementById('bgm-audio');
+        bgm.volume = 0.15; 
+
         const CATS = {
             'aleatorio': { id: 'aleatorio', name: 'Aleatorio', icon: 'fa-dice', color: 'bg-pink-500', border: 'border-pink-400' },
             'deportes': { id: 'deportes', name: 'Deportes', icon: 'fa-futbol', color: 'bg-orange-500', border: 'border-orange-400' },
@@ -699,6 +704,15 @@
                 document.getElementById('combo-container').classList.remove('hidden');
             }
 
+            // --- GESTIÓN DE AUDIO DE FONDO ---
+            if (inGame) {
+                bgm.pause();
+            } else {
+                if (isSoundOn && introSeen) {
+                    bgm.play().catch(()=>{});
+                }
+            }
+
             const appC = document.getElementById('app-container');
             if(id === 'screen-login' || id === 'screen-loading' || id === 'screen-intro') appC.classList.replace('bg-menu', 'bg-start');
             else appC.classList.replace('bg-start', 'bg-menu');
@@ -737,6 +751,9 @@
         window.startFromIntro = () => {
             introSeen = true;
             if(audioCtx.state === 'suspended') audioCtx.resume();
+            if(isSoundOn) {
+                bgm.play().catch(()=>{});
+            }
             window.showScreen(nextScreenAfterIntro);
         };
 
@@ -827,10 +844,13 @@
                 knob.classList.replace('left-1', 'right-1'); 
                 showToast("Sonido Activado"); 
                 playSoundFX('click'); 
+                const currentScreen = ['screen-question', 'screen-question-results'].some(s => !document.getElementById(s).classList.contains('hidden'));
+                if(!currentScreen && introSeen) bgm.play().catch(()=>{});
             } else { 
                 btn.classList.replace('bg-emerald-500', 'bg-slate-600'); 
                 knob.classList.replace('right-1', 'left-1'); 
                 showToast("Sonido Silenciado"); 
+                bgm.pause();
             }
         };
         window.toggleFX = () => {
