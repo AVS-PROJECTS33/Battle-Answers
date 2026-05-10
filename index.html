@@ -176,19 +176,26 @@
                 </button>
             </div>
 
-            <div class="flex-1 flex flex-col justify-center gap-6 pb-20">
-                <button onclick="window.goToSetup(false)" class="glass-panel bg-blue-600/20 border-blue-400/30 hover:bg-blue-600/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all group shadow-2xl">
-                    <div class="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.6)] group-hover:scale-110 transition-transform">
-                        <i class="fas fa-user text-3xl text-white"></i>
+            <div class="flex-1 flex flex-col justify-center gap-4 pb-16">
+                <button onclick="window.goToSetup(false)" class="glass-panel bg-blue-600/20 border-blue-400/30 hover:bg-blue-600/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
+                    <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.6)] group-hover:scale-110 transition-transform">
+                        <i class="fas fa-user text-2xl text-white"></i>
                     </div>
-                    <span class="font-black text-3xl text-white tracking-widest drop-shadow-md">1 JUGADOR</span>
+                    <span class="font-black text-2xl text-white tracking-widest drop-shadow-md">1 JUGADOR</span>
                 </button>
 
-                <button id="btn-menu-multi" onclick="window.showScreen('screen-lobby')" class="glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all group shadow-2xl">
-                    <div class="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.6)] group-hover:scale-110 transition-transform">
-                        <i class="fas fa-globe text-3xl text-white"></i>
+                <button id="btn-menu-duel" onclick="window.enterLobby('duel')" class="hidden glass-panel bg-purple-600/20 border-purple-400/30 hover:bg-purple-600/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
+                    <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.6)] group-hover:scale-110 transition-transform">
+                        <i class="fas fa-khanda text-2xl text-white"></i>
                     </div>
-                    <span class="font-black text-3xl text-white tracking-widest drop-shadow-md">CON AMIGOS</span>
+                    <span class="font-black text-2xl text-white tracking-widest drop-shadow-md">DUELO</span>
+                </button>
+
+                <button id="btn-menu-multi" onclick="window.enterLobby('multi')" class="hidden glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
+                    <div class="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.6)] group-hover:scale-110 transition-transform">
+                        <i class="fas fa-users text-2xl text-white"></i>
+                    </div>
+                    <span class="font-black text-2xl text-white tracking-widest drop-shadow-md">CON AMIGOS</span>
                 </button>
             </div>
         </div>
@@ -249,6 +256,10 @@
             </div>
 
             <div class="flex-1 flex flex-col justify-center gap-6 pb-20">
+                <div class="text-center mb-[-10px]">
+                    <span id="lobby-type-badge" class="px-4 py-1 rounded-full bg-slate-800/80 text-[10px] font-black tracking-widest text-slate-400 border border-slate-700">CON AMIGOS</span>
+                </div>
+
                 <button onclick="window.createRoom()" class="glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all shadow-2xl">
                     <div class="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.5)]">
                         <i class="fas fa-plus text-3xl text-white"></i>
@@ -393,8 +404,18 @@
                 </div>
             </div>
 
+            <!-- NUEVO: Historial de Duelos (Se muestra sólo en modo Duelo con 2 jugadores) -->
+            <div id="duel-stats-container" class="hidden glass-panel p-4 rounded-2xl mb-4 shadow-md bg-purple-900/40 border border-purple-500/30 text-center mx-4 shrink-0">
+                <p class="text-[10px] font-black tracking-widest text-purple-300 mb-2 border-b border-purple-500/30 pb-1">HISTORIAL DE DUELO</p>
+                <div class="flex justify-between items-center px-2">
+                    <span id="duel-p1-name" class="font-bold text-sm text-white truncate max-w-[80px]">P1</span>
+                    <span id="duel-score" class="font-black text-2xl text-purple-400 drop-shadow-md">0 - 0</span>
+                    <span id="duel-p2-name" class="font-bold text-sm text-white truncate max-w-[80px]">P2</span>
+                </div>
+            </div>
+
             <div class="flex-1 glass-panel rounded-3xl p-5 overflow-y-auto mb-4 shadow-lg border-white/5">
-                <h3 class="font-black text-xs text-slate-400 mb-4 text-center tracking-widest border-b border-slate-700 pb-2">JUGADORES (<span id="player-count">1</span>/6)</h3>
+                <h3 class="font-black text-xs text-slate-400 mb-4 text-center tracking-widest border-b border-slate-700 pb-2">JUGADORES (<span id="player-count">1</span>/<span id="max-player-count">6</span>)</h3>
                 <div id="room-players-list" class="space-y-3"></div>
             </div>
 
@@ -539,7 +560,6 @@
                     <button onclick="window.closeInviteModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fas fa-times"></i></button>
                 </div>
                 <div id="invite-room-list" class="flex-1 overflow-y-auto pr-2 space-y-2"></div>
-                <!-- Añadido botón central de envío de invitaciones múltiples -->
                 <div class="mt-4 pt-4 border-t border-slate-700/50 shrink-0">
                     <button onclick="window.sendBulkRoomInvites()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-black text-white transition-all shadow-md active:scale-95 border border-emerald-400">
                         ENVIAR INVITACIÓN
@@ -586,9 +606,10 @@
         let questionStartTime = 0;
         let selectedCategories = [];
         let isMultiplayerSetup = false;
+        let activeLobbyType = 'multi'; // 'multi' o 'duel'
         let activeQuestions = [];
         let pendingInviteCode = null;
-        let selectedFriendsToInvite = []; // Para invitar a varios a la vez
+        let selectedFriendsToInvite = []; 
         
         let selectedLevel = 1;
         let mpGameMode = 'classic'; 
@@ -704,7 +725,6 @@
                 document.getElementById('combo-container').classList.remove('hidden');
             }
 
-            // --- GESTIÓN DE AUDIO DE FONDO ---
             if (inGame) {
                 bgm.pause();
             } else {
@@ -732,6 +752,7 @@
                 document.getElementById('settings-name-input').value = userData?.name || currentUser.displayName || '';
                 
                 document.getElementById('btn-menu-multi').classList.remove('hidden');
+                document.getElementById('btn-menu-duel').classList.remove('hidden');
                 listenToMyData();
                 nextScreenAfterIntro = 'screen-main-menu';
                 
@@ -800,6 +821,7 @@
             document.getElementById('menu-player-name').innerText = 'Invitado';
             document.getElementById('settings-name-input').value = 'Invitado';
             document.getElementById('btn-menu-multi').classList.add('hidden');
+            document.getElementById('btn-menu-duel').classList.add('hidden');
             window.showScreen('screen-main-menu');
         };
 
@@ -807,6 +829,12 @@
             if(!isLocalMode) { await signOut(auth); if(unsubMyData) unsubMyData(); }
             isLocalMode = false; currentUser = null; userData = null;
             window.showScreen('screen-login');
+        };
+
+        window.enterLobby = (type) => {
+            activeLobbyType = type;
+            document.getElementById('lobby-type-badge').innerText = type === 'duel' ? 'MODO DUELO (1 VS 1)' : 'CON AMIGOS';
+            window.showScreen('screen-lobby');
         };
 
         // --- SETTINGS ---
@@ -966,11 +994,10 @@
             await updateDoc(doc(db, 'users', currentUser.uid), { inbox: updatedInbox });
         };
         
-        // --- NUEVA LÓGICA DE INVITACIÓN MÚLTIPLE ---
         window.openInviteModal = () => {
             if(!userData || !Array.isArray(userData.friends) || userData.friends.length === 0) return showToast("No tienes amigos agregados", true);
             
-            selectedFriendsToInvite = []; // Reseteamos la selección
+            selectedFriendsToInvite = []; 
             const list = document.getElementById('invite-room-list'); 
             list.innerHTML = '';
             
@@ -998,14 +1025,12 @@
             const btn = document.getElementById(`invite-friend-${uid}`);
 
             if (idx > -1) {
-                // Deseleccionar
                 selectedFriendsToInvite.splice(idx, 1);
                 checkContainer.classList.replace('border-emerald-500', 'border-slate-500');
                 checkContainer.classList.remove('bg-emerald-500');
                 checkIcon.classList.add('opacity-0');
                 btn.classList.replace('border-emerald-500/50', 'border-slate-700/50');
             } else {
-                // Seleccionar
                 selectedFriendsToInvite.push(uid);
                 checkContainer.classList.replace('border-slate-500', 'border-emerald-500');
                 checkContainer.classList.add('bg-emerald-500');
@@ -1018,7 +1043,7 @@
             if (selectedFriendsToInvite.length === 0) return showToast("Selecciona al menos a un amigo", true);
             
             const code = document.getElementById('room-pin-display').innerText;
-            window.closeInviteModal(); // Cerramos al instante para buena experiencia
+            window.closeInviteModal(); 
             
             let sentCount = 0;
             for (let targetUid of selectedFriendsToInvite) {
@@ -1079,7 +1104,17 @@
         window.createRoom = async () => {
             currentQIndex = -1; 
             const code = Math.random().toString(36).substring(2, 6).toUpperCase(); currentRoomRef = doc(db, 'rooms', code);
-            const initialData = { status: 'waiting', hostId: currentUser.uid, players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false } }, questions: [], currentQ: 0, answers: {}, activeAttack: null, createdAt: Date.now() };
+            const initialData = { 
+                type: activeLobbyType, 
+                status: 'waiting', 
+                hostId: currentUser.uid, 
+                players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false } }, 
+                questions: [], 
+                currentQ: 0, 
+                answers: {}, 
+                activeAttack: null, 
+                createdAt: Date.now() 
+            };
             try { await setDoc(currentRoomRef, initialData); document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.remove('hidden'); window.showScreen('screen-room'); } 
             catch(e) { showToast("Error de conexión", true); }
         };
@@ -1091,7 +1126,11 @@
             try {
                 const snap = await getDoc(currentRoomRef);
                 if(!snap.exists() || snap.data().status !== 'waiting') return showToast("Sala no disponible", true);
-                if(Object.keys(snap.data().players).length >= 6) return showToast("Sala llena (6/6)", true);
+                
+                const roomType = snap.data().type;
+                const maxPlayers = roomType === 'duel' ? 2 : 6;
+                
+                if(Object.keys(snap.data().players).length >= maxPlayers) return showToast(`Sala llena (${maxPlayers}/${maxPlayers})`, true);
                 await updateDoc(currentRoomRef, { [`players.${currentUser.uid}`]: { name: userData.name, score: 0, isDone: false } });
                 document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.add('hidden'); window.showScreen('screen-room');
             } catch(e) { showToast("Fallo al entrar", true); }
@@ -1129,7 +1168,37 @@
 
         function updateRoomWaitingUI(data) {
             const pList = document.getElementById('room-players-list'); pList.innerHTML = '';
-            const pArr = Object.values(data.players); document.getElementById('player-count').innerText = pArr.length;
+            const pArr = Object.values(data.players); 
+            
+            const maxPlayers = data.type === 'duel' ? 2 : 6;
+            document.getElementById('player-count').innerText = pArr.length;
+            document.getElementById('max-player-count').innerText = maxPlayers;
+            
+            if (data.type === 'duel' && pArr.length === 2) {
+                const uids = Object.keys(data.players).sort();
+                const duelId = uids.join('_');
+                
+                getDoc(doc(db, 'duels', duelId)).then(snap => {
+                    const statsContainer = document.getElementById('duel-stats-container');
+                    if(statsContainer) {
+                        statsContainer.classList.remove('hidden');
+                        document.getElementById('duel-p1-name').innerText = data.players[uids[0]].name;
+                        document.getElementById('duel-p2-name').innerText = data.players[uids[1]].name;
+                        
+                        if (snap.exists()) {
+                            const w1 = snap.data()[`wins_${uids[0]}`] || 0;
+                            const w2 = snap.data()[`wins_${uids[1]}`] || 0;
+                            document.getElementById('duel-score').innerText = `${w1} - ${w2}`;
+                        } else {
+                            document.getElementById('duel-score').innerText = `0 - 0`;
+                        }
+                    }
+                }).catch(()=>{});
+            } else {
+                const statsContainer = document.getElementById('duel-stats-container');
+                if(statsContainer) statsContainer.classList.add('hidden');
+            }
+
             pArr.forEach(p => {
                 pList.innerHTML += `
                     <div class="flex items-center gap-4 p-4 glass-panel rounded-2xl border border-white/10 shadow-md bg-slate-800/40">
@@ -1632,6 +1701,36 @@
                         if(localRoomData.currentQ < 14) {
                             updateDoc(currentRoomRef, { status: 'playing', currentQ: localRoomData.currentQ + 1, answers: {}, activeAttack: localRoomData.activeAttack });
                         } else {
+                            // LÓGICA FINALIZAR PARTIDA Y REGISTRAR DUELOS
+                            if (localRoomData.type === 'duel') {
+                                const uids = Object.keys(localRoomData.players);
+                                if (uids.length === 2) {
+                                    const p1 = uids[0];
+                                    const p2 = uids[1];
+                                    const s1 = localRoomData.players[p1].score || 0;
+                                    const s2 = localRoomData.players[p2].score || 0;
+                                    
+                                    if (s1 !== s2) {
+                                        const winnerUid = s1 > s2 ? p1 : p2;
+                                        const sortedUids = [...uids].sort();
+                                        const duelId = sortedUids.join('_');
+                                        
+                                        const duelRef = doc(db, 'duels', duelId);
+                                        getDoc(duelRef).then(snap => {
+                                            if (snap.exists()) {
+                                                updateDoc(duelRef, {
+                                                    [`wins_${winnerUid}`]: increment(1)
+                                                });
+                                            } else {
+                                                setDoc(duelRef, {
+                                                    [`wins_${winnerUid}`]: 1,
+                                                    playerNames: { [p1]: localRoomData.players[p1].name, [p2]: localRoomData.players[p2].name }
+                                                });
+                                            }
+                                        }).catch(()=>{});
+                                    }
+                                }
+                            }
                             updateDoc(currentRoomRef, { status: 'finished' });
                         }
                     }
