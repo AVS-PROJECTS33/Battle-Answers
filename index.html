@@ -578,7 +578,7 @@
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -591,12 +591,6 @@
         };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        
-        // Forzamos que la sesión no se borre al cerrar el navegador
-        setPersistence(auth, browserLocalPersistence).catch((err) => {
-            console.error("Error setting persistence:", err);
-        });
-
         const db = getFirestore(app);
 
         // --- GLOBAL STATE ---
@@ -611,6 +605,7 @@
         let hostForceNextTimeout = null;
         let showingResults = false;
         let authMode = 'login'; // 'login' o 'register'
+        let isAttemptingAutoLogin = false;
         
         let score = 0, combo = 1, currentQIndex = 0, timeRemaining = 20; 
         let timerInterval;
@@ -671,6 +666,18 @@
             const a = getBGM(); 
             if(a) a.pause(); 
         };
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                pauseBGM();
+            } else {
+                const inGame = !document.getElementById('screen-question').classList.contains('hidden') || 
+                               !document.getElementById('screen-question-results').classList.contains('hidden');
+                if (!inGame && isSoundOn && introSeen) {
+                    playBGM();
+                }
+            }
+        });
 
         const CATS = {
             'aleatorio': { id: 'aleatorio', name: 'Aleatorio', icon: 'fa-dice', color: 'bg-pink-500', border: 'border-pink-400' },
@@ -837,9 +844,9 @@
         }
 
         // --- AUTH ---
-        // Firebase se encarga automáticamente de detectar la sesión permanente
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                isAttemptingAutoLogin = false;
                 currentUser = user;
                 try {
                     const docSnap = await getDoc(doc(db, 'users', user.uid));
@@ -866,6 +873,24 @@
                     if(introSeen) window.showScreen('screen-login');
                 }
             } else {
+                // FALLBACK DE SEGURIDAD: Auto-login con LocalStorage
+                if (!isAttemptingAutoLogin) {
+                    const savedEmail = localStorage.getItem('ba_email_v1');
+                    const savedPwd = localStorage.getItem('ba_pwd_v1');
+                    
+                    if (savedEmail && savedPwd) {
+                        isAttemptingAutoLogin = true;
+                        try {
+                            await signInWithEmailAndPassword(auth, savedEmail, savedPwd);
+                            return; // Se detiene aquí. Firebase volverá a llamar a onAuthStateChanged con el usuario.
+                        } catch (err) {
+                            localStorage.removeItem('ba_email_v1');
+                            localStorage.removeItem('ba_pwd_v1');
+                            isAttemptingAutoLogin = false;
+                        }
+                    }
+                }
+
                 currentUser = null; userData = null;
                 nextScreenAfterIntro = 'screen-login';
                 
@@ -934,6 +959,10 @@
                     userData = { uid: currentUser.uid, name: u, playerId: playerId, friends: [], inbox: [], isOnline: true };
                     await setDoc(doc(db, 'users', currentUser.uid), userData);
                     
+                    // AUTOGUARDADO BLINDADO
+                    localStorage.setItem('ba_email_v1', email);
+                    localStorage.setItem('ba_pwd_v1', password);
+                    
                     showToast("¡Cuenta creada con éxito!");
                     listenToMyData();
                     window.showScreen('screen-main-menu');
@@ -954,6 +983,10 @@
                         userData = docSnap.data();
                         await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: true }).catch(()=>{});
                     }
+                    
+                    // AUTOGUARDADO BLINDADO
+                    localStorage.setItem('ba_email_v1', email);
+                    localStorage.setItem('ba_pwd_v1', password);
                     
                     showToast("¡Bienvenido de nuevo!");
                     listenToMyData();
@@ -982,6 +1015,11 @@
             if(currentUser) { 
                 await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
             }
+            
+            // BORRAR AUTOGUARDADO
+            localStorage.removeItem('ba_email_v1');
+            localStorage.removeItem('ba_pwd_v1');
+            
             await signOut(auth); 
             if(unsubMyData) unsubMyData(); 
             Object.values(friendUnsubs).forEach(unsub => unsub());
