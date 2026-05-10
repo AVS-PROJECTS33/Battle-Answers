@@ -128,15 +128,24 @@
             <h2 class="text-xl font-bold text-white drop-shadow-md">Cargando...</h2>
         </div>
 
-        <!-- 1. LOGIN SIMPLIFICADO -->
+        <!-- 1. LOGIN CON PESTAÑAS (CORREO Y CONTRASEÑA) -->
         <div id="screen-login" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center z-20 absolute inset-0">
             <div class="w-full max-w-sm glass-panel rounded-3xl p-6 flex flex-col gap-4">
-                <h1 class="text-2xl font-black mb-4 text-white tracking-wider drop-shadow-lg leading-tight">CREA O INICIA SESIÓN<br><span class="text-lg text-emerald-400">CON TU PERFIL</span></h1>
+                <h1 id="auth-title" class="text-3xl font-black mb-2 text-white tracking-wider drop-shadow-lg">INICIAR SESIÓN</h1>
                 
-                <input type="text" id="auth-username" placeholder="Nombre de jugador" class="w-full px-4 py-4 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-lg">
-                <input type="password" id="auth-pin" placeholder="PIN secreto (4 dígitos o más)" class="w-full px-4 py-4 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-lg">
+                <!-- Pestañas de Modo -->
+                <div class="flex bg-slate-800/50 p-1 rounded-xl mb-2 shadow-inner">
+                    <button id="btn-tab-login" onclick="window.setAuthMode('login')" class="flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white text-sm transition-all shadow-md">ENTRAR</button>
+                    <button id="btn-tab-register" onclick="window.setAuthMode('register')" class="flex-1 py-2 rounded-lg font-bold text-slate-400 text-sm hover:text-white transition-all">REGISTRO</button>
+                </div>
+
+                <input type="text" id="auth-username" placeholder="Nombre de jugador" class="hidden w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
+                <input type="email" id="auth-email" placeholder="Correo electrónico" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
+                <input type="password" id="auth-password" placeholder="Contraseña" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
                 
-                <button onclick="window.loginSimple()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-white transition-all shadow-lg shadow-blue-500/30 active:scale-95 text-xl mt-2 border border-blue-400">
+                <button id="auth-reset-btn" onclick="window.resetPassword()" class="text-xs text-blue-400 hover:text-blue-300 transition-colors w-full text-right -mt-2 font-bold drop-shadow-md">¿Has olvidado la contraseña?</button>
+
+                <button id="auth-submit-btn" onclick="window.submitAuth()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-white transition-all shadow-lg shadow-blue-500/30 active:scale-95 text-xl mt-2 border border-blue-400">
                     ENTRAR
                 </button>
             </div>
@@ -172,7 +181,7 @@
                     <span class="absolute bottom-4 right-6 text-[10px] text-blue-200 font-bold tracking-widest opacity-80">(SOLITARIO)</span>
                 </button>
 
-                <button id="btn-menu-duel" onclick="window.enterLobby('duel')" class="relative hidden glass-panel bg-purple-600/20 border-purple-400/30 hover:bg-purple-600/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
+                <button id="btn-menu-duel" onclick="window.enterLobby('duel')" class="relative glass-panel bg-purple-600/20 border-purple-400/30 hover:bg-purple-600/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
                     <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.6)] group-hover:scale-110 transition-transform">
                         <i class="fas fa-khanda text-2xl text-white"></i>
                     </div>
@@ -180,7 +189,7 @@
                     <span class="absolute bottom-4 right-6 text-[10px] text-purple-200 font-bold tracking-widest opacity-80">(1 VS 1)</span>
                 </button>
 
-                <button id="btn-menu-multi" onclick="window.enterLobby('multi')" class="relative hidden glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
+                <button id="btn-menu-multi" onclick="window.enterLobby('multi')" class="relative glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
                     <div class="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.6)] group-hover:scale-110 transition-transform">
                         <i class="fas fa-users text-2xl text-white"></i>
                     </div>
@@ -558,7 +567,7 @@
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithCustomToken, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -573,24 +582,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Silenciamos el error esperado de custom-token para evitar la alerta en consola
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } catch(e) {
-                        try { await signInAnonymously(auth); } catch(err) { /* Ignorar si no está habilitado */ }
-                    }
-                } else {
-                    try { await signInAnonymously(auth); } catch(err) { /* Ignorar si no está habilitado */ }
-                }
-            } catch (err) {
-                // Ignore
-            }
-        };
-        initAuth();
-
         // --- GLOBAL STATE ---
         let introSeen = false;
         let nextScreenAfterIntro = 'screen-loading';
@@ -602,8 +593,9 @@
         let localRoomData = null;
         let hostForceNextTimeout = null;
         let showingResults = false;
+        let authMode = 'login'; // 'login' o 'register'
         
-        let score = 0, lives = 3, combo = 1, currentQIndex = 0, timeRemaining = 20; 
+        let score = 0, combo = 1, currentQIndex = 0, timeRemaining = 20; 
         let timerInterval;
         let mpResultsInterval = null; 
         let activeAttackIntervals = []; 
@@ -629,12 +621,22 @@
         let unsubMyData = null;
         
         window.addEventListener('beforeunload', () => {
-            if(currentUser && !isLocalMode && !currentUser.isAnonymous) {
+            if(currentUser && !isLocalMode) {
                 updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
             }
         });
 
         // --- MANEJO DE AUDIO SEGURO ---
+        let audioCtx = null;
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                audioCtx = new AudioContext();
+            }
+        } catch (e) {
+            console.warn("AudioContext error:", e);
+        }
+
         const getBGM = () => {
             const audio = document.getElementById('bgm-audio');
             if (audio && audio.volume !== 0.15) {
@@ -677,6 +679,7 @@
 
         const showToast = (msg, isErr=false) => {
             const c = document.getElementById('toast-container');
+            if(!c) return;
             const t = document.createElement('div');
             t.className = `toast-enter px-6 py-3 rounded-full font-bold text-sm shadow-2xl text-white flex items-center gap-2 border ${isErr?'bg-red-500 border-red-400':'glass-panel bg-slate-800/90 border-white/20'}`;
             t.innerHTML = `<i class="fas ${isErr?'fa-exclamation-triangle':(msg.includes('❤️') ? 'fa-heart text-red-500' : 'fa-info-circle text-blue-400')}"></i> ${msg}`;
@@ -684,10 +687,8 @@
             setTimeout(() => { t.style.opacity=0; t.style.transform='translateY(-100%)'; t.style.transition='all 0.3s'; setTimeout(()=>t.remove(),300); }, 3000);
         };
 
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
         function playSoundFX(type) {
-            if(!isSoundOn || audioCtx.state === 'suspended') return;
+            if(!isSoundOn || !audioCtx || audioCtx.state === 'suspended') return;
             const t = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -720,7 +721,7 @@
         }
 
         function playBeep(freq = 440, type = 'sine', duration = 0.1) {
-            if(!isSoundOn || audioCtx.state === 'suspended') return;
+            if(!isSoundOn || !audioCtx || audioCtx.state === 'suspended') return;
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
             osc.type = type; osc.frequency.value = freq;
@@ -748,15 +749,22 @@
             if(targetEl) targetEl.classList.remove('hidden');
             
             const inGame = id === 'screen-question' || id === 'screen-question-results';
-            document.getElementById('game-header').classList.toggle('hidden', !inGame);
-            document.getElementById('timer-bar-container').classList.toggle('hidden', id !== 'screen-question');
+            
+            const gameHeader = document.getElementById('game-header');
+            if (gameHeader) gameHeader.classList.toggle('hidden', !inGame);
+            
+            const timerBarContainer = document.getElementById('timer-bar-container');
+            if (timerBarContainer) timerBarContainer.classList.toggle('hidden', id !== 'screen-question');
+            
+            const livesDisplay = document.getElementById('lives-display');
+            const comboContainer = document.getElementById('combo-container');
             
             if(isMultiplayerSetup && inGame) {
-                document.getElementById('lives-display').classList.add('hidden');
-                document.getElementById('combo-container').classList.add('hidden');
+                if(livesDisplay) livesDisplay.classList.add('hidden');
+                if(comboContainer) comboContainer.classList.add('hidden');
             } else {
-                document.getElementById('lives-display').classList.remove('hidden');
-                document.getElementById('combo-container').classList.remove('hidden');
+                if(livesDisplay) livesDisplay.classList.add('hidden');
+                if(comboContainer) comboContainer.classList.remove('hidden');
             }
 
             if (inGame) {
@@ -768,8 +776,13 @@
             }
 
             const appC = document.getElementById('app-container');
-            if(id === 'screen-login' || id === 'screen-loading' || id === 'screen-intro') appC.classList.replace('bg-menu', 'bg-start');
-            else appC.classList.replace('bg-start', 'bg-menu');
+            if (appC) {
+                if(id === 'screen-login' || id === 'screen-loading' || id === 'screen-intro') {
+                    appC.classList.replace('bg-menu', 'bg-start');
+                } else {
+                    appC.classList.replace('bg-start', 'bg-menu');
+                }
+            }
         };
 
         function manageFriendListeners() {
@@ -808,7 +821,7 @@
 
         // --- AUTH SIMPLIFICADA ---
         onAuthStateChanged(auth, async (user) => {
-            if (user && !user.isAnonymous) {
+            if (user) {
                 currentUser = user;
                 try {
                     const docSnap = await getDoc(doc(db, 'users', user.uid));
@@ -848,85 +861,109 @@
 
         window.startFromIntro = () => {
             introSeen = true;
-            if(audioCtx.state === 'suspended') audioCtx.resume();
+            if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             if(isSoundOn) {
                 playBGM();
             }
             window.showScreen(nextScreenAfterIntro);
         };
 
-        window.loginSimple = async () => {
-            const u = document.getElementById('auth-username').value.trim();
-            const pin = document.getElementById('auth-pin').value.trim();
-            
-            if(!u || u.length < 3) return showToast("El nombre debe tener al menos 3 letras", true);
-            if(!pin || pin.length < 4) return showToast("El PIN debe tener al menos 4 caracteres", true);
-            
-            const safeName = u.toLowerCase().replace(/[^a-z0-9]/g, '');
-            if(safeName.length < 3) return showToast("Usa letras o números", true);
+        window.setAuthMode = (mode) => {
+            authMode = mode;
+            const btnLogin = document.getElementById('btn-tab-login');
+            const btnReg = document.getElementById('btn-tab-register');
+            const userField = document.getElementById('auth-username');
+            const title = document.getElementById('auth-title');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const resetBtn = document.getElementById('auth-reset-btn');
 
-            const fakeEmail = safeName + "@battleanswers.app";
-            const fakePassword = pin + "_battlepwd123";
+            if (mode === 'login') {
+                btnLogin.className = "flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white text-sm transition-all shadow-md";
+                btnReg.className = "flex-1 py-2 rounded-lg font-bold text-slate-400 text-sm hover:text-white transition-all";
+                userField.classList.add('hidden');
+                resetBtn.classList.remove('hidden');
+                title.innerText = "INICIAR SESIÓN";
+                submitBtn.innerText = "ENTRAR";
+            } else {
+                btnReg.className = "flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white text-sm transition-all shadow-md";
+                btnLogin.className = "flex-1 py-2 rounded-lg font-bold text-slate-400 text-sm hover:text-white transition-all";
+                userField.classList.remove('hidden');
+                resetBtn.classList.add('hidden');
+                title.innerText = "REGISTRARSE";
+                submitBtn.innerText = "CREAR CUENTA";
+            }
+        };
+
+        window.submitAuth = async () => {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value.trim();
+            
+            if(!email || !password) return showToast("Falta correo o contraseña", true);
 
             window.showScreen('screen-loading');
-            try {
-                // Intentar login con la cuenta vinculada al nombre y PIN
-                const cred = await signInWithEmailAndPassword(auth, fakeEmail, fakePassword);
-                currentUser = cred.user;
-                
-                // Forzar actualización si la cuenta ya existía
-                const docSnap = await getDoc(doc(db, 'users', currentUser.uid));
-                if(docSnap.exists()) {
-                    userData = docSnap.data();
-                    document.getElementById('menu-player-name').innerText = userData.name;
-                    document.getElementById('my-player-id').innerText = userData.playerId;
-                    document.getElementById('settings-name-input').value = userData.name;
+
+            if (authMode === 'register') {
+                const u = document.getElementById('auth-username').value.trim();
+                if(!u || u.length < 3) {
+                    window.showScreen('screen-login');
+                    return showToast("El nombre debe tener al menos 3 letras", true);
                 }
                 
-                showToast("¡Bienvenido de nuevo, " + u + "!");
-                document.getElementById('btn-menu-multi').classList.remove('hidden');
-                document.getElementById('btn-menu-duel').classList.remove('hidden');
-                listenToMyData();
-                window.showScreen('screen-main-menu');
-            } catch (err) {
-                // Si el usuario no existe, creamos su perfil permanente
-                if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-login-credentials') {
-                    try {
-                        const cred = await createUserWithEmailAndPassword(auth, fakeEmail, fakePassword);
-                        currentUser = cred.user;
-                        await updateProfile(currentUser, { displayName: u });
-                        const playerId = u.replace(/\s+/g, '') + '#' + Math.floor(1000 + Math.random() * 9000);
-                        
-                        userData = { uid: currentUser.uid, name: u, playerId: playerId, friends: [], inbox: [], isOnline: true };
-                        await setDoc(doc(db, 'users', currentUser.uid), userData);
-                        
-                        document.getElementById('menu-player-name').innerText = u;
-                        document.getElementById('my-player-id').innerText = playerId;
-                        document.getElementById('settings-name-input').value = u;
-                        
-                        showToast("¡Perfil creado, " + u + "!");
-                        document.getElementById('btn-menu-multi').classList.remove('hidden');
-                        document.getElementById('btn-menu-duel').classList.remove('hidden');
-                        listenToMyData();
-                        window.showScreen('screen-main-menu');
-                    } catch(e2) {
-                        console.error("Error al registrar:", e2);
-                        window.showScreen('screen-login');
-                        showToast("Error al crear perfil", true);
+                try {
+                    const cred = await createUserWithEmailAndPassword(auth, email, password);
+                    currentUser = cred.user;
+                    await updateProfile(currentUser, { displayName: u });
+                    const playerId = u.replace(/\s+/g, '') + '#' + Math.floor(1000 + Math.random() * 9000);
+                    
+                    userData = { uid: currentUser.uid, name: u, playerId: playerId, friends: [], inbox: [], isOnline: true };
+                    await setDoc(doc(db, 'users', currentUser.uid), userData);
+                    
+                    showToast("¡Cuenta creada con éxito!");
+                    listenToMyData();
+                    window.showScreen('screen-main-menu');
+                } catch (err) {
+                    window.showScreen('screen-login');
+                    if (err.code === 'auth/email-already-in-use') showToast("Ese correo ya está en uso", true);
+                    else if (err.code === 'auth/weak-password') showToast("La contraseña es muy corta", true);
+                    else if (err.code === 'auth/invalid-email') showToast("Correo no válido", true);
+                    else showToast("Error al registrarse", true);
+                }
+            } else {
+                try {
+                    const cred = await signInWithEmailAndPassword(auth, email, password);
+                    currentUser = cred.user;
+                    
+                    const docSnap = await getDoc(doc(db, 'users', currentUser.uid));
+                    if(docSnap.exists()) {
+                        userData = docSnap.data();
+                        await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: true }).catch(()=>{});
                     }
-                } else if (err.code === 'auth/wrong-password') {
+                    
+                    showToast("¡Bienvenido de nuevo!");
+                    listenToMyData();
+                    window.showScreen('screen-main-menu');
+                } catch (err) {
                     window.showScreen('screen-login');
-                    showToast("PIN incorrecto o usuario ya en uso", true);
-                } else {
-                    console.error("Error al iniciar sesión:", err);
-                    window.showScreen('screen-login');
-                    showToast("Error al entrar", true);
+                    if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') {
+                        showToast("Correo o contraseña incorrectos", true);
+                    } else if (err.code === 'auth/invalid-email') {
+                        showToast("Correo no válido", true);
+                    } else {
+                        showToast("Error al iniciar sesión", true);
+                    }
                 }
             }
         };
 
+        window.resetPassword = async () => {
+            const e = document.getElementById('auth-email').value.trim();
+            if(!e) return showToast("Escribe tu correo arriba primero", true);
+            try { await sendPasswordResetEmail(auth, e); showToast("¡Correo de recuperación enviado!"); } 
+            catch(err) { showToast("Error al enviar correo", true); }
+        };
+
         window.logout = async () => {
-            if(currentUser && !currentUser.isAnonymous) { 
+            if(currentUser) { 
                 await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
             }
             await signOut(auth); 
@@ -935,6 +972,10 @@
             friendUnsubs = {};
             friendsOnlineStatus = {};
             isLocalMode = false; currentUser = null; userData = null;
+            
+            document.getElementById('auth-email').value = '';
+            document.getElementById('auth-password').value = '';
+            
             window.showScreen('screen-login');
         };
 
@@ -956,7 +997,7 @@
         window.changeUsername = async () => {
             const newName = document.getElementById('settings-name-input').value.trim();
             if(!newName) return showToast("Escribe un nombre válido", true);
-            if(!currentUser || isLocalMode || currentUser.isAnonymous) {
+            if(!currentUser || isLocalMode) {
                 document.getElementById('menu-player-name').innerText = newName;
                 showToast("Nombre cambiado (Local)"); return window.closeSettingsModal();
             }
@@ -974,7 +1015,7 @@
 
         // --- AMIGOS Y BANDEJA ---
         function listenToMyData() {
-            if(!currentUser || currentUser.isAnonymous) return;
+            if(!currentUser) return;
             if(unsubMyData) unsubMyData();
             unsubMyData = onSnapshot(doc(db, 'users', currentUser.uid), (docS) => {
                 if(docS.exists()) { 
@@ -1555,20 +1596,17 @@
 
         // --- SINGLE PLAYER LOGIC ---
         function startLocalGameLoop() {
-            score = 0; lives = 3; combo = 1; currentQIndex = 0; correctAnswersCount = 0;
+            score = 0; combo = 1; currentQIndex = 0; correctAnswersCount = 0;
             updateSPHUD(); window.showScreen('screen-question'); loadSPQuestion();
         }
 
         function updateSPHUD() {
             document.getElementById('score-display').innerText = score;
             document.getElementById('combo-display').innerText = `x${combo}`;
-            const lDiv = document.getElementById('lives-display'); lDiv.innerHTML = '';
-            const totalHeartsToShow = Math.max(3, lives);
-            for(let i=0; i<totalHeartsToShow; i++) lDiv.innerHTML += i<lives ? '<i class="fas fa-heart text-red-500 drop-shadow-md"></i>' : '<i class="far fa-heart text-slate-600"></i>';
         }
 
         function loadSPQuestion() {
-            if(lives <= 0 || currentQIndex >= localRoomData.questions.length) return finishLocalGame();
+            if(currentQIndex >= localRoomData.questions.length) return finishLocalGame();
             const q = localRoomData.questions[currentQIndex];
             renderQuestionUI(q, currentQIndex, localRoomData.questions.length, (idx, btn) => handleSPAnswer(idx, btn, q.correct));
             startSPTimer();
@@ -1596,7 +1634,7 @@
                 }
                 score += (100 * combo); combo++; correctAnswersCount++; 
                 if(isSoundOn) playSoundFX('correct'); 
-                if(correctAnswersCount % 5 === 0) { lives++; showToast("❤️ ¡Buena racha! VIDA EXTRA", false); if(isSoundOn) setTimeout(() => playBeep(1000, 'square', 0.2), 200); }
+                if(correctAnswersCount % 5 === 0) { showToast("🔥 ¡Buena racha!", false); if(isSoundOn) setTimeout(() => playBeep(1000, 'square', 0.2), 200); }
             } else {
                 if(btnEl) {
                     btnEl.classList.remove('bg-slate-800/80', 'glass-panel');
@@ -1606,7 +1644,7 @@
                 btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
                 
                 if(selIdx===-1) document.getElementById('screen-question').classList.add('shake');
-                lives--; combo = 1; if(isSoundOn) playSoundFX('wrong'); 
+                combo = 1; if(isSoundOn) playSoundFX('wrong'); 
             }
             updateSPHUD();
             setTimeout(() => { document.getElementById('screen-question').classList.remove('shake'); currentQIndex++; loadSPQuestion(); }, 1500);
