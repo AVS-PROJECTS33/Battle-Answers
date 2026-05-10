@@ -633,8 +633,24 @@
             }
         });
 
-        const bgm = document.getElementById('bgm-audio');
-        bgm.volume = 0.15; 
+        // --- MANEJO DE AUDIO SEGURO ---
+        const getBGM = () => {
+            const audio = document.getElementById('bgm-audio');
+            if (audio && audio.volume !== 0.15) {
+                audio.volume = 0.15;
+            }
+            return audio;
+        };
+
+        const playBGM = () => { 
+            const a = getBGM(); 
+            if(a) a.play().catch(()=>{}); 
+        };
+
+        const pauseBGM = () => { 
+            const a = getBGM(); 
+            if(a) a.pause(); 
+        };
 
         const CATS = {
             'aleatorio': { id: 'aleatorio', name: 'Aleatorio', icon: 'fa-dice', color: 'bg-pink-500', border: 'border-pink-400' },
@@ -723,8 +739,12 @@
         });
 
         window.showScreen = (id) => {
-            ['screen-intro', 'screen-login', 'screen-main-menu', 'screen-lobby', 'screen-setup', 'screen-setup-mode', 'screen-room', 'screen-question', 'screen-question-results', 'screen-gameover', 'screen-loading'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
+            ['screen-intro', 'screen-login', 'screen-main-menu', 'screen-lobby', 'screen-setup', 'screen-setup-mode', 'screen-room', 'screen-question', 'screen-question-results', 'screen-gameover', 'screen-loading'].forEach(s => {
+                const el = document.getElementById(s);
+                if (el) el.classList.add('hidden');
+            });
+            const targetEl = document.getElementById(id);
+            if(targetEl) targetEl.classList.remove('hidden');
             
             const inGame = id === 'screen-question' || id === 'screen-question-results';
             document.getElementById('game-header').classList.toggle('hidden', !inGame);
@@ -739,10 +759,10 @@
             }
 
             if (inGame) {
-                bgm.pause();
+                pauseBGM();
             } else {
                 if (isSoundOn && introSeen) {
-                    bgm.play().catch(()=>{});
+                    playBGM();
                 }
             }
 
@@ -823,7 +843,7 @@
             introSeen = true;
             if(audioCtx.state === 'suspended') audioCtx.resume();
             if(isSoundOn) {
-                bgm.play().catch(()=>{});
+                playBGM();
             }
             window.showScreen(nextScreenAfterIntro);
         };
@@ -929,13 +949,16 @@
                 knob.classList.replace('left-1', 'right-1'); 
                 showToast("Sonido Activado"); 
                 playSoundFX('click'); 
-                const currentScreen = ['screen-question', 'screen-question-results'].some(s => !document.getElementById(s).classList.contains('hidden'));
-                if(!currentScreen && introSeen) bgm.play().catch(()=>{});
+                const currentScreen = ['screen-question', 'screen-question-results'].some(s => {
+                    const el = document.getElementById(s);
+                    return el && !el.classList.contains('hidden');
+                });
+                if(!currentScreen && introSeen) playBGM();
             } else { 
                 btn.classList.replace('bg-emerald-500', 'bg-slate-600'); 
                 knob.classList.replace('right-1', 'left-1'); 
                 showToast("Sonido Silenciado"); 
-                bgm.pause();
+                pauseBGM();
             }
         };
         window.toggleFX = () => {
