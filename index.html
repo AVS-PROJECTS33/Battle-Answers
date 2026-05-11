@@ -134,7 +134,7 @@
                 <h1 class="text-2xl font-black mb-1 text-white tracking-wider drop-shadow-lg leading-tight">ENTRAR / REGISTRARSE</h1>
                 <p class="text-[10px] text-slate-300 font-bold mb-2">Entra con Correo/Usuario y Contraseña.<br>Para registrarte, rellena los 3 campos.</p>
 
-                <input type="text" id="auth-username" maxlength="8" placeholder="Usuario (Máx 8 letras)" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
+                <input type="text" id="auth-username" maxlength="12" placeholder="Usuario (Máx 12 letras)" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
                 <input type="text" id="auth-email" placeholder="Correo (o tu usuario para entrar)" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
                 <input type="password" id="auth-password" placeholder="Contraseña" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
                 
@@ -285,7 +285,7 @@
                     <div class="glass-panel p-4 rounded-2xl flex justify-between items-center bg-slate-800/50 shrink-0 shadow-md">
                         <div>
                             <p class="text-[10px] text-slate-400 font-bold tracking-wider mb-1">TU ID PARA COMPARTIR</p>
-                            <p id="my-player-id" class="font-mono font-bold text-lg text-blue-400 select-all drop-shadow-sm">Player#0000</p>
+                            <p id="my-player-id" class="font-mono font-bold text-lg text-blue-400 select-all drop-shadow-sm">Cargando...</p>
                         </div>
                         <button onclick="window.shareText(document.getElementById('my-player-id').innerText)" class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white hover:bg-blue-500 active:scale-95 shadow-lg border border-blue-400"><i class="fas fa-share-alt"></i></button>
                     </div>
@@ -845,9 +845,10 @@
         }
 
         // --- AUTH ---
+        // Firebase se encarga automáticamente de detectar la sesión permanente.
+        // Hemos eliminado cualquier fallback de localStorage o invitado que pueda interferir con este proceso asíncrono.
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                isAttemptingAutoLogin = false;
                 currentUser = user;
                 try {
                     const docSnap = await getDoc(doc(db, 'users', user.uid));
@@ -867,31 +868,15 @@
                     nextScreenAfterIntro = 'screen-login';
                 }
             } else {
-                // Doble seguridad por LocalStorage en caso de que el navegador purgue la memoria interna de Firebase
-                if (!isAttemptingAutoLogin) {
-                    const savedEmail = localStorage.getItem('ba_email_v1');
-                    const savedPwd = localStorage.getItem('ba_pwd_v1');
-                    
-                    if (savedEmail && savedPwd) {
-                        isAttemptingAutoLogin = true;
-                        try {
-                            await signInWithEmailAndPassword(auth, savedEmail, savedPwd);
-                            return; // El proceso se reanudará en la siguiente llamada de onAuthStateChanged
-                        } catch (err) {
-                            localStorage.removeItem('ba_email_v1');
-                            localStorage.removeItem('ba_pwd_v1');
-                            isAttemptingAutoLogin = false;
-                        }
-                    }
-                }
-
                 currentUser = null; 
                 userData = null;
                 nextScreenAfterIntro = 'screen-login';
             }
 
-            authReady = true;
+            authReady = true; // Firebase ya ha terminado de pensar
 
+            // Si el usuario ya pulsó en COMENZAR y estaba viendo la pantalla de carga,
+            // ahora que Firebase ha decidido, le llevamos a la pantalla correcta.
             if(introSeen) {
                 window.showScreen(nextScreenAfterIntro);
             }
@@ -905,9 +890,38 @@
             }
 
             if (authReady) {
+                // Firebase ya sabe si hay sesión iniciada o no
                 window.showScreen(nextScreenAfterIntro);
             } else {
+                // Firebase sigue buscando la sesión (típicamente en móviles/safari tarda un poco más)
+                // Mostramos "Cargando..." y onAuthStateChanged cambiará la pantalla en cuanto termine.
                 window.showScreen('screen-loading');
+            }
+        };
+
+        window.setAuthMode = (mode) => {
+            authMode = mode;
+            const btnLogin = document.getElementById('btn-tab-login');
+            const btnReg = document.getElementById('btn-tab-register');
+            const userField = document.getElementById('auth-username');
+            const title = document.getElementById('auth-title');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const resetBtn = document.getElementById('auth-reset-btn');
+
+            if (mode === 'login') {
+                btnLogin.className = "flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white text-sm transition-all shadow-md";
+                btnReg.className = "flex-1 py-2 rounded-lg font-bold text-slate-400 text-sm hover:text-white transition-all";
+                userField.classList.add('hidden');
+                resetBtn.classList.remove('hidden');
+                title.innerText = "INICIAR SESIÓN";
+                submitBtn.innerText = "ENTRAR";
+            } else {
+                btnReg.className = "flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white text-sm transition-all shadow-md";
+                btnLogin.className = "flex-1 py-2 rounded-lg font-bold text-slate-400 text-sm hover:text-white transition-all";
+                userField.classList.remove('hidden');
+                resetBtn.classList.add('hidden');
+                title.innerText = "REGISTRARSE";
+                submitBtn.innerText = "CREAR CUENTA";
             }
         };
 
@@ -968,9 +982,6 @@
                     await updateDoc(doc(db, 'users', currentUser.uid), updates).catch(()=>{});
                 }
                 
-                localStorage.setItem('ba_email_v1', loginEmail);
-                localStorage.setItem('ba_pwd_v1', p);
-                
                 showToast("¡Bienvenido de nuevo!");
                 listenToMyData();
                 window.showScreen('screen-main-menu');
@@ -980,9 +991,9 @@
                     
                     // Solo procedemos a registrar si están los 3 campos llenos y el correo es válido
                     if (u && e && e.includes('@')) {
-                        if (u.length > 8) {
+                        if (u.length > 12) {
                             window.showScreen('screen-login');
-                            return showToast("El usuario no puede tener más de 8 letras", true);
+                            return showToast("El usuario no puede tener más de 12 letras", true);
                         }
 
                         // Comprobar si el nombre de usuario ya está cogido por otra persona
@@ -1013,9 +1024,6 @@
                                 isOnline: true 
                             };
                             await setDoc(doc(db, 'users', currentUser.uid), userData);
-                            
-                            localStorage.setItem('ba_email_v1', e);
-                            localStorage.setItem('ba_pwd_v1', p);
                             
                             showToast("¡Cuenta creada con éxito!");
                             listenToMyData();
@@ -1062,10 +1070,6 @@
             if(currentUser) { 
                 await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
             }
-            
-            // BORRAR AUTOGUARDADO DOBLE CAPA
-            localStorage.removeItem('ba_email_v1');
-            localStorage.removeItem('ba_pwd_v1');
             
             await signOut(auth); 
             if(unsubMyData) unsubMyData(); 
