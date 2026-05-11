@@ -109,18 +109,21 @@
         </div>
 
         <header id="game-header" class="hidden p-4 flex justify-between items-center glass-panel z-20 sticky top-0 rounded-b-2xl mx-2 mt-2">
-            <button onclick="window.exitGameConfirm()" class="w-10 h-10 glass-panel bg-red-500/10 border border-red-500/30 rounded-full flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white active:scale-95 transition-all shadow-md">
+            <button onclick="window.exitGameConfirm()" class="w-10 h-10 glass-panel bg-red-500/10 border border-red-500/30 rounded-full flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white active:scale-95 transition-all shadow-md shrink-0">
                 <i class="fas fa-times text-xl"></i>
             </button>
             
-            <div class="flex flex-col text-center">
-                <span class="text-[10px] text-slate-300 font-bold">PUNTOS</span>
-                <span id="score-display" class="text-xl font-black text-white drop-shadow-md">0</span>
+            <div class="flex items-center gap-3">
+                <img id="header-player-avatar" src="" class="w-10 h-10 rounded-full border-2 border-blue-500 bg-slate-900 object-cover shadow-inner transition-all duration-300 hidden md:block">
+                <div class="flex flex-col text-center">
+                    <span class="text-[10px] text-slate-300 font-bold">PUNTOS</span>
+                    <span id="score-display" class="text-xl font-black text-white drop-shadow-md">0</span>
+                </div>
             </div>
             
             <div class="flex gap-1 text-red-500 text-lg flex-wrap justify-center max-w-[80px]" id="lives-display"></div>
             
-            <div class="flex flex-col items-end" id="combo-container">
+            <div class="flex flex-col items-end shrink-0" id="combo-container">
                 <span class="text-[10px] text-slate-300 font-bold">COMBO</span>
                 <span id="combo-display" class="text-xl font-black text-yellow-400 drop-shadow-md">x1</span>
             </div>
@@ -177,7 +180,7 @@
             <div class="flex justify-between items-center mb-10 pt-16">
                 <div class="glass-panel px-4 py-2.5 rounded-2xl border-white/10 shadow-lg flex items-center gap-3">
                     <div class="relative shrink-0">
-                        <img id="menu-player-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Alpha&backgroundColor=0f172a" class="w-11 h-11 rounded-full border-2 border-blue-500 bg-slate-900 object-cover shadow-inner">
+                        <img id="menu-player-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Alpha&backgroundColor=0f172a&eyes=round" class="w-11 h-11 rounded-full border-2 border-blue-500 bg-slate-900 object-cover shadow-inner">
                         <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900 animate-pulse"></div>
                     </div>
                     <div class="min-w-0 pr-4">
@@ -216,7 +219,7 @@
 
         <!-- MODAL DE AJUSTES -->
         <div id="settings-modal" class="hidden absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 transition-opacity duration-300">
-            <div id="settings-panel" class="w-full max-w-sm glass-panel bg-slate-900/95 rounded-3xl p-6 shadow-2xl border border-slate-600 transform scale-95 transition-transform duration-300 flex flex-col gap-5">
+            <div id="settings-panel" class="w-full max-w-sm glass-panel bg-slate-900/90 rounded-3xl p-6 shadow-2xl border border-slate-600 transform scale-95 transition-transform duration-300 flex flex-col gap-5">
                 <div class="flex justify-between items-center border-b border-slate-700 pb-3">
                     <h3 class="font-black text-xl text-white"><i class="fas fa-cog mr-2 text-slate-400"></i>AJUSTES</h3>
                     <button onclick="window.closeSettingsModal()" class="text-slate-400 hover:text-white transition-colors w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center active:scale-95"><i class="fas fa-times"></i></button>
@@ -615,17 +618,26 @@
 
         // --- AVATARS DE ESTILO ROBÓTICO/NEÓN ---
         const AVATARS = [
-            "https://api.dicebear.com/7.x/bottts/svg?seed=Alpha&backgroundColor=0f172a",
-            "https://api.dicebear.com/7.x/bottts/svg?seed=Bravo&backgroundColor=0f172a",
-            "https://api.dicebear.com/7.x/bottts/svg?seed=Charlie&backgroundColor=0f172a",
-            "https://api.dicebear.com/7.x/bottts/svg?seed=Delta&backgroundColor=0f172a",
-            "https://api.dicebear.com/7.x/bottts/svg?seed=Echo&backgroundColor=0f172a",
-            "https://api.dicebear.com/7.x/bottts/svg?seed=Foxtrot&backgroundColor=0f172a",
-            "https://api.dicebear.com/7.x/bottts/svg?seed=Golf&backgroundColor=0f172a",
-            "https://api.dicebear.com/7.x/bottts/svg?seed=Hotel&backgroundColor=0f172a",
-            "https://api.dicebear.com/7.x/bottts/svg?seed=India&backgroundColor=0f172a",
-            "https://api.dicebear.com/7.x/bottts/svg?seed=Juliet&backgroundColor=0f172a"
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Alpha&backgroundColor=0f172a&eyes=round",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Bravo&backgroundColor=0f172a&eyes=sensor",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Charlie&backgroundColor=0f172a&eyes=glow",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Delta&backgroundColor=0f172a&eyes=robocop",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Echo&backgroundColor=0f172a&eyes=frame1",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Foxtrot&backgroundColor=0f172a&eyes=roundFrame01",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Golf&backgroundColor=0f172a&eyes=eva",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Hotel&backgroundColor=0f172a&eyes=frame2",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=India&backgroundColor=0f172a&eyes=roundFrame02",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Juliet&backgroundColor=0f172a&eyes=bulging"
         ];
+
+        // Función para cambiar la expresión de los ojos (dizzy = X_X, happy = felices)
+        function getAvatarExpression(url, expr) {
+            if (!url) return '';
+            if (url.includes('&eyes=')) {
+                return url.replace(/&eyes=[^&]+/, '&eyes=' + expr);
+            }
+            return url + '&eyes=' + expr;
+        }
 
         // --- GLOBAL STATE ---
         let introSeen = false;
@@ -652,6 +664,7 @@
         let activeQuestions = [];
         let pendingInviteCode = null;
         let selectedFriendsToInvite = []; 
+        let lastInboxCount = 0; // Añadimos esta variable para saber si hay mensajes nuevos
         
         let selectedLevel = 1;
         let mpGameMode = 'classic'; 
@@ -774,6 +787,19 @@
                 osc.frequency.exponentialRampToValueAtTime(50, t + 0.4);
                 gain.gain.setValueAtTime(0.3, t);
                 gain.gain.linearRampToValueAtTime(0, t + 0.4);
+                osc.start(t); osc.stop(t + 0.4);
+            } else if (type === 'notification') {
+                // Nuevo sonido dinámico de campanilla/notificación ("Ding-Dong")
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, t); // Nota Re (D5)
+                osc.frequency.setValueAtTime(783.99, t + 0.15); // Nota Sol (G5)
+                
+                gain.gain.setValueAtTime(0, t);
+                gain.gain.linearRampToValueAtTime(0.4, t + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+                gain.gain.linearRampToValueAtTime(0.4, t + 0.17);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+                
                 osc.start(t); osc.stop(t + 0.4);
             }
         }
@@ -1237,9 +1263,17 @@
             if(!userData) return;
             const lobbyBadge = document.getElementById('lobby-inbox-badge');
             const mainBadge = document.getElementById('main-inbox-badge');
-            if(userData.inbox && Array.isArray(userData.inbox) && userData.inbox.length > 0) { 
-                if(lobbyBadge) { lobbyBadge.classList.remove('hidden'); lobbyBadge.innerText = userData.inbox.length; } 
-                if(mainBadge) { mainBadge.classList.remove('hidden'); mainBadge.innerText = userData.inbox.length; } 
+            
+            // Lógica para detectar nuevos mensajes y lanzar el sonido
+            const currentInboxCount = (userData.inbox && Array.isArray(userData.inbox)) ? userData.inbox.length : 0;
+            if (currentInboxCount > lastInboxCount) {
+                playSoundFX('notification');
+            }
+            lastInboxCount = currentInboxCount;
+
+            if(currentInboxCount > 0) { 
+                if(lobbyBadge) { lobbyBadge.classList.remove('hidden'); lobbyBadge.innerText = currentInboxCount; } 
+                if(mainBadge) { mainBadge.classList.remove('hidden'); mainBadge.innerText = currentInboxCount; } 
             } 
             else { 
                 if(lobbyBadge) lobbyBadge.classList.add('hidden'); 
@@ -1424,7 +1458,7 @@
                 pendingInviteCode = roomInvite.roomCode;
                 document.getElementById('invite-popup-text').innerText = `${roomInvite.fromName} te invita a su sala`;
                 const popup = document.getElementById('invite-popup'); popup.classList.remove('hidden');
-                if(isSoundOn) playBeep(800, 'sine', 0.2);
+                // Hemos quitado el playBeep de aquí porque el sonido ahora se dispara globalmente en updateFriendsUI
             }
         }
         window.acceptInvitePopup = () => {
@@ -1773,7 +1807,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'w-full py-4 glass-panel bg-slate-800/80 hover:bg-slate-700 active:bg-slate-600 rounded-xl font-black text-white transition-all shadow-md active:scale-95 text-lg flex items-center justify-center gap-3 border border-slate-600';
                 
-                const oppAvatar = localRoomData.players[opp.uid].avatar || AVATARS[0];
+                const oppAvatar = getAvatarExpression(localRoomData.players[opp.uid].avatar || AVATARS[0], 'round');
                 btn.innerHTML = `<img src="${oppAvatar}" class="w-8 h-8 rounded-full border border-blue-500 bg-slate-900 object-cover"> <span>${localRoomData.players[opp.uid].name}</span>`;
                 btn.onclick = () => window.launchAttack(opp.uid);
                 targetContainer.appendChild(btn);
@@ -1816,6 +1850,13 @@
 
         function loadSPQuestion() {
             if(currentQIndex >= localRoomData.questions.length) return finishLocalGame();
+            
+            const headerAv = document.getElementById('header-player-avatar');
+            if (headerAv && userData) {
+                headerAv.src = userData.avatar || AVATARS[0];
+                headerAv.classList.remove('scale-125', 'shake');
+            }
+
             const q = localRoomData.questions[currentQIndex];
             renderQuestionUI(q, currentQIndex, localRoomData.questions.length, (idx, btn) => handleSPAnswer(idx, btn, q.correct));
             startSPTimer();
@@ -1835,11 +1876,17 @@
         function handleSPAnswer(selIdx, btnEl, correctIdx) {
             clearInterval(timerInterval); disableOptions();
             const btns = document.getElementById('options-container').querySelectorAll('button');
-            
+            const headerAv = document.getElementById('header-player-avatar');
+            const baseAv = userData?.avatar || AVATARS[0];
+
             if(selIdx === correctIdx) {
                 if(btnEl) {
                     btnEl.classList.remove('bg-slate-800/80', 'glass-panel');
                     btnEl.classList.add('bg-emerald-500', 'border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.8)]', 'text-white', 'scale-105');
+                }
+                if(headerAv) {
+                    headerAv.src = getAvatarExpression(baseAv, 'happy');
+                    headerAv.classList.add('scale-125');
                 }
                 score += (100 * combo); combo++; correctAnswersCount++; 
                 if(isSoundOn) playSoundFX('correct'); 
@@ -1848,6 +1895,10 @@
                 if(btnEl) {
                     btnEl.classList.remove('bg-slate-800/80', 'glass-panel');
                     btnEl.classList.add('bg-red-500', 'border-red-400', 'shake', 'text-white');
+                }
+                if(headerAv) {
+                    headerAv.src = getAvatarExpression(baseAv, 'dizzy');
+                    headerAv.classList.add('shake');
                 }
                 btns[correctIdx].classList.remove('bg-slate-800/80', 'glass-panel');
                 btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
@@ -1870,6 +1921,12 @@
             window.showScreen('screen-question');
             document.getElementById('mp-waiting-overlay').classList.add('hidden');
             
+            const headerAv = document.getElementById('header-player-avatar');
+            if (headerAv && userData) {
+                headerAv.src = userData.avatar || AVATARS[0];
+                headerAv.classList.remove('scale-125', 'shake');
+            }
+
             const q = localRoomData.questions[currentQIndex];
             renderQuestionUI(q, currentQIndex, localRoomData.questions.length, (idx) => handleMPAnswer(idx, q.correct));
             
@@ -1904,6 +1961,8 @@
         function handleMPAnswer(selIdx, correctIdx) {
             clearInterval(timerInterval); disableOptions();
             const btns = document.getElementById('options-container').querySelectorAll('button');
+            const headerAv = document.getElementById('header-player-avatar');
+            const baseAv = userData?.avatar || AVATARS[0];
             
             let timeTaken = (Date.now() - questionStartTime) / 1000;
             if (timeTaken > 20) timeTaken = 20;
@@ -1916,6 +1975,10 @@
                     btns[selIdx].classList.remove('bg-slate-800/80', 'glass-panel');
                     btns[selIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.8)]', 'text-white', 'scale-105');
                 }
+                if(headerAv) {
+                    headerAv.src = getAvatarExpression(baseAv, 'happy');
+                    headerAv.classList.add('scale-125');
+                }
                 if(isSoundOn) playSoundFX('correct'); 
             } else {
                 if(selIdx > -1) {
@@ -1924,6 +1987,11 @@
                 }
                 btns[correctIdx].classList.remove('bg-slate-800/80', 'glass-panel');
                 btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
+                
+                if(headerAv) {
+                    headerAv.src = getAvatarExpression(baseAv, 'dizzy');
+                    headerAv.classList.add('shake');
+                }
                 if(isSoundOn) playSoundFX('wrong'); 
             }
 
@@ -1981,7 +2049,7 @@
             let totalSorted = [...playersByScore].reverse(); // De mayor a menor puntuación
             totalSorted.forEach((p, i) => {
                 const isMe = p.uid === currentUser.uid;
-                const av = p.avatar || AVATARS[0];
+                const av = getAvatarExpression(p.avatar || AVATARS[0], 'round');
                 totalList.innerHTML += `
                     <div class="flex items-center justify-between p-4 mb-3 rounded-2xl glass-panel ${isMe ? 'bg-blue-600/20 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-slate-800/80 border-white/5'} shadow-md">
                         <div class="flex items-center gap-4">
@@ -2022,14 +2090,16 @@
                     attackIconHTML = pwrIcons[localRoomData.activeAttack.power] || '';
                 }
 
-                const av = r.avatar || AVATARS[0];
+                const baseAv = r.avatar || AVATARS[0];
+                const expr = r.correct ? 'happy' : 'dizzy';
+                const finalAvatar = getAvatarExpression(baseAv, expr);
 
                 list.innerHTML += `
                     <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-800/80 border border-white/5 shadow-md">
                         <div class="flex items-center gap-3">
                             <div class="relative w-8 h-8 rounded-full border border-slate-600 flex items-center justify-center text-xs font-black text-white shadow-inner shrink-0 overflow-hidden">
                                 <span class="absolute z-10 drop-shadow-md">#${i+1}</span>
-                                <img src="${av}" class="absolute inset-0 w-full h-full object-cover opacity-40">
+                                <img src="${finalAvatar}" class="absolute inset-0 w-full h-full object-cover opacity-40">
                             </div>
                             <span class="font-black text-white tracking-wide truncate max-w-[90px] md:max-w-[150px]">${r.name}${attackIconHTML}</span>
                         </div>
@@ -2336,18 +2406,21 @@
             const sorted = Object.values(playersObj).sort((a, b) => b.score - a.score);
             sorted.forEach((p, i) => {
                 const isMe = p.name === (userData ? userData.name : 'Tú') || p.name === 'Invitado';
-                const av = p.avatar || AVATARS[0];
+                const baseAv = p.avatar || AVATARS[0];
+                const expr = i === 0 ? 'happy' : 'dizzy'; // El primero feliz, el resto tristes
+                const finalAvatar = getAvatarExpression(baseAv, expr);
+
                 c.innerHTML += `
                     <div class="flex items-center justify-between p-4 mb-3 rounded-2xl glass-panel ${isMe ? 'bg-blue-600/20 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-slate-800/80 border-white/5'}">
                         <div class="flex items-center gap-4">
                             <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white text-lg shadow-inner relative overflow-hidden shrink-0">
                                 <span class="absolute z-10 text-white/80 drop-shadow-md">#${i+1}</span>
-                                <img src="${av}" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                                <img src="${finalAvatar}" class="absolute inset-0 w-full h-full object-cover opacity-30">
                             </div>
-                            <img src="${av}" class="w-10 h-10 rounded-full border border-slate-500 bg-slate-900 object-cover shadow-inner shrink-0 hidden md:block">
-                            <span class="font-black text-white text-lg md:text-xl tracking-wide truncate max-w-[120px] md:max-w-[180px]">${p.name}</span>
+                            <img src="${finalAvatar}" class="w-10 h-10 rounded-full border border-slate-500 bg-slate-900 object-cover shadow-inner shrink-0 hidden md:block">
+                            <span class="font-black text-white text-xl tracking-wide">${p.name}</span>
                         </div>
-                        <div class="text-right shrink-0">
+                        <div class="text-right">
                             <span class="text-3xl font-black text-blue-400 drop-shadow-md">${p.score}</span>
                             <span class="text-[10px] text-slate-400 block -mt-1 font-bold tracking-widest">PTS</span>
                         </div>
