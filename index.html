@@ -165,14 +165,14 @@
 
             <!-- Botones Top Right: Ajustes, Bandeja y Amigos -->
             <div class="absolute top-4 right-4 flex gap-1.5 z-30">
-                <button onclick="window.toggleSettingsModal()" class="glass-panel bg-slate-600 hover:bg-slate-500 border-slate-400 px-3 py-2.5 rounded-xl text-white font-black text-[10px] sm:text-xs tracking-wider active:scale-95 transition-all flex items-center gap-1.5 shadow-md">
+                <button onclick="window.toggleSettingsModal()" class="glass-panel bg-slate-600 hover:bg-slate-500 border-slate-400 px-3 py-2.5 rounded-full text-white font-black text-[10px] sm:text-xs tracking-wider active:scale-95 transition-all flex items-center gap-1.5 shadow-md">
                     <i class="fas fa-cog text-sm"></i> AJUSTES
                 </button>
-                <button onclick="window.openFriends('inbox')" class="glass-panel bg-emerald-600 hover:bg-emerald-500 border-emerald-400 px-3 py-2.5 rounded-xl text-white font-bold text-[10px] sm:text-xs tracking-wider active:scale-95 transition-all flex items-center gap-1.5 relative shadow-md">
+                <button onclick="window.openFriends('inbox')" class="glass-panel bg-emerald-600 hover:bg-emerald-500 border-emerald-400 px-3 py-2.5 rounded-full text-white font-bold text-[10px] sm:text-xs tracking-wider active:scale-95 transition-all flex items-center gap-1.5 relative shadow-md">
                     <i class="fas fa-inbox text-sm"></i> MENSAJES
-                    <div id="main-inbox-badge" class="hidden absolute -top-2 -right-2 w-5 h-5 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-black text-white shadow-[0_0_10px_rgba(220,38,38,0.8)] animate-pop">1</div>
+                    <div id="main-inbox-badge" class="hidden absolute -top-1 -right-1 w-5 h-5 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-black text-white shadow-[0_0_10px_rgba(220,38,38,0.8)] animate-pop">1</div>
                 </button>
-                <button onclick="window.openFriends('friends')" class="glass-panel bg-red-600 hover:bg-red-500 border-red-400 px-3 py-2.5 rounded-xl text-white font-black text-[10px] sm:text-xs tracking-wider active:scale-95 transition-all flex items-center gap-1.5 shadow-md">
+                <button onclick="window.openFriends('friends')" class="glass-panel bg-red-600 hover:bg-red-500 border-red-400 px-3 py-2.5 rounded-full text-white font-black text-[10px] sm:text-xs tracking-wider active:scale-95 transition-all flex items-center gap-1.5 shadow-md">
                     <i class="fas fa-user-friends text-sm"></i> AMIGOS
                 </button>
             </div>
@@ -257,11 +257,11 @@
                 </button>
                 
                 <div class="flex gap-2">
-                    <button onclick="window.openFriends('inbox')" class="glass-panel bg-emerald-600 hover:bg-emerald-500 border-emerald-400 px-4 py-2.5 rounded-2xl text-white font-bold text-xs tracking-wider active:scale-95 transition-all flex items-center gap-2 relative shadow-md">
+                    <button onclick="window.openFriends('inbox')" class="glass-panel bg-emerald-600 hover:bg-emerald-500 border-emerald-400 px-4 py-2.5 rounded-full text-white font-bold text-xs tracking-wider active:scale-95 transition-all flex items-center gap-2 relative shadow-md">
                         <i class="fas fa-inbox"></i> MENSAJES
-                        <div id="lobby-inbox-badge" class="hidden absolute -top-2 -right-2 w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-xs font-black text-white shadow-[0_0_10px_rgba(220,38,38,0.8)] animate-pop">1</div>
+                        <div id="lobby-inbox-badge" class="hidden absolute -top-1 -right-1 w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-xs font-black text-white shadow-[0_0_10px_rgba(220,38,38,0.8)] animate-pop">1</div>
                     </button>
-                    <button onclick="window.openFriends('friends')" class="glass-panel bg-red-600 hover:bg-red-500 border-red-400 px-4 py-2.5 rounded-2xl text-white font-black text-xs tracking-wider active:scale-95 transition-all flex items-center gap-2 shadow-md">
+                    <button onclick="window.openFriends('friends')" class="glass-panel bg-red-600 hover:bg-red-500 border-red-400 px-4 py-2.5 rounded-full text-white font-black text-xs tracking-wider active:scale-95 transition-all flex items-center gap-2 shadow-md">
                         <i class="fas fa-user-friends"></i> AMIGOS
                     </button>
                 </div>
@@ -458,9 +458,9 @@
             <div class="glass-panel rounded-3xl p-5 flex-1 flex flex-col justify-center shadow-2xl overflow-y-auto border-white/10 relative">
                 
                 <!-- Overlay MP Waiting -->
-                <div id="mp-waiting-overlay" class="hidden absolute inset-0 z-20 bg-slate-900/90 backdrop-blur-md flex flex-col items-center justify-center rounded-3xl">
+                <div id="mp-waiting-overlay" class="hidden absolute inset-0 z-20 bg-slate-900/90 backdrop-blur-md flex flex-col items-center justify-center rounded-3xl p-4">
                     <i class="fas fa-circle-notch fa-spin text-5xl text-blue-500 mb-6 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]"></i>
-                    <h3 class="text-xl font-black text-white tracking-widest animate-pulse">ESPERANDO A LOS DEMÁS...</h3>
+                    <h3 class="text-base sm:text-xl font-black text-white tracking-widest animate-pulse text-center w-full break-words">ESPERANDO A LOS DEMÁS...</h3>
                 </div>
 
                 <div class="flex items-center justify-between shrink-0 border-b border-slate-700/50 pb-2">
@@ -653,6 +653,7 @@
         let currentRoomRef = null;
         let unsubscribeRoom = null;
         let localRoomData = null;
+        let hostForceNextTimeout = null;
         let showingResults = false;
         let isAttemptingAutoLogin = false;
         let syncTimeout = null; // <- ESTA ES LA CLAVE DE LA SOLUCIÓN
@@ -907,6 +908,8 @@
         }
 
         // --- AUTH ---
+        // Firebase se encarga automáticamente de detectar la sesión permanente.
+        // Hemos eliminado cualquier fallback de localStorage o invitado que pueda interferir con este proceso asíncrono.
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
@@ -915,6 +918,7 @@
                     if(docSnap.exists()) {
                         userData = docSnap.data();
                         
+                        // Si no tiene avatar por ser de una versión antigua, se le pone el primero
                         if (!userData.avatar) {
                             userData.avatar = AVATARS[0];
                             updateDoc(doc(db, 'users', user.uid), { avatar: AVATARS[0] }).catch(()=>{});
@@ -940,8 +944,10 @@
                 nextScreenAfterIntro = 'screen-login';
             }
 
-            authReady = true; 
+            authReady = true; // Firebase ya ha terminado de pensar
 
+            // Si el usuario ya pulsó en COMENZAR y estaba viendo la pantalla de carga,
+            // ahora que Firebase ha decidido, le llevamos a la pantalla correcta.
             if(introSeen) {
                 window.showScreen(nextScreenAfterIntro);
             }
@@ -955,8 +961,11 @@
             }
 
             if (authReady) {
+                // Firebase ya sabe si hay sesión iniciada o no
                 window.showScreen(nextScreenAfterIntro);
             } else {
+                // Firebase sigue buscando la sesión (típicamente en móviles/safari tarda un poco más)
+                // Mostramos "Cargando..." y onAuthStateChanged cambiará la pantalla en cuanto termine.
                 window.showScreen('screen-loading');
             }
         };
@@ -999,6 +1008,7 @@
 
             let loginEmail = e;
 
+            // 1. Si escribió Usuario pero no Correo, lo buscamos en Firestore
             if (!e && u) {
                 try {
                     const q = query(collection(db, "users"), where("name", "==", u));
@@ -1013,6 +1023,7 @@
                     console.error("Error buscando usuario:", err);
                 }
             } 
+            // 1.1 Si escribió el usuario en el cajón de Correo
             else if (e && !e.includes('@')) {
                 try {
                     const q = query(collection(db, "users"), where("name", "==", e));
@@ -1028,6 +1039,7 @@
                 }
             }
 
+            // 2. Intentamos INICIAR SESIÓN primero
             try {
                 const cred = await signInWithEmailAndPassword(auth, loginEmail, p);
                 currentUser = cred.user;
@@ -1036,7 +1048,9 @@
                 if(docSnap.exists()) {
                     userData = docSnap.data();
                     let updates = { isOnline: true };
+                    // Guardar retroactivamente el correo si no lo tenía en versiones viejas
                     if (!userData.email && loginEmail.includes('@')) updates.email = loginEmail;
+                    // Guardar retroactivamente un avatar inicial si no lo tenía
                     if (!userData.avatar) {
                         userData.avatar = AVATARS[0];
                         updates.avatar = AVATARS[0];
@@ -1051,14 +1065,17 @@
                 listenToMyData();
                 window.showScreen('screen-main-menu');
             } catch (err) {
+                // 3. Si falla el inicio de sesión, analizamos si quería REGISTRARSE
                 if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-email' || err.code === 'auth/missing-email') {
                     
+                    // Solo procedemos a registrar si están los 3 campos llenos y el correo es válido
                     if (u && e && e.includes('@')) {
                         if (u.length > 12) {
                             window.showScreen('screen-login');
                             return showToast("El usuario no puede tener más de 12 letras", true);
                         }
 
+                        // Comprobar si el nombre de usuario ya está cogido por otra persona
                         try {
                             const qCheck = query(collection(db, "users"), where("name", "==", u));
                             const snapCheck = await getDocs(qCheck);
@@ -1102,6 +1119,7 @@
                             else showToast("Error al registrarse", true);
                         }
                     } else {
+                        // Si no rellenó los 3, asumimos que se equivocó de contraseña/correo al intentar entrar
                         window.showScreen('screen-login');
                         showToast("Credenciales incorrectas o rellena los 3 datos para registrarte", true);
                     }
@@ -1524,7 +1542,20 @@
                     if (h3) h3.innerText = "SINCRONIZANDO JUGADORES...";
                     
                     if (!localRoomData.loadedPlayers || !localRoomData.loadedPlayers[currentUser.uid]) {
-                        updateDoc(currentRoomRef, { [`loadedPlayers.${currentUser.uid}`]: true }).catch(()=>{});
+                        const markReady = () => {
+                            updateDoc(currentRoomRef, { [`loadedPlayers.${currentUser.uid}`]: true }).catch(()=>{});
+                        };
+                        
+                        // Precarga de imagen antes de dar el OK
+                        const nextQ = localRoomData.questions[localRoomData.currentQ];
+                        if (nextQ && nextQ.img && nextQ.img.trim() !== '') {
+                            const preImg = new Image();
+                            preImg.onload = markReady;
+                            preImg.onerror = markReady; 
+                            preImg.src = nextQ.img.trim();
+                        } else {
+                            markReady();
+                        }
                     }
 
                     if (localRoomData.hostId === currentUser.uid) {
@@ -1537,7 +1568,7 @@
                             window.syncTimeout = setTimeout(() => {
                                 window.syncTimeout = null;
                                 if (currentRoomRef) updateDoc(currentRoomRef, { status: 'playing' }).catch(()=>{});
-                            }, 5000); 
+                            }, 10000); // 10s de espera máxima para pre-cargar las imágenes
                         }
                     }
                 }
