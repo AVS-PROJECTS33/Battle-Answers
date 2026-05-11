@@ -62,6 +62,10 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        
+        /* Ocultar barra de scroll en el selector de avatares */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -156,29 +160,31 @@
                 <i class="fas fa-sign-out-alt"></i>
             </button>
 
-            <!-- Botones Top Right: Amigos y Bandeja -->
-            <div class="absolute top-4 right-4 flex gap-2 z-30">
-                <button onclick="window.openFriends('inbox')" class="glass-panel bg-emerald-600 hover:bg-emerald-500 border-emerald-400 px-3 py-2 rounded-xl text-white font-bold text-[10px] tracking-wider active:scale-95 transition-all flex items-center gap-1.5 relative shadow-md">
-                    <i class="fas fa-inbox"></i> MENSAJES
-                    <div id="main-inbox-badge" class="hidden absolute -top-2 -right-2 w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-xs font-black text-white shadow-[0_0_10px_rgba(220,38,38,0.8)] animate-pop">1</div>
+            <!-- Botones Top Right: Ajustes, Bandeja y Amigos -->
+            <div class="absolute top-4 right-4 flex gap-1.5 z-30">
+                <button onclick="window.toggleSettingsModal()" class="glass-panel bg-slate-600 hover:bg-slate-500 border-slate-400 px-2.5 py-2 rounded-xl text-white font-black text-[9px] sm:text-[10px] tracking-wider active:scale-95 transition-all flex items-center gap-1.5 shadow-md">
+                    <i class="fas fa-cog"></i> AJUSTES
                 </button>
-                <button onclick="window.openFriends('friends')" class="glass-panel bg-red-600 hover:bg-red-500 border-red-400 px-3 py-2 rounded-xl text-white font-black text-[10px] tracking-wider active:scale-95 transition-all flex items-center gap-1.5 shadow-md">
+                <button onclick="window.openFriends('inbox')" class="glass-panel bg-emerald-600 hover:bg-emerald-500 border-emerald-400 px-2.5 py-2 rounded-xl text-white font-bold text-[9px] sm:text-[10px] tracking-wider active:scale-95 transition-all flex items-center gap-1.5 relative shadow-md">
+                    <i class="fas fa-inbox"></i> MENSAJES
+                    <div id="main-inbox-badge" class="hidden absolute -top-2 -right-2 w-5 h-5 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-black text-white shadow-[0_0_10px_rgba(220,38,38,0.8)] animate-pop">1</div>
+                </button>
+                <button onclick="window.openFriends('friends')" class="glass-panel bg-red-600 hover:bg-red-500 border-red-400 px-2.5 py-2 rounded-xl text-white font-black text-[9px] sm:text-[10px] tracking-wider active:scale-95 transition-all flex items-center gap-1.5 shadow-md">
                     <i class="fas fa-user-friends"></i> AMIGOS
                 </button>
             </div>
 
-            <div class="flex justify-between items-center mb-10 pt-14">
-                <div class="glass-panel px-5 py-2.5 rounded-2xl border-white/10 shadow-lg flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <div>
+            <div class="flex justify-between items-center mb-10 pt-16">
+                <div class="glass-panel px-4 py-2.5 rounded-2xl border-white/10 shadow-lg flex items-center gap-3">
+                    <div class="relative shrink-0">
+                        <img id="menu-player-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Alpha&backgroundColor=0f172a" class="w-11 h-11 rounded-full border-2 border-blue-500 bg-slate-900 object-cover shadow-inner">
+                        <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900 animate-pulse"></div>
+                    </div>
+                    <div class="min-w-0 pr-4">
                         <p class="text-[9px] text-emerald-400 font-black tracking-widest mb-0.5">BIENVENIDO</p>
                         <h2 id="menu-player-name" class="text-lg font-black text-white drop-shadow-md truncate max-w-[140px]">Jugador</h2>
                     </div>
                 </div>
-                
-                <button onclick="window.toggleSettingsModal()" class="relative w-12 h-12 glass-panel rounded-full flex items-center justify-center text-slate-300 hover:text-white transition-colors active:scale-95 border-white/10 shadow-lg">
-                    <i class="fas fa-cog text-xl"></i>
-                </button>
             </div>
 
             <div class="flex-1 flex flex-col justify-center gap-4 pb-16">
@@ -210,10 +216,18 @@
 
         <!-- MODAL DE AJUSTES -->
         <div id="settings-modal" class="hidden absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 transition-opacity duration-300">
-            <div id="settings-panel" class="w-full max-w-sm glass-panel bg-slate-900/90 rounded-3xl p-6 shadow-2xl border border-slate-600 transform scale-95 transition-transform duration-300 flex flex-col gap-5">
+            <div id="settings-panel" class="w-full max-w-sm glass-panel bg-slate-900/95 rounded-3xl p-6 shadow-2xl border border-slate-600 transform scale-95 transition-transform duration-300 flex flex-col gap-5">
                 <div class="flex justify-between items-center border-b border-slate-700 pb-3">
                     <h3 class="font-black text-xl text-white"><i class="fas fa-cog mr-2 text-slate-400"></i>AJUSTES</h3>
                     <button onclick="window.closeSettingsModal()" class="text-slate-400 hover:text-white transition-colors w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center active:scale-95"><i class="fas fa-times"></i></button>
+                </div>
+
+                <!-- SECCIÓN AVATARES -->
+                <div>
+                    <label class="text-[10px] text-slate-400 font-black tracking-widest mb-3 block">SELECCIONA TU AVATAR</label>
+                    <div class="flex gap-3 overflow-x-auto pb-2 pt-1 px-1 snap-x no-scrollbar" id="settings-avatar-list">
+                        <!-- JS rellena esto -->
+                    </div>
                 </div>
 
                 <div>
@@ -599,6 +613,20 @@
 
         const db = getFirestore(app);
 
+        // --- AVATARS DE ESTILO ROBÓTICO/NEÓN ---
+        const AVATARS = [
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Alpha&backgroundColor=0f172a",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Bravo&backgroundColor=0f172a",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Charlie&backgroundColor=0f172a",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Delta&backgroundColor=0f172a",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Echo&backgroundColor=0f172a",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Foxtrot&backgroundColor=0f172a",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Golf&backgroundColor=0f172a",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Hotel&backgroundColor=0f172a",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=India&backgroundColor=0f172a",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=Juliet&backgroundColor=0f172a"
+        ];
+
         // --- GLOBAL STATE ---
         let introSeen = false;
         let authReady = false; 
@@ -859,10 +887,18 @@
                     const docSnap = await getDoc(doc(db, 'users', user.uid));
                     if(docSnap.exists()) {
                         userData = docSnap.data();
+                        
+                        // Si no tiene avatar por ser de una versión antigua, se le pone el primero
+                        if (!userData.avatar) {
+                            userData.avatar = AVATARS[0];
+                            updateDoc(doc(db, 'users', user.uid), { avatar: AVATARS[0] }).catch(()=>{});
+                        }
+
                         updateDoc(doc(db, 'users', user.uid), { isOnline: true }).catch(()=>{});
                         
                         document.getElementById('menu-player-name').innerText = userData?.name || currentUser.displayName || 'Jugador';
                         document.getElementById('my-player-id').innerText = userData?.playerId || '---';
+                        document.getElementById('menu-player-avatar').src = userData.avatar;
                         
                         listenToMyData();
                         nextScreenAfterIntro = 'screen-main-menu';
@@ -984,9 +1020,17 @@
                     let updates = { isOnline: true };
                     // Guardar retroactivamente el correo si no lo tenía en versiones viejas
                     if (!userData.email && loginEmail.includes('@')) updates.email = loginEmail;
+                    // Guardar retroactivamente un avatar inicial si no lo tenía
+                    if (!userData.avatar) {
+                        userData.avatar = AVATARS[0];
+                        updates.avatar = AVATARS[0];
+                    }
+
                     await updateDoc(doc(db, 'users', currentUser.uid), updates).catch(()=>{});
                 }
                 
+                document.getElementById('menu-player-avatar').src = userData?.avatar || AVATARS[0];
+
                 showToast("¡Bienvenido de nuevo!");
                 listenToMyData();
                 window.showScreen('screen-main-menu');
@@ -1018,18 +1062,22 @@
                             currentUser = cred.user;
                             await updateProfile(currentUser, { displayName: u });
                             const playerId = u.replace(/\s+/g, '') + '#' + Math.floor(1000 + Math.random() * 9000);
-                            
+                            const randomAvatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
+
                             userData = { 
                                 uid: currentUser.uid, 
                                 name: u, 
                                 email: e, 
                                 playerId: playerId, 
+                                avatar: randomAvatar,
                                 friends: [], 
                                 inbox: [], 
                                 isOnline: true 
                             };
                             await setDoc(doc(db, 'users', currentUser.uid), userData);
                             
+                            document.getElementById('menu-player-avatar').src = userData.avatar;
+
                             showToast("¡Cuenta creada con éxito!");
                             listenToMyData();
                             window.showScreen('screen-main-menu');
@@ -1037,6 +1085,7 @@
                             window.showScreen('screen-login');
                             if (createErr.code === 'auth/email-already-in-use') showToast("Ese correo ya está en uso", true);
                             else if (createErr.code === 'auth/weak-password') showToast("La contraseña es muy corta", true);
+                            else if (createErr.code === 'auth/invalid-email') showToast("Correo no válido", true);
                             else showToast("Error al registrarse", true);
                         }
                     } else {
@@ -1117,16 +1166,47 @@
             window.showScreen('screen-lobby');
         };
 
-        // --- SETTINGS ---
+        // --- SETTINGS Y AVATARES ---
+        window.renderAvatarList = () => {
+            const list = document.getElementById('settings-avatar-list');
+            if(!list) return;
+            list.innerHTML = '';
+            const myAvatar = (userData && userData.avatar) ? userData.avatar : AVATARS[0];
+            
+            AVATARS.forEach((av) => {
+                const isSelected = av === myAvatar;
+                list.innerHTML += `
+                    <img src="${av}" onclick="window.changeAvatar('${av}')" 
+                         class="w-12 h-12 rounded-full cursor-pointer shrink-0 border-2 transition-all ${isSelected ? 'border-emerald-500 scale-110 shadow-[0_0_10px_rgba(16,185,129,0.8)]' : 'border-transparent opacity-60 hover:opacity-100'} bg-slate-800 object-cover">
+                `;
+            });
+        };
+
+        window.changeAvatar = async (avatarUrl) => {
+            if(!currentUser) return;
+            try {
+                await updateDoc(doc(db, 'users', currentUser.uid), { avatar: avatarUrl });
+                userData.avatar = avatarUrl;
+                document.getElementById('menu-player-avatar').src = avatarUrl;
+                window.renderAvatarList();
+                showToast("¡Avatar actualizado!");
+            } catch(e) {
+                showToast("Error al guardar avatar", true);
+            }
+        };
+
         window.toggleSettingsModal = () => {
             const m = document.getElementById('settings-modal'); const p = document.getElementById('settings-panel');
-            if(m.classList.contains('hidden')){ m.classList.remove('hidden'); setTimeout(() => { m.classList.remove('opacity-0'); p.classList.remove('scale-95'); }, 10); }
+            if(m.classList.contains('hidden')){ 
+                window.renderAvatarList(); // Cargar la lista de avatares al abrir
+                m.classList.remove('hidden'); 
+                setTimeout(() => { m.classList.remove('opacity-0'); p.classList.remove('scale-95'); }, 10); 
+            }
         };
         window.closeSettingsModal = () => {
             const m = document.getElementById('settings-modal'); const p = document.getElementById('settings-panel');
             m.classList.add('opacity-0'); p.classList.add('scale-95'); setTimeout(() => { m.classList.add('hidden'); }, 300);
         };
-        // Ocultamos Change Username ya que ahora el nombre va atado al Login Unificado.
         
         window.updateTransparency = (val) => {
             document.documentElement.style.setProperty('--glass-opacity', val / 100);
@@ -1375,7 +1455,7 @@
                 type: activeLobbyType, 
                 status: 'waiting', 
                 hostId: currentUser.uid, 
-                players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false } }, 
+                players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false, avatar: userData.avatar || AVATARS[0] } }, 
                 questions: [], 
                 currentQ: 0, 
                 answers: {}, 
@@ -1398,7 +1478,7 @@
                 const maxPlayers = roomType === 'duel' ? 2 : 6;
                 
                 if(Object.keys(snap.data().players).length >= maxPlayers) return showToast(`Sala llena (${maxPlayers}/${maxPlayers})`, true);
-                await updateDoc(currentRoomRef, { [`players.${currentUser.uid}`]: { name: userData.name, score: 0, isDone: false } });
+                await updateDoc(currentRoomRef, { [`players.${currentUser.uid}`]: { name: userData.name, score: 0, isDone: false, avatar: userData.avatar || AVATARS[0] } });
                 document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.add('hidden'); window.showScreen('screen-room');
             } catch(e) { showToast("Fallo al entrar", true); }
         };
@@ -1469,7 +1549,7 @@
             pArr.forEach(p => {
                 pList.innerHTML += `
                     <div class="flex items-center gap-4 p-4 glass-panel rounded-2xl border border-white/10 shadow-md bg-slate-800/40">
-                        <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center font-black text-xl text-white shadow-inner">${p.name.charAt(0).toUpperCase()}</div>
+                        <img src="${p.avatar || AVATARS[0]}" class="w-12 h-12 rounded-full bg-slate-900 border-2 border-blue-500 object-cover shadow-inner shrink-0">
                         <span class="font-black text-lg text-white tracking-wide">${p.name}</span>
                         ${data.hostId === p.uid ? '<i class="fas fa-crown text-2xl text-yellow-400 ml-auto drop-shadow-md"></i>' : ''}
                     </div>`;
@@ -1692,7 +1772,9 @@
             currentOpponents.forEach(opp => {
                 const btn = document.createElement('button');
                 btn.className = 'w-full py-4 glass-panel bg-slate-800/80 hover:bg-slate-700 active:bg-slate-600 rounded-xl font-black text-white transition-all shadow-md active:scale-95 text-lg flex items-center justify-center gap-3 border border-slate-600';
-                btn.innerHTML = `<div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-sm shadow-inner">${localRoomData.players[opp.uid].name.charAt(0).toUpperCase()}</div> <span>${localRoomData.players[opp.uid].name}</span>`;
+                
+                const oppAvatar = localRoomData.players[opp.uid].avatar || AVATARS[0];
+                btn.innerHTML = `<img src="${oppAvatar}" class="w-8 h-8 rounded-full border border-blue-500 bg-slate-900 object-cover"> <span>${localRoomData.players[opp.uid].name}</span>`;
                 btn.onclick = () => window.launchAttack(opp.uid);
                 targetContainer.appendChild(btn);
             });
@@ -1779,7 +1861,7 @@
 
         async function finishLocalGame() {
             window.showScreen('screen-gameover');
-            updateLeaderboardUI({ me: { name: userData ? userData.name : 'Tú', score: score, isDone: true } });
+            updateLeaderboardUI({ me: { name: userData ? userData.name : 'Tú', avatar: userData ? userData.avatar : AVATARS[0], score: score, isDone: true } });
         }
 
         // --- MULTIPLAYER SÍNCRONO LOGIC ---
@@ -1885,8 +1967,8 @@
 
             Object.keys(players).forEach(uid => {
                 const p = players[uid]; const ans = answers[uid];
-                if(ans) results.push({ uid: uid, name: p.name, score: p.score, ...ans });
-                else results.push({ uid: uid, name: p.name, score: p.score, time: 20, correct: false, points: 0 });
+                if(ans) results.push({ uid: uid, name: p.name, avatar: p.avatar, score: p.score, ...ans });
+                else results.push({ uid: uid, name: p.name, avatar: p.avatar, score: p.score, time: 20, correct: false, points: 0 });
             });
 
             // Para saber quién va último
@@ -1899,14 +1981,19 @@
             let totalSorted = [...playersByScore].reverse(); // De mayor a menor puntuación
             totalSorted.forEach((p, i) => {
                 const isMe = p.uid === currentUser.uid;
+                const av = p.avatar || AVATARS[0];
                 totalList.innerHTML += `
                     <div class="flex items-center justify-between p-4 mb-3 rounded-2xl glass-panel ${isMe ? 'bg-blue-600/20 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-slate-800/80 border-white/5'} shadow-md">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white text-lg shadow-inner">#${i+1}</div>
-                            <span class="font-black text-white text-xl tracking-wide">${p.name}</span>
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white text-sm md:text-lg shadow-inner shrink-0 overflow-hidden relative">
+                                <span class="absolute z-10 text-white/80 drop-shadow-md">#${i+1}</span>
+                                <img src="${av}" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                            </div>
+                            <img src="${av}" class="w-10 h-10 rounded-full border-2 border-slate-500 bg-slate-900 object-cover shadow-inner shrink-0 hidden md:block">
+                            <span class="font-black text-white text-lg md:text-xl tracking-wide truncate max-w-[120px] md:max-w-[200px]">${p.name}</span>
                         </div>
-                        <div class="text-right">
-                            <span class="text-3xl font-black text-blue-400 drop-shadow-md">${p.score}</span>
+                        <div class="text-right shrink-0">
+                            <span class="text-2xl md:text-3xl font-black text-blue-400 drop-shadow-md">${p.score}</span>
                             <span class="text-[10px] text-slate-400 block -mt-1 font-bold tracking-widest">PTS</span>
                         </div>
                     </div>`;
@@ -1935,16 +2022,21 @@
                     attackIconHTML = pwrIcons[localRoomData.activeAttack.power] || '';
                 }
 
+                const av = r.avatar || AVATARS[0];
+
                 list.innerHTML += `
                     <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-800/80 border border-white/5 shadow-md">
                         <div class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center text-xs font-black text-white shadow-inner">#${i+1}</div>
-                            <span class="font-black text-white tracking-wide">${r.name}${attackIconHTML}</span>
+                            <div class="relative w-8 h-8 rounded-full border border-slate-600 flex items-center justify-center text-xs font-black text-white shadow-inner shrink-0 overflow-hidden">
+                                <span class="absolute z-10 drop-shadow-md">#${i+1}</span>
+                                <img src="${av}" class="absolute inset-0 w-full h-full object-cover opacity-40">
+                            </div>
+                            <span class="font-black text-white tracking-wide truncate max-w-[90px] md:max-w-[150px]">${r.name}${attackIconHTML}</span>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-xs font-bold text-slate-400 w-10 text-right">${r.time.toFixed(1)}s</span>
+                        <div class="flex items-center gap-2 md:gap-4">
+                            <span class="text-[10px] md:text-xs font-bold text-slate-400 w-8 md:w-10 text-right">${r.time.toFixed(1)}s</span>
                             ${icon}
-                            <span class="font-black ${ptsColor} w-16 text-right text-lg">+${r.points}</span>
+                            <span class="font-black ${ptsColor} w-12 md:w-16 text-right text-base md:text-lg">+${r.points}</span>
                         </div>
                     </div>`;
             });
@@ -2244,13 +2336,18 @@
             const sorted = Object.values(playersObj).sort((a, b) => b.score - a.score);
             sorted.forEach((p, i) => {
                 const isMe = p.name === (userData ? userData.name : 'Tú') || p.name === 'Invitado';
+                const av = p.avatar || AVATARS[0];
                 c.innerHTML += `
                     <div class="flex items-center justify-between p-4 mb-3 rounded-2xl glass-panel ${isMe ? 'bg-blue-600/20 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-slate-800/80 border-white/5'}">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white text-lg shadow-inner">#${i+1}</div>
-                            <span class="font-black text-white text-xl tracking-wide">${p.name}</span>
+                            <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white text-lg shadow-inner relative overflow-hidden shrink-0">
+                                <span class="absolute z-10 text-white/80 drop-shadow-md">#${i+1}</span>
+                                <img src="${av}" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                            </div>
+                            <img src="${av}" class="w-10 h-10 rounded-full border border-slate-500 bg-slate-900 object-cover shadow-inner shrink-0 hidden md:block">
+                            <span class="font-black text-white text-lg md:text-xl tracking-wide truncate max-w-[120px] md:max-w-[180px]">${p.name}</span>
                         </div>
-                        <div class="text-right">
+                        <div class="text-right shrink-0">
                             <span class="text-3xl font-black text-blue-400 drop-shadow-md">${p.score}</span>
                             <span class="text-[10px] text-slate-400 block -mt-1 font-bold tracking-widest">PTS</span>
                         </div>
