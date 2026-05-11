@@ -128,25 +128,20 @@
             <h2 class="text-xl font-bold text-white drop-shadow-md">Cargando...</h2>
         </div>
 
-        <!-- 1. LOGIN CON PESTAÑAS (CORREO Y CONTRASEÑA) -->
+        <!-- 1. LOGIN UNIFICADO (TODO EN UNA) -->
         <div id="screen-login" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center z-20 absolute inset-0">
             <div class="w-full max-w-sm glass-panel rounded-3xl p-6 flex flex-col gap-4">
-                <h1 id="auth-title" class="text-3xl font-black mb-2 text-white tracking-wider drop-shadow-lg">INICIAR SESIÓN</h1>
-                
-                <!-- Pestañas de Modo -->
-                <div class="flex bg-slate-800/50 p-1 rounded-xl mb-2 shadow-inner">
-                    <button id="btn-tab-login" onclick="window.setAuthMode('login')" class="flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white text-sm transition-all shadow-md">ENTRAR</button>
-                    <button id="btn-tab-register" onclick="window.setAuthMode('register')" class="flex-1 py-2 rounded-lg font-bold text-slate-400 text-sm hover:text-white transition-all">REGISTRO</button>
-                </div>
+                <h1 class="text-2xl font-black mb-1 text-white tracking-wider drop-shadow-lg leading-tight">ENTRAR / REGISTRARSE</h1>
+                <p class="text-[10px] text-slate-300 font-bold mb-2">Entra con Correo/Usuario y Contraseña.<br>Para registrarte, rellena los 3 campos.</p>
 
-                <input type="text" id="auth-username" placeholder="Nombre de jugador" class="hidden w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
-                <input type="email" id="auth-email" placeholder="Correo electrónico" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
+                <input type="text" id="auth-username" maxlength="8" placeholder="Usuario (Máx 8 letras)" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
+                <input type="text" id="auth-email" placeholder="Correo (o tu usuario para entrar)" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
                 <input type="password" id="auth-password" placeholder="Contraseña" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-center shadow-inner text-base transition-all">
                 
-                <button id="auth-reset-btn" onclick="window.resetPassword()" class="text-xs text-blue-400 hover:text-blue-300 transition-colors w-full text-right -mt-2 font-bold drop-shadow-md">¿Has olvidado la contraseña?</button>
+                <button onclick="window.resetPassword()" class="text-xs text-blue-400 hover:text-blue-300 transition-colors w-full text-right -mt-2 font-bold drop-shadow-md">¿Has olvidado la contraseña?</button>
 
-                <button id="auth-submit-btn" onclick="window.submitAuth()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-white transition-all shadow-lg shadow-blue-500/30 active:scale-95 text-xl mt-2 border border-blue-400">
-                    ENTRAR
+                <button onclick="window.submitAuth()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-white transition-all shadow-lg shadow-blue-500/30 active:scale-95 text-xl mt-2 border border-blue-400">
+                    CONTINUAR
                 </button>
             </div>
         </div>
@@ -578,7 +573,7 @@
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -591,6 +586,12 @@
         };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        
+        // Forzamos persistencia pero esperamos activamente a Firebase
+        setPersistence(auth, browserLocalPersistence).catch((err) => {
+            console.error("Error setting persistence:", err);
+        });
+
         const db = getFirestore(app);
 
         // --- GLOBAL STATE ---
@@ -605,7 +606,7 @@
         let localRoomData = null;
         let hostForceNextTimeout = null;
         let showingResults = false;
-        let authMode = 'login'; // 'login' o 'register'
+        let isAttemptingAutoLogin = false;
         
         let score = 0, combo = 1, currentQIndex = 0, timeRemaining = 20; 
         let timerInterval;
@@ -614,7 +615,7 @@
         let questionStartTime = 0;
         let selectedCategories = [];
         let isMultiplayerSetup = false;
-        let activeLobbyType = 'multi'; // 'multi' o 'duel'
+        let activeLobbyType = 'multi'; 
         let activeQuestions = [];
         let pendingInviteCode = null;
         let selectedFriendsToInvite = []; 
@@ -844,10 +845,9 @@
         }
 
         // --- AUTH ---
-        // Firebase se encarga automáticamente de detectar la sesión permanente.
-        // Hemos eliminado cualquier fallback de localStorage o invitado que pueda interferir con este proceso asíncrono.
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                isAttemptingAutoLogin = false;
                 currentUser = user;
                 try {
                     const docSnap = await getDoc(doc(db, 'users', user.uid));
@@ -857,7 +857,6 @@
                         
                         document.getElementById('menu-player-name').innerText = userData?.name || currentUser.displayName || 'Jugador';
                         document.getElementById('my-player-id').innerText = userData?.playerId || '---';
-                        document.getElementById('settings-name-input').value = userData?.name || currentUser.displayName || '';
                         
                         listenToMyData();
                         nextScreenAfterIntro = 'screen-main-menu';
@@ -868,15 +867,31 @@
                     nextScreenAfterIntro = 'screen-login';
                 }
             } else {
+                // Doble seguridad por LocalStorage en caso de que el navegador purgue la memoria interna de Firebase
+                if (!isAttemptingAutoLogin) {
+                    const savedEmail = localStorage.getItem('ba_email_v1');
+                    const savedPwd = localStorage.getItem('ba_pwd_v1');
+                    
+                    if (savedEmail && savedPwd) {
+                        isAttemptingAutoLogin = true;
+                        try {
+                            await signInWithEmailAndPassword(auth, savedEmail, savedPwd);
+                            return; // El proceso se reanudará en la siguiente llamada de onAuthStateChanged
+                        } catch (err) {
+                            localStorage.removeItem('ba_email_v1');
+                            localStorage.removeItem('ba_pwd_v1');
+                            isAttemptingAutoLogin = false;
+                        }
+                    }
+                }
+
                 currentUser = null; 
                 userData = null;
                 nextScreenAfterIntro = 'screen-login';
             }
 
-            authReady = true; // Firebase ya ha terminado de pensar
+            authReady = true;
 
-            // Si el usuario ya pulsó en COMENZAR y estaba viendo la pantalla de carga,
-            // ahora que Firebase ha decidido, le llevamos a la pantalla correcta.
             if(introSeen) {
                 window.showScreen(nextScreenAfterIntro);
             }
@@ -890,105 +905,155 @@
             }
 
             if (authReady) {
-                // Firebase ya sabe si hay sesión iniciada o no
                 window.showScreen(nextScreenAfterIntro);
             } else {
-                // Firebase sigue buscando la sesión (típicamente en móviles/safari tarda un poco más)
-                // Mostramos "Cargando..." y onAuthStateChanged cambiará la pantalla en cuanto termine.
                 window.showScreen('screen-loading');
             }
         };
 
-        window.setAuthMode = (mode) => {
-            authMode = mode;
-            const btnLogin = document.getElementById('btn-tab-login');
-            const btnReg = document.getElementById('btn-tab-register');
-            const userField = document.getElementById('auth-username');
-            const title = document.getElementById('auth-title');
-            const submitBtn = document.getElementById('auth-submit-btn');
-            const resetBtn = document.getElementById('auth-reset-btn');
-
-            if (mode === 'login') {
-                btnLogin.className = "flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white text-sm transition-all shadow-md";
-                btnReg.className = "flex-1 py-2 rounded-lg font-bold text-slate-400 text-sm hover:text-white transition-all";
-                userField.classList.add('hidden');
-                resetBtn.classList.remove('hidden');
-                title.innerText = "INICIAR SESIÓN";
-                submitBtn.innerText = "ENTRAR";
-            } else {
-                btnReg.className = "flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white text-sm transition-all shadow-md";
-                btnLogin.className = "flex-1 py-2 rounded-lg font-bold text-slate-400 text-sm hover:text-white transition-all";
-                userField.classList.remove('hidden');
-                resetBtn.classList.add('hidden');
-                title.innerText = "REGISTRARSE";
-                submitBtn.innerText = "CREAR CUENTA";
-            }
-        };
-
         window.submitAuth = async () => {
-            const email = document.getElementById('auth-email').value.trim();
-            const password = document.getElementById('auth-password').value.trim();
+            const u = document.getElementById('auth-username').value.trim();
+            const e = document.getElementById('auth-email').value.trim();
+            const p = document.getElementById('auth-password').value.trim();
             
-            if(!email || !password) return showToast("Falta correo o contraseña", true);
+            if(!p) return showToast("Falta la contraseña", true);
+            if(!u && !e) return showToast("Escribe tu correo o usuario", true);
 
             window.showScreen('screen-loading');
 
-            if (authMode === 'register') {
-                const u = document.getElementById('auth-username').value.trim();
-                if(!u || u.length < 3) {
-                    window.showScreen('screen-login');
-                    return showToast("El nombre debe tener al menos 3 letras", true);
+            let loginEmail = e;
+
+            // 1. Si escribió Usuario pero no Correo, lo buscamos en Firestore
+            if (!e && u) {
+                try {
+                    const q = query(collection(db, "users"), where("name", "==", u));
+                    const snap = await getDocs(q);
+                    if (!snap.empty && snap.docs[0].data().email) {
+                        loginEmail = snap.docs[0].data().email;
+                    } else {
+                        window.showScreen('screen-login');
+                        return showToast("Usuario no encontrado o sin correo. Entra con correo o regístrate.", true);
+                    }
+                } catch (err) {
+                    console.error("Error buscando usuario:", err);
+                }
+            } 
+            // 1.1 Si escribió el usuario en el cajón de Correo
+            else if (e && !e.includes('@')) {
+                try {
+                    const q = query(collection(db, "users"), where("name", "==", e));
+                    const snap = await getDocs(q);
+                    if (!snap.empty && snap.docs[0].data().email) {
+                        loginEmail = snap.docs[0].data().email;
+                    } else {
+                        window.showScreen('screen-login');
+                        return showToast("Usuario no encontrado.", true);
+                    }
+                } catch (err) {
+                    console.error("Error buscando usuario:", err);
+                }
+            }
+
+            // 2. Intentamos INICIAR SESIÓN primero
+            try {
+                const cred = await signInWithEmailAndPassword(auth, loginEmail, p);
+                currentUser = cred.user;
+                
+                const docSnap = await getDoc(doc(db, 'users', currentUser.uid));
+                if(docSnap.exists()) {
+                    userData = docSnap.data();
+                    let updates = { isOnline: true };
+                    // Guardar retroactivamente el correo si no lo tenía en versiones viejas
+                    if (!userData.email && loginEmail.includes('@')) updates.email = loginEmail;
+                    await updateDoc(doc(db, 'users', currentUser.uid), updates).catch(()=>{});
                 }
                 
-                try {
-                    const cred = await createUserWithEmailAndPassword(auth, email, password);
-                    currentUser = cred.user;
-                    await updateProfile(currentUser, { displayName: u });
-                    const playerId = u.replace(/\s+/g, '') + '#' + Math.floor(1000 + Math.random() * 9000);
+                localStorage.setItem('ba_email_v1', loginEmail);
+                localStorage.setItem('ba_pwd_v1', p);
+                
+                showToast("¡Bienvenido de nuevo!");
+                listenToMyData();
+                window.showScreen('screen-main-menu');
+            } catch (err) {
+                // 3. Si falla el inicio de sesión, analizamos si quería REGISTRARSE
+                if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-email' || err.code === 'auth/missing-email') {
                     
-                    userData = { uid: currentUser.uid, name: u, playerId: playerId, friends: [], inbox: [], isOnline: true };
-                    await setDoc(doc(db, 'users', currentUser.uid), userData);
-                    
-                    showToast("¡Cuenta creada con éxito!");
-                    listenToMyData();
-                    window.showScreen('screen-main-menu');
-                } catch (err) {
-                    window.showScreen('screen-login');
-                    if (err.code === 'auth/email-already-in-use') showToast("Ese correo ya está en uso", true);
-                    else if (err.code === 'auth/weak-password') showToast("La contraseña es muy corta", true);
-                    else if (err.code === 'auth/invalid-email') showToast("Correo no válido", true);
-                    else showToast("Error al registrarse", true);
-                }
-            } else {
-                try {
-                    const cred = await signInWithEmailAndPassword(auth, email, password);
-                    currentUser = cred.user;
-                    
-                    const docSnap = await getDoc(doc(db, 'users', currentUser.uid));
-                    if(docSnap.exists()) {
-                        userData = docSnap.data();
-                        await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: true }).catch(()=>{});
-                    }
-                    
-                    showToast("¡Bienvenido de nuevo!");
-                    listenToMyData();
-                    window.showScreen('screen-main-menu');
-                } catch (err) {
-                    window.showScreen('screen-login');
-                    if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') {
-                        showToast("Correo o contraseña incorrectos", true);
-                    } else if (err.code === 'auth/invalid-email') {
-                        showToast("Correo no válido", true);
+                    // Solo procedemos a registrar si están los 3 campos llenos y el correo es válido
+                    if (u && e && e.includes('@')) {
+                        if (u.length > 8) {
+                            window.showScreen('screen-login');
+                            return showToast("El usuario no puede tener más de 8 letras", true);
+                        }
+
+                        // Comprobar si el nombre de usuario ya está cogido por otra persona
+                        try {
+                            const qCheck = query(collection(db, "users"), where("name", "==", u));
+                            const snapCheck = await getDocs(qCheck);
+                            if (!snapCheck.empty) {
+                                window.showScreen('screen-login');
+                                return showToast("Ese nombre de usuario ya está cogido", true);
+                            }
+                        } catch (qErr) {
+                            console.error(qErr);
+                        }
+                        
+                        try {
+                            const cred = await createUserWithEmailAndPassword(auth, e, p);
+                            currentUser = cred.user;
+                            await updateProfile(currentUser, { displayName: u });
+                            const playerId = u.replace(/\s+/g, '') + '#' + Math.floor(1000 + Math.random() * 9000);
+                            
+                            userData = { 
+                                uid: currentUser.uid, 
+                                name: u, 
+                                email: e, 
+                                playerId: playerId, 
+                                friends: [], 
+                                inbox: [], 
+                                isOnline: true 
+                            };
+                            await setDoc(doc(db, 'users', currentUser.uid), userData);
+                            
+                            localStorage.setItem('ba_email_v1', e);
+                            localStorage.setItem('ba_pwd_v1', p);
+                            
+                            showToast("¡Cuenta creada con éxito!");
+                            listenToMyData();
+                            window.showScreen('screen-main-menu');
+                        } catch (createErr) {
+                            window.showScreen('screen-login');
+                            if (createErr.code === 'auth/email-already-in-use') showToast("Ese correo ya está en uso", true);
+                            else if (createErr.code === 'auth/weak-password') showToast("La contraseña es muy corta", true);
+                            else showToast("Error al registrarse", true);
+                        }
                     } else {
-                        showToast("Error al iniciar sesión", true);
+                        // Si no rellenó los 3, asumimos que se equivocó de contraseña/correo al intentar entrar
+                        window.showScreen('screen-login');
+                        showToast("Credenciales incorrectas o rellena los 3 datos para registrarte", true);
                     }
+                } else {
+                    window.showScreen('screen-login');
+                    showToast("Error al entrar. Inténtalo de nuevo.", true);
                 }
             }
         };
 
         window.resetPassword = async () => {
-            const e = document.getElementById('auth-email').value.trim();
-            if(!e) return showToast("Escribe tu correo arriba primero", true);
+            let e = document.getElementById('auth-email').value.trim();
+            if(!e) return showToast("Escribe tu correo o usuario arriba primero", true);
+
+            if(!e.includes('@')) {
+                try {
+                    const q = query(collection(db, "users"), where("name", "==", e));
+                    const snap = await getDocs(q);
+                    if (!snap.empty && snap.docs[0].data().email) {
+                        e = snap.docs[0].data().email;
+                    } else {
+                        return showToast("Escribe tu correo electrónico válido", true);
+                    }
+                } catch(err) {}
+            }
+
             try { await sendPasswordResetEmail(auth, e); showToast("¡Correo de recuperación enviado!"); } 
             catch(err) { showToast("Error al enviar correo", true); }
         };
@@ -997,6 +1062,10 @@
             if(currentUser) { 
                 await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
             }
+            
+            // BORRAR AUTOGUARDADO DOBLE CAPA
+            localStorage.removeItem('ba_email_v1');
+            localStorage.removeItem('ba_pwd_v1');
             
             await signOut(auth); 
             if(unsubMyData) unsubMyData(); 
@@ -1028,20 +1097,8 @@
             const m = document.getElementById('settings-modal'); const p = document.getElementById('settings-panel');
             m.classList.add('opacity-0'); p.classList.add('scale-95'); setTimeout(() => { m.classList.add('hidden'); }, 300);
         };
-        window.changeUsername = async () => {
-            const newName = document.getElementById('settings-name-input').value.trim();
-            if(!newName) return showToast("Escribe un nombre válido", true);
-            if(!currentUser || isLocalMode) {
-                document.getElementById('menu-player-name').innerText = newName;
-                showToast("Nombre cambiado (Local)"); return window.closeSettingsModal();
-            }
-            try {
-                await updateProfile(currentUser, { displayName: newName });
-                await updateDoc(doc(db, 'users', currentUser.uid), { name: newName });
-                document.getElementById('menu-player-name').innerText = newName;
-                showToast("¡Nombre actualizado!"); window.closeSettingsModal();
-            } catch(e) { showToast("Error al guardar", true); }
-        };
+        // Ocultamos Change Username ya que ahora el nombre va atado al Login Unificado.
+        
         window.updateTransparency = (val) => {
             document.documentElement.style.setProperty('--glass-opacity', val / 100);
             document.getElementById('transparency-val').innerText = val + '%';
