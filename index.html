@@ -578,7 +578,7 @@
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -843,62 +843,74 @@
             });
         }
 
-        // --- AUTH ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                isAttemptingAutoLogin = false;
-                currentUser = user;
-                try {
-                    const docSnap = await getDoc(doc(db, 'users', user.uid));
-                    if(docSnap.exists()) {
-                        userData = docSnap.data();
-                        updateDoc(doc(db, 'users', user.uid), { isOnline: true }).catch(()=>{});
-                        
-                        document.getElementById('menu-player-name').innerText = userData?.name || currentUser.displayName || 'Jugador';
-                        document.getElementById('my-player-id').innerText = userData?.playerId || '---';
-                        document.getElementById('settings-name-input').value = userData?.name || currentUser.displayName || '';
-                        
-                        listenToMyData();
-                        nextScreenAfterIntro = 'screen-main-menu';
-                        
-                        if(introSeen && (!document.getElementById('screen-login').classList.contains('hidden') || !document.getElementById('screen-loading').classList.contains('hidden'))) {
-                            window.showScreen('screen-main-menu');
+        // --- AUTH BLINDADA ---
+        async function initializeAppAuth() {
+            try {
+                // AWAIT persistence antes de escuchar los cambios de estado (Evita el Race Condition)
+                await setPersistence(auth, browserLocalPersistence);
+            } catch (err) {
+                console.error("No se pudo configurar la persistencia:", err);
+            }
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    isAttemptingAutoLogin = false;
+                    currentUser = user;
+                    try {
+                        const docSnap = await getDoc(doc(db, 'users', user.uid));
+                        if(docSnap.exists()) {
+                            userData = docSnap.data();
+                            updateDoc(doc(db, 'users', user.uid), { isOnline: true }).catch(()=>{});
+                            
+                            document.getElementById('menu-player-name').innerText = userData?.name || currentUser.displayName || 'Jugador';
+                            document.getElementById('my-player-id').innerText = userData?.playerId || '---';
+                            document.getElementById('settings-name-input').value = userData?.name || currentUser.displayName || '';
+                            
+                            listenToMyData();
+                            nextScreenAfterIntro = 'screen-main-menu';
+                            
+                            if(introSeen) {
+                                window.showScreen('screen-main-menu');
+                            }
+                        } else {
+                            nextScreenAfterIntro = 'screen-login';
+                            if(introSeen) window.showScreen('screen-login');
                         }
-                    } else {
+                    } catch(e){
                         nextScreenAfterIntro = 'screen-login';
                         if(introSeen) window.showScreen('screen-login');
                     }
-                } catch(e){
-                    nextScreenAfterIntro = 'screen-login';
-                    if(introSeen) window.showScreen('screen-login');
-                }
-            } else {
-                // FALLBACK DE SEGURIDAD: Auto-login con LocalStorage
-                if (!isAttemptingAutoLogin) {
-                    const savedEmail = localStorage.getItem('ba_email_v1');
-                    const savedPwd = localStorage.getItem('ba_pwd_v1');
-                    
-                    if (savedEmail && savedPwd) {
-                        isAttemptingAutoLogin = true;
-                        try {
-                            await signInWithEmailAndPassword(auth, savedEmail, savedPwd);
-                            return; // Se detiene aquí. Firebase volverá a llamar a onAuthStateChanged con el usuario.
-                        } catch (err) {
-                            localStorage.removeItem('ba_email_v1');
-                            localStorage.removeItem('ba_pwd_v1');
-                            isAttemptingAutoLogin = false;
+                } else {
+                    // Doble seguridad por LocalStorage en caso de que Safari/Chrome borren la IDB
+                    if (!isAttemptingAutoLogin) {
+                        const savedEmail = localStorage.getItem('ba_email_v1');
+                        const savedPwd = localStorage.getItem('ba_pwd_v1');
+                        
+                        if (savedEmail && savedPwd) {
+                            isAttemptingAutoLogin = true;
+                            try {
+                                await signInWithEmailAndPassword(auth, savedEmail, savedPwd);
+                                return; // Firebase volverá a disparar onAuthStateChanged
+                            } catch (err) {
+                                localStorage.removeItem('ba_email_v1');
+                                localStorage.removeItem('ba_pwd_v1');
+                                isAttemptingAutoLogin = false;
+                            }
                         }
                     }
-                }
 
-                currentUser = null; userData = null;
-                nextScreenAfterIntro = 'screen-login';
-                
-                if(introSeen && (!document.getElementById('screen-main-menu').classList.contains('hidden') || !document.getElementById('screen-loading').classList.contains('hidden'))) {
-                    window.showScreen('screen-login');
+                    currentUser = null; userData = null;
+                    nextScreenAfterIntro = 'screen-login';
+                    
+                    if(introSeen) {
+                        window.showScreen('screen-login');
+                    }
                 }
-            }
-        });
+            });
+        }
+
+        // Arrancamos el motor de Auth
+        initializeAppAuth();
 
         window.startFromIntro = () => {
             introSeen = true;
@@ -959,7 +971,7 @@
                     userData = { uid: currentUser.uid, name: u, playerId: playerId, friends: [], inbox: [], isOnline: true };
                     await setDoc(doc(db, 'users', currentUser.uid), userData);
                     
-                    // AUTOGUARDADO BLINDADO
+                    // AUTOGUARDADO DOBLE CAPA
                     localStorage.setItem('ba_email_v1', email);
                     localStorage.setItem('ba_pwd_v1', password);
                     
@@ -984,7 +996,7 @@
                         await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: true }).catch(()=>{});
                     }
                     
-                    // AUTOGUARDADO BLINDADO
+                    // AUTOGUARDADO DOBLE CAPA
                     localStorage.setItem('ba_email_v1', email);
                     localStorage.setItem('ba_pwd_v1', password);
                     
