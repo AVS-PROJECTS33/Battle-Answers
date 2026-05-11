@@ -578,7 +578,7 @@
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs, query, where, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -595,6 +595,7 @@
 
         // --- GLOBAL STATE ---
         let introSeen = false;
+        let authReady = false; 
         let nextScreenAfterIntro = 'screen-loading';
         let currentUser = null;
         let userData = null;
@@ -605,7 +606,6 @@
         let hostForceNextTimeout = null;
         let showingResults = false;
         let authMode = 'login'; // 'login' o 'register'
-        let isAttemptingAutoLogin = false;
         
         let score = 0, combo = 1, currentQIndex = 0, timeRemaining = 20; 
         let timerInterval;
@@ -843,74 +843,44 @@
             });
         }
 
-        // --- AUTH BLINDADA ---
-        async function initializeAppAuth() {
-            try {
-                // AWAIT persistence antes de escuchar los cambios de estado (Evita el Race Condition)
-                await setPersistence(auth, browserLocalPersistence);
-            } catch (err) {
-                console.error("No se pudo configurar la persistencia:", err);
+        // --- AUTH ---
+        // Firebase se encarga automáticamente de detectar la sesión permanente.
+        // Hemos eliminado cualquier fallback de localStorage o invitado que pueda interferir con este proceso asíncrono.
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                try {
+                    const docSnap = await getDoc(doc(db, 'users', user.uid));
+                    if(docSnap.exists()) {
+                        userData = docSnap.data();
+                        updateDoc(doc(db, 'users', user.uid), { isOnline: true }).catch(()=>{});
+                        
+                        document.getElementById('menu-player-name').innerText = userData?.name || currentUser.displayName || 'Jugador';
+                        document.getElementById('my-player-id').innerText = userData?.playerId || '---';
+                        document.getElementById('settings-name-input').value = userData?.name || currentUser.displayName || '';
+                        
+                        listenToMyData();
+                        nextScreenAfterIntro = 'screen-main-menu';
+                    } else {
+                        nextScreenAfterIntro = 'screen-login';
+                    }
+                } catch(e){
+                    nextScreenAfterIntro = 'screen-login';
+                }
+            } else {
+                currentUser = null; 
+                userData = null;
+                nextScreenAfterIntro = 'screen-login';
             }
 
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    isAttemptingAutoLogin = false;
-                    currentUser = user;
-                    try {
-                        const docSnap = await getDoc(doc(db, 'users', user.uid));
-                        if(docSnap.exists()) {
-                            userData = docSnap.data();
-                            updateDoc(doc(db, 'users', user.uid), { isOnline: true }).catch(()=>{});
-                            
-                            document.getElementById('menu-player-name').innerText = userData?.name || currentUser.displayName || 'Jugador';
-                            document.getElementById('my-player-id').innerText = userData?.playerId || '---';
-                            document.getElementById('settings-name-input').value = userData?.name || currentUser.displayName || '';
-                            
-                            listenToMyData();
-                            nextScreenAfterIntro = 'screen-main-menu';
-                            
-                            if(introSeen) {
-                                window.showScreen('screen-main-menu');
-                            }
-                        } else {
-                            nextScreenAfterIntro = 'screen-login';
-                            if(introSeen) window.showScreen('screen-login');
-                        }
-                    } catch(e){
-                        nextScreenAfterIntro = 'screen-login';
-                        if(introSeen) window.showScreen('screen-login');
-                    }
-                } else {
-                    // Doble seguridad por LocalStorage en caso de que Safari/Chrome borren la IDB
-                    if (!isAttemptingAutoLogin) {
-                        const savedEmail = localStorage.getItem('ba_email_v1');
-                        const savedPwd = localStorage.getItem('ba_pwd_v1');
-                        
-                        if (savedEmail && savedPwd) {
-                            isAttemptingAutoLogin = true;
-                            try {
-                                await signInWithEmailAndPassword(auth, savedEmail, savedPwd);
-                                return; // Firebase volverá a disparar onAuthStateChanged
-                            } catch (err) {
-                                localStorage.removeItem('ba_email_v1');
-                                localStorage.removeItem('ba_pwd_v1');
-                                isAttemptingAutoLogin = false;
-                            }
-                        }
-                    }
+            authReady = true; // Firebase ya ha terminado de pensar
 
-                    currentUser = null; userData = null;
-                    nextScreenAfterIntro = 'screen-login';
-                    
-                    if(introSeen) {
-                        window.showScreen('screen-login');
-                    }
-                }
-            });
-        }
-
-        // Arrancamos el motor de Auth
-        initializeAppAuth();
+            // Si el usuario ya pulsó en COMENZAR y estaba viendo la pantalla de carga,
+            // ahora que Firebase ha decidido, le llevamos a la pantalla correcta.
+            if(introSeen) {
+                window.showScreen(nextScreenAfterIntro);
+            }
+        });
 
         window.startFromIntro = () => {
             introSeen = true;
@@ -918,7 +888,15 @@
             if(isSoundOn) {
                 playBGM();
             }
-            window.showScreen(nextScreenAfterIntro);
+
+            if (authReady) {
+                // Firebase ya sabe si hay sesión iniciada o no
+                window.showScreen(nextScreenAfterIntro);
+            } else {
+                // Firebase sigue buscando la sesión (típicamente en móviles/safari tarda un poco más)
+                // Mostramos "Cargando..." y onAuthStateChanged cambiará la pantalla en cuanto termine.
+                window.showScreen('screen-loading');
+            }
         };
 
         window.setAuthMode = (mode) => {
@@ -971,10 +949,6 @@
                     userData = { uid: currentUser.uid, name: u, playerId: playerId, friends: [], inbox: [], isOnline: true };
                     await setDoc(doc(db, 'users', currentUser.uid), userData);
                     
-                    // AUTOGUARDADO DOBLE CAPA
-                    localStorage.setItem('ba_email_v1', email);
-                    localStorage.setItem('ba_pwd_v1', password);
-                    
                     showToast("¡Cuenta creada con éxito!");
                     listenToMyData();
                     window.showScreen('screen-main-menu');
@@ -995,10 +969,6 @@
                         userData = docSnap.data();
                         await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: true }).catch(()=>{});
                     }
-                    
-                    // AUTOGUARDADO DOBLE CAPA
-                    localStorage.setItem('ba_email_v1', email);
-                    localStorage.setItem('ba_pwd_v1', password);
                     
                     showToast("¡Bienvenido de nuevo!");
                     listenToMyData();
@@ -1028,16 +998,14 @@
                 await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
             }
             
-            // BORRAR AUTOGUARDADO
-            localStorage.removeItem('ba_email_v1');
-            localStorage.removeItem('ba_pwd_v1');
-            
             await signOut(auth); 
             if(unsubMyData) unsubMyData(); 
             Object.values(friendUnsubs).forEach(unsub => unsub());
             friendUnsubs = {};
             friendsOnlineStatus = {};
-            isLocalMode = false; currentUser = null; userData = null;
+            isLocalMode = false; 
+            currentUser = null; 
+            userData = null;
             
             document.getElementById('auth-email').value = '';
             document.getElementById('auth-password').value = '';
