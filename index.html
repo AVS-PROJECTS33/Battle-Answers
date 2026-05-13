@@ -1066,6 +1066,8 @@
         window.enterLobby = (type) => {
             activeLobbyType = type;
             isMultiplayerSetup = true;
+            isLocalMode = false; // ESTA LÍNEA EVITA QUE TE ECHEN DE LA SALA A MAIN MENU
+            
             const badgeText = document.getElementById('lobby-type-badge'); const badgeCard = document.getElementById('lobby-type-card');
             const btnCreate = document.getElementById('btn-create-room'); const iconCreate = document.getElementById('icon-create-room');
 
@@ -1480,7 +1482,7 @@
         // --- SALAS MULTIJUGADOR ---
         window.createRoom = async () => {
             if (!currentUser || !userData) return showToast("Cargando perfil... inténtalo de nuevo", true);
-            currentQIndex = -1; window.hasSavedScoreThisGame = false;
+            currentQIndex = -1; window.hasSavedScoreThisGame = false; isLocalMode = false;
             const code = Math.random().toString(36).substring(2, 6).toUpperCase(); currentRoomRef = doc(db, 'rooms', code);
             const initialData = { type: activeLobbyType, status: 'waiting', hostId: currentUser.uid, players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false, avatar: userData.avatar || AVATARS[0] } }, questions: [], currentQ: 0, answers: {}, activeAttack: null, createdAt: Date.now() };
             try { await setDoc(currentRoomRef, initialData); document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.remove('hidden'); window.showScreen('screen-room'); } catch(e) { showToast("Error al crear sala", true); }
@@ -1488,7 +1490,7 @@
         
         window.joinRoomBtn = async () => {
             if (!currentUser || !userData) return showToast("Cargando perfil... inténtalo de nuevo", true);
-            currentQIndex = -1; window.hasSavedScoreThisGame = false;
+            currentQIndex = -1; window.hasSavedScoreThisGame = false; isLocalMode = false;
             const code = document.getElementById('room-code-input').value.trim().toUpperCase();
             if(code.length !== 4) return showToast("Código de 4 caracteres", true);
             currentRoomRef = doc(db, 'rooms', code);
@@ -1597,7 +1599,7 @@
             document.getElementById('room-host-controls').classList.toggle('hidden', !isHost); document.getElementById('room-guest-controls').classList.toggle('hidden', isHost);
         }
 
-        window.leaveRoom = () => { if(unsubscribeRoom) unsubscribeRoom(); currentRoomRef = null; localRoomData = null; window.showScreen(isLocalMode ? 'screen-main-menu' : 'screen-lobby'); };
+        window.leaveRoom = () => { if(unsubscribeRoom) unsubscribeRoom(); currentRoomRef = null; localRoomData = null; window.showScreen(isLocalMode ? 'screen-worlds' : 'screen-lobby'); };
 
         // --- LÓGICA DE ATAQUES ---
         let currentOpponents = []; 
@@ -1830,7 +1832,10 @@
                 timeRemaining = 20 - ((Date.now() - questionStartTime) / 1000); if(timeRemaining < 0) timeRemaining = 0;
                 bar.style.width = `${(timeRemaining/20)*100}%`;
                 if(timeRemaining <= 5) bar.classList.replace('bg-yellow-400', 'bg-red-500');
-                if(timeRemaining <= 0) { clearInterval(timerInterval); handleMPAnswer(-1, localRoomData.questions[currentQIndex].correct); }
+                if(timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleMPAnswer(-1, localRoomData.questions[currentQIndex].correct);
+                }
             }, 100);
         }
 
@@ -2048,16 +2053,16 @@
         window.exitGameConfirm = () => { 
             if(confirm("¿Salir de la partida?")) { 
                 clearInterval(timerInterval); 
-                if(isLocalMode || !currentRoomRef) window.showScreen('screen-main-menu'); 
+                if(isLocalMode || !currentRoomRef) window.showScreen('screen-worlds'); 
                 else window.leaveRoom(); 
             } 
         };
         
         window.exitGameComplete = () => { 
-            if(isLocalMode || !currentRoomRef) { window.showScreen('screen-main-menu'); 
+            if(!currentRoomRef) { window.showScreen(isLocalMode ? 'screen-worlds' : 'screen-main-menu'); 
             } else {
                 if (localRoomData && localRoomData.hostId === currentUser.uid) {
-                    let updates = { status: 'waiting', currentQ: 0, answers: {}, questions: [], activeAttack: null };
+                    let updates = { status: 'waiting', currentQ: 0, answers: {}, questions: [], activeAttack: null, loadedPlayers: {} };
                     for (let pid in localRoomData.players) { updates[`players.${pid}.score`] = 0; }
                     updateDoc(currentRoomRef, updates);
                 }
