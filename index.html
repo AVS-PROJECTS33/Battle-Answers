@@ -129,6 +129,7 @@
                 </div>
             </div>
             
+            <!-- Vidas. Ahora usará el nuevo formato unificado -->
             <div class="flex items-center gap-1 text-red-500 text-lg flex-wrap justify-center shrink-0" id="lives-display"></div>
             
             <div class="flex flex-col items-end shrink-0" id="combo-container">
@@ -207,6 +208,7 @@
             </div>
 
             <div class="flex-1 flex flex-col justify-center gap-4 pb-16">
+                <!-- Botón 1 Jugador abre el mapa de mundos -->
                 <button onclick="window.openWorlds()" class="relative glass-panel bg-blue-600/20 border-blue-400/30 hover:bg-blue-600/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
                     <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.6)] group-hover:scale-110 transition-transform">
                         <i class="fas fa-user text-2xl text-white"></i>
@@ -280,7 +282,7 @@
                 </div>
 
                 <div class="flex justify-between items-center p-5 border-b border-white/10 shrink-0 relative z-10">
-                    <h3 class="font-black text-xl text-yellow-400 drop-shadow-md"><i class="fas fa-trophy mr-2 cursor-pointer active:scale-90 transition-transform" onclick="window.deleteTop1()" title="Resetear Top 1"></i>TOP 5 GLOBAL</h3>
+                    <h3 class="font-black text-xl text-yellow-400 drop-shadow-md"><i class="fas fa-trophy mr-2"></i>TOP 5 GLOBAL</h3>
                     <button onclick="window.closeRankings()" class="w-8 h-8 rounded-full bg-black/40 text-white/70 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center active:scale-95"><i class="fas fa-times text-sm"></i></button>
                 </div>
 
@@ -1239,23 +1241,6 @@
             m.classList.add('opacity-0'); p.classList.add('scale-95'); setTimeout(() => { m.classList.add('hidden'); }, 300);
         };
 
-        window.deleteTop1 = async () => {
-            if(!confirm("¿Borrar la puntuación del TOP 1?")) return;
-            try {
-                const snap = await getDocs(collection(db, "users"));
-                let users = [];
-                snap.forEach(doc => { const d = doc.data(); if(d.highScore > 0) users.push({id: doc.id, ...d}); });
-                users.sort((a, b) => b.highScore - a.highScore);
-                if(users.length > 0) {
-                    await updateDoc(doc(db, 'users', users[0].id), { highScore: 0 });
-                    showToast("Top 1 reseteado", false);
-                    window.openRankings();
-                }
-            } catch(e) {
-                showToast("Error al borrar", true);
-            }
-        };
-
         // --- SETTINGS Y AVATARES ---
         window.renderAvatarList = () => {
             const list = document.getElementById('settings-avatar-list'); if(!list) return; list.innerHTML = '';
@@ -2064,7 +2049,7 @@
 
             q.options.forEach((opt, idx) => {
                 const b = document.createElement('button'); b.style.order = idx;
-                b.className = 'relative w-full text-left py-2 px-3 md:p-3 glass-panel bg-slate-800/80 hover:bg-slate-700 rounded-xl font-semibold text-white transition-all border border-white/5 shadow-md active:scale-95 text-sm md:text-base overflow-hidden flex-shrink-0';
+                b.className = 'relative w-full text-left py-2 px-3 md:p-3 glass-panel bg-slate-800/80 rounded-xl font-semibold text-white transition-all border border-white/5 shadow-md active:scale-95 active:bg-slate-700 focus:outline-none text-sm md:text-base overflow-hidden flex-shrink-0';
                 const tSpan = document.createElement('span'); tSpan.innerText = opt; tSpan.className = 'relative z-10 pointer-events-none'; b.appendChild(tSpan);
 
                 if(isFrozen) {
