@@ -207,7 +207,6 @@
             </div>
 
             <div class="flex-1 flex flex-col justify-center gap-4 pb-16">
-                <!-- Botón 1 Jugador abre el mapa de mundos -->
                 <button onclick="window.openWorlds()" class="relative glass-panel bg-blue-600/20 border-blue-400/30 hover:bg-blue-600/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
                     <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.6)] group-hover:scale-110 transition-transform">
                         <i class="fas fa-user text-2xl text-white"></i>
@@ -281,7 +280,7 @@
                 </div>
 
                 <div class="flex justify-between items-center p-5 border-b border-white/10 shrink-0 relative z-10">
-                    <h3 class="font-black text-xl text-yellow-400 drop-shadow-md"><i class="fas fa-trophy mr-2"></i>TOP 5 GLOBAL</h3>
+                    <h3 class="font-black text-xl text-yellow-400 drop-shadow-md"><i class="fas fa-trophy mr-2 cursor-pointer active:scale-90 transition-transform" onclick="window.deleteTop1()" title="Resetear Top 1"></i>TOP 5 GLOBAL</h3>
                     <button onclick="window.closeRankings()" class="w-8 h-8 rounded-full bg-black/40 text-white/70 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center active:scale-95"><i class="fas fa-times text-sm"></i></button>
                 </div>
 
@@ -750,7 +749,9 @@
         let selectedAttackPower = null; 
         let correctAnswersCount = 0;
         let isSoundOn = true;
+        
         let askedQuestionsHistory = new Set(); 
+        window.spQuestionPool = null;
 
         let friendUnsubs = {};
         let friendsOnlineStatus = {};
@@ -1066,7 +1067,7 @@
         window.enterLobby = (type) => {
             activeLobbyType = type;
             isMultiplayerSetup = true;
-            isLocalMode = false; // ESTA LÍNEA EVITA QUE TE ECHEN DE LA SALA A MAIN MENU
+            isLocalMode = false; 
             
             const badgeText = document.getElementById('lobby-type-badge'); const badgeCard = document.getElementById('lobby-type-card');
             const btnCreate = document.getElementById('btn-create-room'); const iconCreate = document.getElementById('icon-create-room');
@@ -1160,12 +1161,24 @@
                 if(fetchedQ.length === 0) throw new Error("No se encontraron preguntas.");
                 let freshQuestions = fetchedQ.filter(q => !askedQuestionsHistory.has(q.text));
                 if(freshQuestions.length < limitNum) { askedQuestionsHistory.clear(); freshQuestions = fetchedQ; }
-                shuffleArray(freshQuestions); activeQuestions = freshQuestions.slice(0, limitNum);
-                activeQuestions.forEach(q => askedQuestionsHistory.add(q.text));
+                shuffleArray(freshQuestions); 
+                
+                activeQuestions = [];
+                for (let candidate of freshQuestions) {
+                    if (activeQuestions.length >= limitNum) break;
+                    let isValid = await new Promise(r => {
+                        if(!candidate.img) r(true);
+                        else { let img = new Image(); img.onload = () => r(true); img.onerror = () => r(false); img.src = candidate.img; }
+                    });
+                    if (isValid) { activeQuestions.push(candidate); askedQuestionsHistory.add(candidate.text); }
+                }
                 
                 if(activeQuestions.length < limitNum) {
                      let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio')); shuffleArray(fall);
-                     let extras = fall.slice(0, limitNum - activeQuestions.length); activeQuestions = [...activeQuestions, ...extras];
+                     for(let candidate of fall) {
+                         if(activeQuestions.length >= limitNum) break;
+                         activeQuestions.push(candidate);
+                     }
                 }
             } catch(e) {
                 console.error("Error cargando de Firebase:", e);
@@ -1173,8 +1186,14 @@
                 let pool = fall.length > 0 ? [...fall] : [...backupQuestions];
                 let freshQuestions = pool.filter(q => !askedQuestionsHistory.has(q.text));
                 if(freshQuestions.length < limitNum) { askedQuestionsHistory.clear(); freshQuestions = pool; }
-                shuffleArray(freshQuestions); activeQuestions = freshQuestions.slice(0, limitNum);
-                activeQuestions.forEach(q => askedQuestionsHistory.add(q.text)); showToast("Modo Offline / Respaldo", true);
+                shuffleArray(freshQuestions); 
+                
+                activeQuestions = [];
+                for (let candidate of freshQuestions) {
+                    if(activeQuestions.length >= limitNum) break;
+                    activeQuestions.push(candidate); askedQuestionsHistory.add(candidate.text);
+                }
+                showToast("Modo Offline / Respaldo", true);
             }
 
             if(isMultiplayerSetup && currentRoomRef) {
@@ -1218,6 +1237,23 @@
         window.closeRankings = () => {
             const m = document.getElementById('rankings-modal'); const p = document.getElementById('rankings-panel');
             m.classList.add('opacity-0'); p.classList.add('scale-95'); setTimeout(() => { m.classList.add('hidden'); }, 300);
+        };
+
+        window.deleteTop1 = async () => {
+            if(!confirm("¿Borrar la puntuación del TOP 1?")) return;
+            try {
+                const snap = await getDocs(collection(db, "users"));
+                let users = [];
+                snap.forEach(doc => { const d = doc.data(); if(d.highScore > 0) users.push({id: doc.id, ...d}); });
+                users.sort((a, b) => b.highScore - a.highScore);
+                if(users.length > 0) {
+                    await updateDoc(doc(db, 'users', users[0].id), { highScore: 0 });
+                    showToast("Top 1 reseteado", false);
+                    window.openRankings();
+                }
+            } catch(e) {
+                showToast("Error al borrar", true);
+            }
         };
 
         // --- SETTINGS Y AVATARES ---
@@ -1686,29 +1722,50 @@
 
         window.startSPLevel = async (levelNum) => {
             currentLevelNum = levelNum; window.showScreen('screen-loading');
-            const limitNum = levelNum * 5; let fetchedQ = [];
+            const limitNum = levelNum * 5; 
 
-            try {
-                const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle"); const snap = await getDocs(qRef);
-                snap.forEach(doc => {
-                    let rawData = doc.data(); let rawCat = rawData["Categoria"] || ""; let normalizedCat = normalizarCategoria(rawCat);
-                    if (currentWorldId === normalizedCat || currentWorldId === 'aleatorio') {
-                        let formattedQ = { cat: normalizedCat, text: rawData["Pregunta"], options: [ rawData["Opcion 1"], rawData["Opcion 2"], rawData["Opcion 3"], rawData["Opcion 4"] ] };
-                        let correctVal = rawData["Respuesta Correcta"]; if (typeof correctVal === 'string') correctVal = parseInt(correctVal, 10);
-                        formattedQ.correct = correctVal - 1; if (rawData["Imagen"]) { formattedQ.img = rawData["Imagen"]; }
-                        if (formattedQ.text && formattedQ.options[0] && formattedQ.options[3] && !isNaN(formattedQ.correct)) { fetchedQ.push(formattedQ); }
-                    }
+            if (!window.spQuestionPool || window.spQuestionPool.worldId !== currentWorldId) {
+                try {
+                    let fetchedQ = [];
+                    const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle"); 
+                    const snap = await getDocs(qRef);
+                    snap.forEach(doc => {
+                        let rawData = doc.data(); let rawCat = rawData["Categoria"] || ""; let normalizedCat = normalizarCategoria(rawCat);
+                        if (currentWorldId === normalizedCat || currentWorldId === 'aleatorio') {
+                            let formattedQ = { cat: normalizedCat, text: rawData["Pregunta"], options: [ rawData["Opcion 1"], rawData["Opcion 2"], rawData["Opcion 3"], rawData["Opcion 4"] ] };
+                            let correctVal = rawData["Respuesta Correcta"]; if (typeof correctVal === 'string') correctVal = parseInt(correctVal, 10);
+                            formattedQ.correct = correctVal - 1; if (rawData["Imagen"]) { formattedQ.img = rawData["Imagen"]; }
+                            if (formattedQ.text && formattedQ.options[0] && formattedQ.options[3] && !isNaN(formattedQ.correct)) { fetchedQ.push(formattedQ); }
+                        }
+                    });
+
+                    if(fetchedQ.length === 0) throw new Error("No hay preguntas para este mundo.");
+                    window.spQuestionPool = { worldId: currentWorldId, questions: fetchedQ, index: 0, pass: 1 };
+                } catch(e) {
+                    console.error("Error cargando DB:", e);
+                    let fall = backupQuestions.filter(q => currentWorldId === q.cat || currentWorldId === 'aleatorio');
+                    let pool = fall.length > 0 ? [...fall] : [...backupQuestions];
+                    window.spQuestionPool = { worldId: currentWorldId, questions: pool, index: 0, pass: 1 };
+                    showToast("Modo Respaldo. Conexión débil.", true);
+                }
+            }
+
+            activeQuestions = [];
+            while (activeQuestions.length < limitNum) {
+                if (window.spQuestionPool.index >= window.spQuestionPool.questions.length) {
+                    shuffleArray(window.spQuestionPool.questions);
+                    window.spQuestionPool.index = 0;
+                    window.spQuestionPool.pass++;
+                }
+                let candidate = window.spQuestionPool.questions[window.spQuestionPool.index];
+                window.spQuestionPool.index++;
+                
+                let isValid = await new Promise(r => {
+                    if(!candidate.img) r(true);
+                    else { let img = new Image(); img.onload = () => r(true); img.onerror = () => r(false); img.src = candidate.img; }
                 });
 
-                if(fetchedQ.length === 0) throw new Error("No hay preguntas para este mundo.");
-                shuffleArray(fetchedQ); activeQuestions = []; let i = 0;
-                while (activeQuestions.length < limitNum) { activeQuestions.push(fetchedQ[i % fetchedQ.length]); i++; }
-            } catch(e) {
-                console.error("Error cargando DB:", e);
-                let fall = backupQuestions.filter(q => currentWorldId === q.cat || currentWorldId === 'aleatorio');
-                let pool = fall.length > 0 ? [...fall] : [...backupQuestions]; shuffleArray(pool); activeQuestions = []; let i = 0;
-                while (activeQuestions.length < limitNum) { activeQuestions.push(pool[i % pool.length]); i++; }
-                showToast("Modo Respaldo. Conexión débil.", true);
+                if (isValid) activeQuestions.push(candidate);
             }
 
             localRoomData = { questions: activeQuestions }; 
@@ -1806,12 +1863,8 @@
                 if (!userData.spProgress[currentWorldId]) userData.spProgress[currentWorldId] = {};
                 
                 userData.spProgress[currentWorldId].maxLevel = newMax; userData.spLives = spLives;
-                let updates = { [`spProgress.${currentWorldId}.maxLevel`]: newMax, spLives: spLives };
                 
-                if (score > (userData.highScore || 0)) {
-                    updates.highScore = score; userData.highScore = score;
-                    setTimeout(() => showToast("🏆 ¡NUEVO RÉCORD GLOBAL!", false), 800);
-                }
+                let updates = { [`spProgress.${currentWorldId}.maxLevel`]: newMax, spLives: spLives };
                 await updateDoc(doc(db, 'users', currentUser.uid), updates).catch(()=>{});
             }
         }
@@ -2032,7 +2085,9 @@
                 }
 
                 b.onclick = () => {
+                    b.blur();
                     if(isBlocked) return; if(isSlime && !slimeRemoved) return;
+                    
                     if(isFrozen) {
                         iceTaps--; const allBtns = opts.querySelectorAll('button');
                         allBtns.forEach(btn => { btn.classList.add('shake'); setTimeout(() => btn.classList.remove('shake'), 200); });
@@ -2047,7 +2102,7 @@
 
         function disableOptions() { 
             const btns = document.getElementById('options-container').querySelectorAll('button'); 
-            btns.forEach(b => { b.disabled = true; b.classList.remove('active:scale-95','active:bg-slate-700', 'hover:bg-slate-700', 'hover:bg-white/30'); }); 
+            btns.forEach(b => { b.disabled = true; b.classList.remove('active:scale-95','active:bg-slate-700'); }); 
         }
 
         window.exitGameConfirm = () => { 
