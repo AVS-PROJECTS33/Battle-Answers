@@ -231,6 +231,8 @@
             </div>
         </div>
 
+        <!-- MODALES GLOBALES -->
+
         <!-- MODAL DE AJUSTES -->
         <div id="settings-modal" class="hidden absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-center items-center p-4 opacity-0 transition-opacity duration-300">
             <div id="settings-panel" class="w-full max-w-md glass-panel theme-settings border border-cyan-500/40 rounded-3xl p-6 shadow-[0_0_30px_rgba(6,182,212,0.15)] transform scale-95 transition-transform duration-300 flex flex-col gap-5 relative overflow-hidden">
@@ -346,7 +348,48 @@
             </div>
         </div>
 
-        <!-- PANTALLA 4.1: SETUP MODO (Sólo Multijugador) -->
+        <!-- 3.1 SETUP MODO (Lobby Opciones - Sólo Multijugador) -->
+        <div id="screen-lobby" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0">
+            <div class="flex justify-between items-center mb-6 mt-4 w-full">
+                <button onclick="window.showScreen('screen-main-menu')" class="glass-panel px-4 py-2 rounded-full text-slate-200 hover:text-white flex items-center gap-2 font-black text-xs tracking-wider active:scale-95 transition-all shadow-lg border-white/10 shrink-0">
+                    <i class="fas fa-arrow-left"></i> ATRÁS
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="window.openFriends('inbox')" class="glass-panel bg-emerald-600 hover:bg-emerald-500 border-emerald-400 px-4 py-2.5 rounded-full text-white font-bold text-xs tracking-wider active:scale-95 transition-all flex items-center gap-2 relative shadow-md">
+                        <i class="fas fa-inbox"></i> MENSAJES
+                        <div id="lobby-inbox-badge" class="hidden absolute -top-1 -right-1 w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-xs font-black text-white shadow-[0_0_10px_rgba(220,38,38,0.8)] animate-pop">1</div>
+                    </button>
+                    <button onclick="window.openFriends('friends')" class="glass-panel bg-red-600 hover:bg-red-500 border-red-400 px-4 py-2.5 rounded-full text-white font-black text-xs tracking-wider active:scale-95 transition-all flex items-center gap-2 shadow-md">
+                        <i class="fas fa-user-friends"></i> AMIGOS
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col justify-center gap-6 pb-20">
+                <div class="text-center mb-2">
+                    <div id="lobby-type-card" class="glass-panel px-6 py-3 rounded-2xl inline-block shadow-lg border-emerald-500/30 bg-emerald-900/40">
+                        <span id="lobby-type-badge" class="text-xl md:text-2xl font-black tracking-widest text-emerald-400 drop-shadow-md">MULTIJUGADOR</span>
+                    </div>
+                </div>
+                <button id="btn-create-room" onclick="window.createRoom()" class="glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all shadow-2xl">
+                    <div id="icon-create-room" class="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.5)]">
+                        <i class="fas fa-plus text-3xl text-white"></i>
+                    </div>
+                    <span class="font-black text-2xl text-white tracking-widest drop-shadow-md">CREAR SALA</span>
+                </button>
+                
+                <div class="glass-panel w-full p-6 rounded-[2rem] flex flex-col items-center gap-4 shadow-xl">
+                    <p class="text-sm font-black text-slate-300 tracking-wider">UNIRSE CON CÓDIGO</p>
+                    <div class="flex gap-3 w-full">
+                        <input type="text" id="room-code-input" placeholder="PIN" maxlength="4" class="w-full min-w-0 px-4 py-4 rounded-2xl bg-slate-900/60 border border-slate-600 text-white text-center font-black text-3xl tracking-widest uppercase focus:outline-none focus:border-blue-500 shadow-inner">
+                        <button onclick="window.joinRoomBtn()" class="shrink-0 px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-white transition-colors active:scale-95 text-xl shadow-lg border border-blue-400">
+                            IR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="screen-setup-mode" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-24">
             <div class="flex justify-between items-center mb-4 mt-0 shrink-0">
                 <button onclick="window.backFromModeSelection()" class="glass-panel px-4 py-1.5 rounded-full text-slate-200 hover:text-white flex items-center gap-1.5 font-black text-[10px] tracking-wider active:scale-95 transition-all shadow-lg border-white/10">
@@ -380,7 +423,6 @@
             </div>
         </div>
 
-        <!-- 4. SETUP (Niveles y Categorías) -->
         <div id="screen-setup" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 overflow-y-auto pb-24">
             <div class="flex justify-between items-center mb-4 mt-0 shrink-0">
                 <button onclick="window.backFromSetup()" class="glass-panel px-4 py-1.5 rounded-full text-slate-200 hover:text-white flex items-center gap-1.5 font-black text-[10px] tracking-wider active:scale-95 transition-all shadow-lg border-white/10">
@@ -421,49 +463,46 @@
             </div>
         </div>
 
-        <!-- 5. SALA DE ESPERA (ROOM) -->
-        <div id="screen-lobby" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-6">
+        <!-- SCREEN ROOM (SALA DE ESPERA MULTIJUGADOR) -->
+        <div id="screen-room" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-6">
+            <div class="text-center mb-3 mt-2 glass-panel p-3 rounded-3xl shadow-xl shrink-0">
+                <p class="text-[10px] text-slate-400 font-black tracking-widest mb-1">CÓDIGO DE SALA</p>
+                <h2 id="room-pin-display" class="text-2xl font-black text-blue-400 tracking-widest drop-shadow-md">----</h2>
+                <div class="flex justify-center gap-2 mt-2">
+                    <button onclick="window.shareRoomCode()" class="flex-1 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-xl text-[10px] font-bold active:scale-95 transition-all shadow-md"><i class="fas fa-share-alt mr-1"></i>Compartir PIN</button>
+                    <button id="btn-invite-inroom" onclick="window.openInviteModal()" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 border border-emerald-400 rounded-xl text-[10px] font-bold active:scale-95 transition-all hidden shadow-sm text-white"><i class="fas fa-users mr-1"></i>Invitar Amigos</button>
+                </div>
+            </div>
+
+            <!-- NUEVO: Historial de Duelos (Se muestra sólo en modo Duelo con 2 jugadores) -->
+            <div id="duel-stats-container" class="hidden glass-panel p-4 rounded-2xl mb-4 shadow-md bg-purple-900/40 border border-purple-500/30 text-center mx-4 shrink-0">
+                <p class="text-[10px] font-black tracking-widest text-purple-300 mb-2 border-b border-purple-500/30 pb-1">HISTORIAL DE DUELO</p>
+                <div class="flex justify-between items-center px-2">
+                    <span id="duel-p1-name" class="font-bold text-sm text-white truncate max-w-[80px]">P1</span>
+                    <span id="duel-score" class="font-black text-2xl text-purple-400 drop-shadow-md">0 - 0</span>
+                    <span id="duel-p2-name" class="font-bold text-sm text-white truncate max-w-[80px]">P2</span>
+                </div>
+            </div>
+
+            <div class="flex-1 glass-panel rounded-3xl p-5 overflow-y-auto mb-4 shadow-lg border-white/5">
+                <h3 class="font-black text-xs text-slate-400 mb-4 text-center tracking-widest border-b border-slate-700 pb-2">JUGADORES (<span id="player-count">1</span>/<span id="max-player-count">6</span>)</h3>
+                <div id="room-players-list" class="space-y-3"></div>
+            </div>
+
+            <div id="room-host-controls" class="hidden shrink-0 mb-4 w-full">
+                <button onclick="window.goToSetup(true)" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-xl transition-all shadow-[0_10px_30px_rgba(59,130,246,0.5)] active:scale-95 text-white border-2 border-blue-400">
+                    CONFIGURAR Y EMPEZAR
+                </button>
+            </div>
             
-            <div class="flex justify-between items-center mb-6 mt-4 w-full">
-                <button onclick="window.showScreen('screen-main-menu')" class="glass-panel px-4 py-2 rounded-full text-slate-200 hover:text-white flex items-center gap-2 font-black text-xs tracking-wider active:scale-95 transition-all shadow-lg border-white/10 shrink-0">
-                    <i class="fas fa-arrow-left"></i> ATRÁS
-                </button>
-                
-                <div class="flex gap-2">
-                    <button onclick="window.openFriends('inbox')" class="glass-panel bg-emerald-600 hover:bg-emerald-500 border-emerald-400 px-4 py-2.5 rounded-full text-white font-bold text-xs tracking-wider active:scale-95 transition-all flex items-center gap-2 relative shadow-md">
-                        <i class="fas fa-inbox"></i> MENSAJES
-                        <div id="lobby-inbox-badge" class="hidden absolute -top-1 -right-1 w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-xs font-black text-white shadow-[0_0_10px_rgba(220,38,38,0.8)] animate-pop">1</div>
-                    </button>
-                    <button onclick="window.openFriends('friends')" class="glass-panel bg-red-600 hover:bg-red-500 border-red-400 px-4 py-2.5 rounded-full text-white font-black text-xs tracking-wider active:scale-95 transition-all flex items-center gap-2 shadow-md">
-                        <i class="fas fa-user-friends"></i> AMIGOS
-                    </button>
-                </div>
+            <div id="room-guest-controls" class="text-center text-white hidden glass-panel py-3 px-4 rounded-xl mb-4 shadow-sm flex flex-row items-center justify-center gap-3 shrink-0">
+                <i class="fas fa-circle-notch fa-spin text-xl text-blue-400"></i>
+                <p class="tracking-wide text-xs font-bold text-slate-300">Esperando al host para empezar...</p>
             </div>
-
-            <div class="flex-1 flex flex-col justify-center gap-6 pb-20">
-                <div class="text-center mb-2">
-                    <div id="lobby-type-card" class="glass-panel px-6 py-3 rounded-2xl inline-block shadow-lg border-emerald-500/30 bg-emerald-900/40">
-                        <span id="lobby-type-badge" class="text-xl md:text-2xl font-black tracking-widest text-emerald-400 drop-shadow-md">MULTIJUGADOR</span>
-                    </div>
-                </div>
-
-                <button id="btn-create-room" onclick="window.createRoom()" class="glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all shadow-2xl">
-                    <div id="icon-create-room" class="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.5)]">
-                        <i class="fas fa-plus text-3xl text-white"></i>
-                    </div>
-                    <span class="font-black text-2xl text-white tracking-widest drop-shadow-md">CREAR SALA</span>
-                </button>
-                
-                <div class="glass-panel w-full p-6 rounded-[2rem] flex flex-col items-center gap-4 shadow-xl">
-                    <p class="text-sm font-black text-slate-300 tracking-wider">UNIRSE CON CÓDIGO</p>
-                    <div class="flex gap-3 w-full">
-                        <input type="text" id="room-code-input" placeholder="PIN" maxlength="4" class="w-full min-w-0 px-4 py-4 rounded-2xl bg-slate-900/60 border border-slate-600 text-white text-center font-black text-3xl tracking-widest uppercase focus:outline-none focus:border-blue-500 shadow-inner">
-                        <button onclick="window.joinRoomBtn()" class="shrink-0 px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-white transition-colors active:scale-95 text-xl shadow-lg border border-blue-400">
-                            IR
-                        </button>
-                    </div>
-                </div>
-            </div>
+            
+            <button onclick="window.leaveRoom()" class="glass-panel px-6 py-3 rounded-full text-red-400 hover:bg-red-500/20 font-bold text-xs tracking-wider active:scale-95 transition-all shadow-md self-center mt-auto mb-2 border-white/5 shrink-0">
+                ABANDONAR SALA
+            </button>
         </div>
 
         <!-- 6. PANTALLA DE PREGUNTA -->
@@ -568,7 +607,7 @@
             </button>
         </div>
 
-        <!-- Popups y Modales -->
+        <!-- MODALES DE ALERTAS Y POPUPS -->
         <div id="invite-popup" class="hidden absolute top-6 left-4 right-4 bg-emerald-600 rounded-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.8)] border-2 border-emerald-400 z-[100] toast-enter flex items-center justify-between">
             <div>
                 <p class="text-[10px] font-black text-emerald-200 tracking-widest mb-0.5"><i class="fas fa-bell mr-1"></i>¡INVITACIÓN A SALA!</p>
@@ -599,7 +638,6 @@
                     <button onclick="window.closeInviteModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fas fa-times"></i></button>
                 </div>
                 <div id="invite-room-list" class="flex-1 overflow-y-auto pr-2 space-y-2"></div>
-                <!-- Añadido botón central de envío de invitaciones múltiples -->
                 <div class="mt-4 pt-4 border-t border-slate-700/50 shrink-0">
                     <button onclick="window.sendBulkRoomInvites()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-black text-white transition-all shadow-md active:scale-95 border border-emerald-400">
                         ENVIAR INVITACIÓN
@@ -607,6 +645,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
     <!-- FIREBASE & LOGIC -->
@@ -714,7 +753,6 @@
                 if(transVal) transVal.innerText = savedOpacity + '%';
             }, 100);
         } else {
-            // Asegurar que si no hay nada guardado, se vea el 50%
             document.documentElement.style.setProperty('--glass-opacity', 0.5);
             setTimeout(() => {
                 const transInput = document.getElementById('settings-transparency');
@@ -865,9 +903,6 @@
         window.showScreen = (id) => {
             ['screen-intro', 'screen-login', 'screen-main-menu', 'screen-lobby', 'screen-setup', 'screen-setup-mode', 'screen-room', 'screen-question', 'screen-question-results', 'screen-gameover', 'screen-loading', 'settings-modal', 'friends-modal', 'rankings-modal'].forEach(s => {
                 const el = document.getElementById(s);
-                // No ocultar modales a la fuerza si solo estamos cambiando de pantalla interior, 
-                // a menos que vengamos de partida al menú o similar. 
-                // Pero como showScreen se usa para navegación principal:
                 if (el && !s.includes('modal')) el.classList.add('hidden');
             });
             
@@ -946,8 +981,6 @@
         }
 
         // --- AUTH ---
-        // Firebase se encarga automáticamente de detectar la sesión permanente.
-        // Hemos eliminado cualquier fallback de localStorage o invitado que pueda interferir con este proceso asíncrono.
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
@@ -956,7 +989,6 @@
                     if(docSnap.exists()) {
                         userData = docSnap.data();
                         
-                        // Si no tiene avatar por ser de una versión antigua, se le pone el primero
                         if (!userData.avatar) {
                             userData.avatar = AVATARS[0];
                             updateDoc(doc(db, 'users', user.uid), { avatar: AVATARS[0] }).catch(()=>{});
@@ -982,10 +1014,8 @@
                 nextScreenAfterIntro = 'screen-login';
             }
 
-            authReady = true; // Firebase ya ha terminado de pensar
+            authReady = true;
 
-            // Si el usuario ya pulsó en COMENZAR y estaba viendo la pantalla de carga,
-            // ahora que Firebase ha decidido, le llevamos a la pantalla correcta.
             if(introSeen) {
                 window.showScreen(nextScreenAfterIntro);
             }
@@ -999,11 +1029,8 @@
             }
 
             if (authReady) {
-                // Firebase ya sabe si hay sesión iniciada o no
                 window.showScreen(nextScreenAfterIntro);
             } else {
-                // Firebase sigue buscando la sesión (típicamente en móviles/safari tarda un poco más)
-                // Mostramos "Cargando..." y onAuthStateChanged cambiará la pantalla en cuanto termine.
                 window.showScreen('screen-loading');
             }
         };
@@ -1046,7 +1073,6 @@
 
             let loginEmail = e;
 
-            // 1. Si escribió Usuario pero no Correo, lo buscamos en Firestore
             if (!e && u) {
                 try {
                     const q = query(collection(db, "users"), where("name", "==", u));
@@ -1061,7 +1087,6 @@
                     console.error("Error buscando usuario:", err);
                 }
             } 
-            // 1.1 Si escribió el usuario en el cajón de Correo
             else if (e && !e.includes('@')) {
                 try {
                     const q = query(collection(db, "users"), where("name", "==", e));
@@ -1077,7 +1102,6 @@
                 }
             }
 
-            // 2. Intentamos INICIAR SESIÓN primero
             try {
                 const cred = await signInWithEmailAndPassword(auth, loginEmail, p);
                 currentUser = cred.user;
@@ -1086,9 +1110,7 @@
                 if(docSnap.exists()) {
                     userData = docSnap.data();
                     let updates = { isOnline: true };
-                    // Guardar retroactivamente el correo si no lo tenía en versiones viejas
                     if (!userData.email && loginEmail.includes('@')) updates.email = loginEmail;
-                    // Guardar retroactivamente un avatar inicial si no lo tenía
                     if (!userData.avatar) {
                         userData.avatar = AVATARS[0];
                         updates.avatar = AVATARS[0];
@@ -1103,17 +1125,14 @@
                 listenToMyData();
                 window.showScreen('screen-main-menu');
             } catch (err) {
-                // 3. Si falla el inicio de sesión, analizamos si quería REGISTRARSE
                 if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-email' || err.code === 'auth/missing-email') {
                     
-                    // Solo procedemos a registrar si están los 3 campos llenos y el correo es válido
                     if (u && e && e.includes('@')) {
                         if (u.length > 12) {
                             window.showScreen('screen-login');
                             return showToast("El usuario no puede tener más de 12 letras", true);
                         }
 
-                        // Comprobar si el nombre de usuario ya está cogido por otra persona
                         try {
                             const qCheck = query(collection(db, "users"), where("name", "==", u));
                             const snapCheck = await getDocs(qCheck);
@@ -1141,7 +1160,7 @@
                                 friends: [], 
                                 inbox: [], 
                                 isOnline: true,
-                                highScore: 0 // Nuevo campo para Ranking Global
+                                highScore: 0 
                             };
                             await setDoc(doc(db, 'users', currentUser.uid), userData);
                             
@@ -1158,7 +1177,6 @@
                             else showToast("Error al registrarse", true);
                         }
                     } else {
-                        // Si no rellenó los 3, asumimos que se equivocó de contraseña/correo al intentar entrar
                         window.showScreen('screen-login');
                         showToast("Credenciales incorrectas o rellena los 3 datos para registrarte", true);
                     }
@@ -1615,9 +1633,13 @@
 
         // --- SALAS MULTIJUGADOR ---
         window.createRoom = async () => {
+            if (!currentUser || !userData) {
+                return showToast("Cargando perfil... inténtalo de nuevo", true);
+            }
             currentQIndex = -1; 
             window.hasSavedScoreThisGame = false;
-            const code = Math.random().toString(36).substring(2, 6).toUpperCase(); currentRoomRef = doc(db, 'rooms', code);
+            const code = Math.random().toString(36).substring(2, 6).toUpperCase(); 
+            currentRoomRef = doc(db, 'rooms', code);
             const initialData = { 
                 type: activeLobbyType, 
                 status: 'waiting', 
@@ -1629,10 +1651,23 @@
                 activeAttack: null, 
                 createdAt: Date.now() 
             };
-            try { await setDoc(currentRoomRef, initialData); document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.remove('hidden'); window.showScreen('screen-room'); } 
-            catch(e) { showToast("Error de conexión", true); }
+            try { 
+                await setDoc(currentRoomRef, initialData); 
+                document.getElementById('room-pin-display').innerText = code; 
+                setupRoomListener(); 
+                document.getElementById('btn-invite-inroom').classList.remove('hidden'); 
+                window.showScreen('screen-room'); 
+            } 
+            catch(e) { 
+                console.error("Error en createRoom:", e); 
+                showToast("Error al crear sala", true); 
+            }
         };
+        
         window.joinRoomBtn = async () => {
+            if (!currentUser || !userData) {
+                return showToast("Cargando perfil... inténtalo de nuevo", true);
+            }
             currentQIndex = -1; 
             window.hasSavedScoreThisGame = false;
             const code = document.getElementById('room-code-input').value.trim().toUpperCase();
@@ -2127,9 +2162,6 @@
             const q = localRoomData.questions[currentQIndex];
             renderQuestionUI(q, currentQIndex, localRoomData.questions.length, (idx) => handleMPAnswer(idx, q.correct));
             
-            // Eliminado el timeout de avance forzado por inactividad. 
-            // Esperaremos a que se acabe el tiempo del jugador localmente o que todos respondan.
-            
             startMPTimer();
         }
 
@@ -2411,6 +2443,7 @@
             
             const qTextEl = document.getElementById('question-text');
             qTextEl.innerText = q.text;
+            qTextEl.className = "text-lg md:text-xl font-bold mb-3 text-white drop-shadow-md transition-all";
             
             const imgC = document.getElementById('q-image-container'); 
             const imgEl = document.getElementById('q-image');
@@ -2418,17 +2451,16 @@
             // Solución de bug de imágenes: detectamos si carga bien o da error.
             imgEl.onerror = function() {
                 imgC.classList.add('hidden');
-                qTextEl.className = "text-xl md:text-2xl font-black text-center text-white leading-tight drop-shadow-md transition-all";
             };
             imgEl.removeAttribute('src');
             
             if(q.img && q.img.trim() !== '') { 
                 imgC.classList.remove('hidden'); 
-                qTextEl.className = "text-base md:text-lg font-black text-center text-white leading-tight drop-shadow-md transition-all";
                 imgEl.src = q.img.trim(); 
+                imgC.className = "h-20 md:h-32 w-full object-contain mx-auto rounded-lg border border-white/20 shadow-sm bg-black/30 p-1 mb-4 flex items-center justify-center shrink-0";
+                imgEl.className = "h-full w-auto max-w-full object-contain";
             } else { 
                 imgC.classList.add('hidden'); 
-                qTextEl.className = "text-xl md:text-2xl font-black text-center text-white leading-tight drop-shadow-md transition-all";
             }
             
             const opts = document.getElementById('options-container'); opts.innerHTML = '';
@@ -2488,7 +2520,7 @@
             q.options.forEach((opt, idx) => {
                 const b = document.createElement('button');
                 b.style.order = idx; // Respetado por flex para el swap
-                b.className = 'relative w-full py-3 px-4 glass-panel bg-slate-800/80 active:bg-slate-700 rounded-xl text-center font-bold text-white transition-all border border-white/5 shadow-md active:scale-95 text-base md:text-lg overflow-hidden flex-shrink-0';
+                b.className = 'relative w-full text-left py-2 px-3 md:p-3 glass-panel bg-slate-800/80 hover:bg-slate-700 rounded-xl font-semibold text-white transition-all border border-white/5 shadow-md active:scale-95 text-sm md:text-base overflow-hidden flex-shrink-0';
                 
                 const tSpan = document.createElement('span');
                 tSpan.innerText = opt;
@@ -2576,7 +2608,7 @@
             const btns = document.getElementById('options-container').querySelectorAll('button'); 
             btns.forEach(b => { 
                 b.disabled = true; 
-                b.classList.remove('active:scale-95','active:bg-slate-700'); 
+                b.classList.remove('active:scale-95','active:bg-slate-700', 'hover:bg-slate-700', 'hover:bg-white/30'); 
             }); 
         }
 
