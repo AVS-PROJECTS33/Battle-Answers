@@ -115,6 +115,7 @@
             </div>
         </div>
 
+        <!-- CABECERA DEL JUEGO -->
         <header id="game-header" class="hidden p-4 flex justify-between items-center glass-panel z-20 sticky top-0 rounded-b-2xl mx-2 mt-2">
             <button onclick="window.exitGameConfirm()" class="w-10 h-10 glass-panel bg-red-500/10 border border-red-500/30 rounded-full flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white active:scale-95 transition-all shadow-md shrink-0">
                 <i class="fas fa-times text-xl"></i>
@@ -128,7 +129,6 @@
                 </div>
             </div>
             
-            <!-- Vidas. Ahora usará el nuevo formato unificado -->
             <div class="flex items-center gap-1 text-red-500 text-lg flex-wrap justify-center shrink-0" id="lives-display"></div>
             
             <div class="flex flex-col items-end shrink-0" id="combo-container">
@@ -141,12 +141,13 @@
             <div id="timer-bar" class="h-full bg-yellow-400 w-full transition-all duration-100 linear rounded-full shadow-[0_0_15px_rgba(250,204,21,0.8)]"></div>
         </div>
 
+        <!-- PANTALLA CARGANDO -->
         <div id="screen-loading" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center z-50 absolute inset-0 glass-panel bg-slate-900/80">
             <i class="fas fa-circle-notch fa-spin text-5xl text-blue-500 mb-4 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]"></i>
             <h2 class="text-xl font-bold text-white drop-shadow-md">Cargando...</h2>
         </div>
 
-        <!-- 1. LOGIN UNIFICADO (TODO EN UNA) -->
+        <!-- LOGIN / REGISTRO -->
         <div id="screen-login" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center z-20 absolute inset-0">
             <div class="w-full max-w-sm glass-panel rounded-3xl p-6 flex flex-col gap-4">
                 <h1 class="text-2xl font-black mb-1 text-white tracking-wider drop-shadow-lg leading-tight">ENTRAR / REGISTRARSE</h1>
@@ -164,7 +165,7 @@
             </div>
         </div>
 
-        <!-- 2. MENÚ PRINCIPAL -->
+        <!-- MENÚ PRINCIPAL -->
         <div id="screen-main-menu" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0">
             
             <button onclick="window.logout()" class="absolute top-4 left-4 bg-black w-10 h-10 rounded-full flex items-center justify-center text-red-600 border-2 border-red-600 hover:bg-red-600 hover:text-white transition-all active:scale-95 z-30 shadow-[0_0_15px_rgba(220,38,38,0.5)]">
@@ -206,7 +207,7 @@
             </div>
 
             <div class="flex-1 flex flex-col justify-center gap-4 pb-16">
-                <!-- Botón 1 Jugador ahora abre el mapa de mundos -->
+                <!-- Botón 1 Jugador abre el mapa de mundos -->
                 <button onclick="window.openWorlds()" class="relative glass-panel bg-blue-600/20 border-blue-400/30 hover:bg-blue-600/30 w-full py-5 rounded-[2rem] flex flex-col items-center justify-center gap-3 active:scale-95 transition-all group shadow-xl">
                     <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.6)] group-hover:scale-110 transition-transform">
                         <i class="fas fa-user text-2xl text-white"></i>
@@ -233,13 +234,10 @@
             </div>
         </div>
 
-        <!-- MODALES GLOBALES -->
-
         <!-- MODAL DE AJUSTES -->
         <div id="settings-modal" class="hidden absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-center items-center p-4 opacity-0 transition-opacity duration-300">
             <div id="settings-panel" class="w-full max-w-md glass-panel theme-settings border border-cyan-500/40 rounded-3xl p-6 shadow-[0_0_30px_rgba(6,182,212,0.15)] transform scale-95 transition-transform duration-300 flex flex-col gap-5 relative overflow-hidden">
                 
-                <!-- Decoración Animada Ajustes -->
                 <div id="settings-bg-decor" class="absolute inset-0 pointer-events-none z-0">
                     <i class="fas fa-cogs absolute -right-6 -top-6 text-[8rem] text-cyan-400 opacity-10 transform rotate-45 animate-[spin_10s_linear_infinite]"></i>
                     <i class="fas fa-microchip absolute bottom-8 -left-6 text-7xl text-blue-400 opacity-10 transform -rotate-12"></i>
@@ -251,12 +249,9 @@
                     <button onclick="window.closeSettingsModal()" class="text-slate-400 hover:text-white transition-colors w-8 h-8 rounded-full bg-black/40 flex items-center justify-center active:scale-95"><i class="fas fa-times"></i></button>
                 </div>
 
-                <!-- SECCIÓN AVATARES -->
                 <div class="relative z-10">
                     <label class="text-[10px] text-cyan-200 font-black tracking-widest mb-3 block drop-shadow-md">SELECCIONA TU AVATAR</label>
-                    <div class="flex gap-3 overflow-x-auto pb-2 pt-1 px-1 snap-x no-scrollbar" id="settings-avatar-list">
-                        <!-- JS rellena esto -->
-                    </div>
+                    <div class="flex gap-3 overflow-x-auto pb-2 pt-1 px-1 snap-x no-scrollbar" id="settings-avatar-list"></div>
                 </div>
 
                 <div class="relative z-10">
@@ -288,9 +283,7 @@
                     <button onclick="window.closeRankings()" class="w-8 h-8 rounded-full bg-black/40 text-white/70 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center active:scale-95"><i class="fas fa-times text-sm"></i></button>
                 </div>
 
-                <div class="p-5 flex-1 flex flex-col gap-2 overflow-y-auto relative z-10" id="rankings-list">
-                    <!-- JS rellena esto -->
-                </div>
+                <div class="p-5 flex-1 flex flex-col gap-2 overflow-y-auto relative z-10" id="rankings-list"></div>
             </div>
         </div>
 
@@ -298,14 +291,12 @@
         <div id="friends-modal" class="hidden absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-center items-center p-4 opacity-0 transition-opacity duration-300">
             <div id="friends-panel" class="w-full max-w-md glass-panel rounded-3xl flex flex-col shadow-2xl border transform scale-95 transition-all duration-300 relative overflow-hidden">
                 
-                <!-- Decoración animada y colorida exclusiva para Mensajes -->
                 <div id="messages-bg-decor" class="hidden absolute inset-0 pointer-events-none z-0">
                     <i class="fas fa-envelope-open-text absolute -right-10 -bottom-10 text-[14rem] text-pink-300 opacity-20 transform -rotate-12"></i>
                     <i class="fas fa-paper-plane absolute top-16 -left-6 text-7xl text-fuchsia-300 opacity-20 transform rotate-12 animate-pulse"></i>
                     <i class="fas fa-comment-dots absolute top-1/2 right-12 text-6xl text-purple-300 opacity-20 transform rotate-12"></i>
                 </div>
 
-                <!-- Decoración animada exclusiva para Amigos -->
                 <div id="friends-bg-decor" class="hidden absolute inset-0 pointer-events-none z-0">
                     <i class="fas fa-users absolute -right-6 -bottom-10 text-[12rem] text-red-400 opacity-15 transform -rotate-6"></i>
                     <i class="fas fa-handshake absolute top-16 -left-6 text-7xl text-orange-400 opacity-20 transform rotate-12 animate-pulse"></i>
@@ -318,7 +309,6 @@
                 </div>
 
                 <div class="p-5 flex-1 flex flex-col gap-4 overflow-hidden relative z-10">
-                    
                     <div class="glass-panel p-3 rounded-2xl flex justify-between items-center bg-black/40 shrink-0 shadow-md">
                         <div>
                             <p class="text-[10px] text-white/70 font-bold tracking-wider mb-0.5">TU ID PARA COMPARTIR</p>
@@ -350,9 +340,7 @@
             </div>
         </div>
 
-        <!-- NUEVAS PANTALLAS DE CAMPAÑA (1 JUGADOR) -->
-        
-        <!-- PANTALLA: MUNDOS -->
+        <!-- PANTALLA MUNDOS -->
         <div id="screen-worlds" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-24 overflow-hidden">
             <div class="flex justify-between items-center mb-6 mt-0 shrink-0">
                 <button onclick="window.showScreen('screen-main-menu')" class="glass-panel px-4 py-2 rounded-full text-slate-200 hover:text-white flex items-center gap-2 font-black text-xs tracking-wider active:scale-95 transition-all shadow-lg border-white/10">
@@ -362,17 +350,13 @@
                     <span class="text-xs text-blue-400 font-black tracking-widest"><i class="fas fa-globe-americas mr-2"></i>MUNDOS</span>
                 </div>
             </div>
-            
             <p class="text-[10px] text-slate-400 font-black tracking-widest mb-4 border-b border-slate-700 pb-2 shrink-0">ELIGE UN MUNDO</p>
-            
             <div class="flex-1 overflow-y-auto pr-1 pb-10">
-                <div class="grid grid-cols-2 gap-4" id="worlds-grid">
-                    <!-- Rellenado por JS -->
-                </div>
+                <div class="grid grid-cols-2 gap-4" id="worlds-grid"></div>
             </div>
         </div>
 
-        <!-- PANTALLA: NIVELES -->
+        <!-- PANTALLA NIVELES -->
         <div id="screen-levels" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-24 overflow-hidden">
             <div class="flex justify-between items-center mb-6 mt-0 shrink-0">
                 <button onclick="window.showScreen('screen-worlds')" class="glass-panel px-4 py-2 rounded-full text-slate-200 hover:text-white flex items-center gap-2 font-black text-xs tracking-wider active:scale-95 transition-all shadow-lg border-white/10">
@@ -382,17 +366,13 @@
                     <span id="level-world-title" class="text-xs text-emerald-400 font-black tracking-widest uppercase">CATEGORÍA</span>
                 </div>
             </div>
-            
             <p class="text-[10px] text-slate-400 font-black tracking-widest mb-4 border-b border-slate-700 pb-2 shrink-0">SELECCIONA EL NIVEL</p>
-            
-            <div class="flex-1 overflow-y-auto pr-1 pb-10 flex flex-col justify-center">
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" id="levels-grid">
-                    <!-- Rellenado por JS -->
-                </div>
+            <div class="flex-1 overflow-y-auto pr-1 pb-10">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" id="levels-grid"></div>
             </div>
         </div>
 
-        <!-- PANTALLAS DE RESULTADO DE 1 JUGADOR (WIN/FAIL) -->
+        <!-- RESULTADOS 1 JUGADOR -->
         <div id="screen-sp-fail" class="hidden absolute inset-0 z-50 bg-black/80 backdrop-blur-xl flex flex-col justify-center items-center p-6 text-center">
             <i class="fas fa-skull text-8xl text-red-500 mb-6 drop-shadow-[0_0_30px_rgba(239,68,68,0.8)] animate-pulse"></i>
             <h2 class="text-5xl font-black text-white mb-2 tracking-widest drop-shadow-lg">¡SIN VIDAS!</h2>
@@ -417,8 +397,7 @@
             </button>
         </div>
 
-
-        <!-- 3.1 SETUP MODO (Lobby Opciones - Sólo Multijugador) -->
+        <!-- LOBBY (Multijugador) -->
         <div id="screen-lobby" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0">
             <div class="flex justify-between items-center mb-6 mt-4 w-full">
                 <button onclick="window.showScreen('screen-main-menu')" class="glass-panel px-4 py-2 rounded-full text-slate-200 hover:text-white flex items-center gap-2 font-black text-xs tracking-wider active:scale-95 transition-all shadow-lg border-white/10 shrink-0">
@@ -460,6 +439,7 @@
             </div>
         </div>
 
+        <!-- MODO DE JUEGO MULTIJUGADOR -->
         <div id="screen-setup-mode" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-24">
             <div class="flex justify-between items-center mb-4 mt-0 shrink-0">
                 <button onclick="window.backFromModeSelection()" class="glass-panel px-4 py-1.5 rounded-full text-slate-200 hover:text-white flex items-center gap-1.5 font-black text-[10px] tracking-wider active:scale-95 transition-all shadow-lg border-white/10">
@@ -493,6 +473,7 @@
             </div>
         </div>
 
+        <!-- CATEGORÍAS MULTIJUGADOR -->
         <div id="screen-setup" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 overflow-y-auto pb-24">
             <div class="flex justify-between items-center mb-4 mt-0 shrink-0">
                 <button onclick="window.backFromSetup()" class="glass-panel px-4 py-1.5 rounded-full text-slate-200 hover:text-white flex items-center gap-1.5 font-black text-[10px] tracking-wider active:scale-95 transition-all shadow-lg border-white/10">
@@ -504,26 +485,9 @@
                 </div>
             </div>
 
-            <!-- Panel de Niveles (Sólo visible en 1 Jugador) -->
-            <div id="sp-level-section" class="glass-panel p-5 rounded-3xl mb-6 shrink-0 shadow-xl hidden">
-                <p class="text-[10px] text-slate-400 font-black tracking-widest mb-4 flex justify-between items-end border-b border-slate-700 pb-2">
-                    <span>NIVEL DE DIFICULTAD</span> 
-                    <span id="lvl-desc" class="text-emerald-400 text-xs">10 Preguntas</span>
-                </p>
-                <div class="flex gap-2">
-                    <button id="btn-lvl-1" onclick="window.selectLevel(1)" class="flex-1 py-3 rounded-xl font-black bg-blue-600 border border-blue-400 text-white transition-all active:scale-95 shadow-lg">1</button>
-                    <button id="btn-lvl-2" onclick="window.selectLevel(2)" class="flex-1 py-3 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95 hover:bg-white/5">2</button>
-                    <button id="btn-lvl-3" onclick="window.selectLevel(3)" class="flex-1 py-3 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95 hover:bg-white/5">3</button>
-                    <button id="btn-lvl-4" onclick="window.selectLevel(4)" class="flex-1 py-3 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95 hover:bg-white/5">4</button>
-                    <button id="btn-lvl-5" onclick="window.selectLevel(5)" class="flex-1 py-3 rounded-xl font-black glass-panel border border-white/10 text-slate-400 transition-all active:scale-95 hover:bg-white/5">5</button>
-                </div>
-            </div>
-
             <div class="glass-panel p-5 rounded-3xl mb-6 shrink-0 shadow-xl">
                 <p class="text-[10px] text-slate-400 font-black tracking-widest mb-4 border-b border-slate-700 pb-2">CATEGORÍAS (Elige al menos 1)</p>
-                <div class="grid grid-cols-2 gap-3" id="categories-grid">
-                    <!-- JS rellena esto -->
-                </div>
+                <div class="grid grid-cols-2 gap-3" id="categories-grid"></div>
             </div>
 
             <div class="fixed bottom-6 left-6 right-6 z-30 max-w-md mx-auto">
@@ -533,9 +497,8 @@
             </div>
         </div>
 
-        <!-- 5. SALA DE ESPERA (ROOM) -->
+        <!-- SALA DE ESPERA INTERNA (ROOM) -->
         <div id="screen-room" class="hidden flex-1 flex flex-col p-6 z-20 absolute inset-0 pb-6">
-            
             <div class="text-center mb-3 mt-2 glass-panel p-3 rounded-3xl shadow-xl shrink-0">
                 <p class="text-[10px] text-slate-400 font-black tracking-widest mb-1">CÓDIGO DE SALA</p>
                 <h2 id="room-pin-display" class="text-2xl font-black text-blue-400 tracking-widest drop-shadow-md">----</h2>
@@ -545,7 +508,6 @@
                 </div>
             </div>
 
-            <!-- NUEVO: Historial de Duelos (Se muestra sólo en modo Duelo con 2 jugadores) -->
             <div id="duel-stats-container" class="hidden glass-panel p-4 rounded-2xl mb-4 shadow-md bg-purple-900/40 border border-purple-500/30 text-center mx-4 shrink-0">
                 <p class="text-[10px] font-black tracking-widest text-purple-300 mb-2 border-b border-purple-500/30 pb-1">HISTORIAL DE DUELO</p>
                 <div class="flex justify-between items-center px-2">
@@ -580,7 +542,6 @@
         <div id="screen-question" class="hidden flex-1 flex flex-col p-4 z-10 relative pb-6 overflow-hidden">
             <div class="glass-panel rounded-3xl p-5 flex-1 flex flex-col justify-center shadow-2xl overflow-y-auto border-white/10 relative">
                 
-                <!-- Overlay MP Waiting -->
                 <div id="mp-waiting-overlay" class="hidden absolute inset-0 z-20 bg-slate-900/90 backdrop-blur-md flex flex-col items-center justify-center rounded-3xl p-4">
                     <i class="fas fa-circle-notch fa-spin text-5xl text-blue-500 mb-6 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]"></i>
                     <h3 class="text-base sm:text-xl font-black text-white tracking-widest animate-pulse text-center w-full break-words">SINCRONIZANDO JUGADORES...</h3>
@@ -591,7 +552,6 @@
                     <span class="text-xs text-slate-300 font-bold bg-slate-900/80 px-3 py-1 rounded-full border border-slate-600 shadow-inner" id="q-counter">1/10</span>
                 </div>
                 
-                <!-- Contenedor central elástico para Pregunta + Imagen -->
                 <div class="flex-1 flex flex-col items-center justify-center w-full py-4 gap-4">
                     <h2 id="question-text" class="text-xl md:text-2xl font-black text-center text-white leading-tight drop-shadow-md transition-all">
                         ¿Pregunta?
@@ -602,71 +562,55 @@
                     </div>
                 </div>
 
-                <div id="options-container" class="flex flex-col gap-3 w-full shrink-0 relative">
-                    <!-- Respuestas -->
-                </div>
+                <div id="options-container" class="flex flex-col gap-3 w-full shrink-0 relative"></div>
             </div>
         </div>
 
-        <!-- PANTALLA DE RESULTADOS MP (RANKING POR PREGUNTA Y TOTAL) -->
+        <!-- PANTALLA DE RESULTADOS MP -->
         <div id="screen-question-results" class="hidden flex-1 flex flex-col p-6 z-30 absolute inset-0 glass-panel bg-slate-900/95 backdrop-blur-xl">
             <h2 id="mp-results-title" class="text-3xl font-black text-white text-center mb-6 mt-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] tracking-widest">RESULTADOS</h2>
             
-            <!-- Vista de la ronda actual -->
             <div id="mp-round-view" class="flex-1 flex flex-col overflow-hidden">
                 <div class="glass-panel p-4 rounded-2xl mb-6 bg-slate-800/80 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)] shrink-0">
                     <p class="text-[10px] font-black text-slate-400 text-center tracking-widest mb-1">LA RESPUESTA CORRECTA ERA:</p>
                     <p id="correct-answer-text" class="text-xl font-black text-emerald-400 text-center drop-shadow-md"></p>
                 </div>
                 
-                <div id="mp-results-list" class="flex-1 overflow-y-auto space-y-3 pb-4 pr-1">
-                    <!-- Rankings de la ronda -->
-                </div>
+                <div id="mp-results-list" class="flex-1 overflow-y-auto space-y-3 pb-4 pr-1"></div>
             </div>
 
-            <!-- Vista del ranking total -->
-            <div id="mp-total-view" class="hidden flex-1 overflow-y-auto space-y-3 pb-4 pr-1">
-                <!-- Ranking global -->
-            </div>
+            <div id="mp-total-view" class="hidden flex-1 overflow-y-auto space-y-3 pb-4 pr-1"></div>
             
             <div id="mp-next-countdown-container" class="text-center mt-auto pb-4 pt-4 border-t border-slate-700 shrink-0">
                 <p class="text-[10px] font-black text-slate-400 tracking-widest mb-1">PRÓXIMA PREGUNTA EN</p>
                 <div class="text-4xl font-black text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" id="mp-countdown-sec">8</div>
             </div>
 
-            <!-- NUEVO MODAL DE ATAQUE -->
+            <!-- MODAL ATAQUES -->
             <div id="attack-modal" class="hidden absolute inset-0 z-40 bg-slate-900/95 backdrop-blur-2xl flex flex-col p-6 items-center justify-center">
                 <h2 class="text-3xl font-black text-red-500 mb-2 drop-shadow-md text-center"><i class="fas fa-meteor"></i> ¡TU TURNO DE ATACAR!</h2>
                 <p id="attack-modal-desc" class="text-sm font-bold text-slate-300 mb-8 text-center">Vas último, elige un poder para fastidiar a un rival.</p>
                 
-                <!-- Poderes -->
                 <div id="attack-powers-container" class="grid grid-cols-2 gap-4 w-full max-w-sm mb-6">
                     <button onclick="window.selectAttackPower('ice')" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all hover:bg-slate-800">
-                        <i class="fas fa-snowflake text-4xl text-cyan-400"></i>
-                        <span class="font-black text-sm text-white mt-1">HIELO</span>
+                        <i class="fas fa-snowflake text-4xl text-cyan-400"></i><span class="font-black text-sm text-white mt-1">HIELO</span>
                     </button>
                     <button onclick="window.selectAttackPower('swap')" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all hover:bg-slate-800">
-                        <i class="fas fa-random text-4xl text-purple-400"></i>
-                        <span class="font-black text-sm text-white mt-1">INTERCAMBIO</span>
+                        <i class="fas fa-random text-4xl text-purple-400"></i><span class="font-black text-sm text-white mt-1">INTERCAMBIO</span>
                     </button>
                     <button onclick="window.selectAttackPower('slime')" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all hover:bg-slate-800">
-                        <i class="fas fa-fill-drip text-4xl text-green-400"></i>
-                        <span class="font-black text-sm text-white mt-1">LÍQUIDO</span>
+                        <i class="fas fa-fill-drip text-4xl text-green-400"></i><span class="font-black text-sm text-white mt-1">LÍQUIDO</span>
                     </button>
                     <button onclick="window.selectAttackPower('block')" class="glass-panel p-4 rounded-xl border-2 border-slate-600 flex flex-col items-center gap-2 active:scale-95 transition-all hover:bg-slate-800">
-                        <i class="fas fa-lock text-4xl text-red-400"></i>
-                        <span class="font-black text-sm text-white mt-1">BLOQUEO</span>
+                        <i class="fas fa-lock text-4xl text-red-400"></i><span class="font-black text-sm text-white mt-1">BLOQUEO</span>
                     </button>
                 </div>
 
-                <!-- Targets (oculto por defecto) -->
-                <div id="attack-targets-container" class="hidden w-full max-w-sm flex-col items-center gap-3">
-                    <!-- Dinámico -->
-                </div>
+                <div id="attack-targets-container" class="hidden w-full max-w-sm flex-col items-center gap-3"></div>
             </div>
         </div>
 
-        <!-- 7. GAME OVER -->
+        <!-- 7. GAME OVER GLOBALS -->
         <div id="screen-gameover" class="hidden flex-1 flex flex-col items-center p-6 text-center z-20 absolute inset-0 glass-panel bg-slate-900/90 backdrop-blur-xl">
             <i class="fas fa-trophy text-6xl text-yellow-400 mb-4 mt-10 drop-shadow-[0_0_30px_rgba(250,204,21,0.6)] animate-pulse"></i>
             <h2 class="text-4xl font-black text-white mb-8 tracking-widest drop-shadow-lg">PODIO FINAL</h2>
@@ -678,7 +622,7 @@
             </button>
         </div>
 
-        <!-- MODALES DE ALERTAS Y POPUPS -->
+        <!-- POPUPS ADICIONALES -->
         <div id="invite-popup" class="hidden absolute top-6 left-4 right-4 bg-emerald-600 rounded-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.8)] border-2 border-emerald-400 z-[100] toast-enter flex items-center justify-between">
             <div>
                 <p class="text-[10px] font-black text-emerald-200 tracking-widest mb-0.5"><i class="fas fa-bell mr-1"></i>¡INVITACIÓN A SALA!</p>
@@ -716,7 +660,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- FIREBASE & LOGIC -->
@@ -736,14 +679,9 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         
-        // Forzamos persistencia
-        setPersistence(auth, browserLocalPersistence).catch((err) => {
-            console.error("Error setting persistence:", err);
-        });
-
+        setPersistence(auth, browserLocalPersistence).catch((err) => { console.error("Error setting persistence:", err); });
         const db = getFirestore(app);
 
-        // --- AVATARS DE ESTILO ROBÓTICO/NEÓN ---
         const AVATARS = [
             "https://api.dicebear.com/7.x/bottts/svg?seed=Alpha&backgroundColor=0f172a&eyes=round",
             "https://api.dicebear.com/7.x/bottts/svg?seed=Bravo&backgroundColor=0f172a&eyes=sensor",
@@ -757,16 +695,12 @@
             "https://api.dicebear.com/7.x/bottts/svg?seed=Juliet&backgroundColor=0f172a&eyes=bulging"
         ];
 
-        // Función para cambiar la expresión de los ojos
         function getAvatarExpression(url, expr) {
             if (!url) return '';
-            if (url.includes('&eyes=')) {
-                return url.replace(/&eyes=[^&]+/, '&eyes=' + expr);
-            }
+            if (url.includes('&eyes=')) return url.replace(/&eyes=[^&]+/, '&eyes=' + expr);
             return url + '&eyes=' + expr;
         }
 
-        // --- FUNCIONES ESENCIALES PARA MUNDOS Y PREGUNTAS ---
         function normalizarCategoria(catName) {
             if (!catName) return "";
             return catName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -780,7 +714,6 @@
             return array;
         }
 
-        // --- GLOBAL STATE ---
         let introSeen = false;
         let authReady = false; 
         let nextScreenAfterIntro = 'screen-loading';
@@ -793,7 +726,6 @@
         let showingResults = false;
         let syncTimeout = null; 
         
-        // --- 1 PLAYER CAMPAIGN STATE ---
         let spLives = 3;
         let spConsecutiveCorrect = 0;
         let spQuestionsPlayed = 0;
@@ -823,9 +755,7 @@
         let unsubMyData = null;
         
         window.addEventListener('beforeunload', () => {
-            if(currentUser && !isLocalMode) {
-                updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
-            }
+            if(currentUser && !isLocalMode) updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
         });
 
         const savedOpacity = localStorage.getItem('ba_opacity');
@@ -847,34 +777,12 @@
             }, 100);
         }
 
-        // --- MANEJO DE AUDIO SEGURO ---
         let audioCtx = null;
-        try {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (AudioContext) {
-                audioCtx = new AudioContext();
-            }
-        } catch (e) {
-            console.warn("AudioContext error:", e);
-        }
+        try { if (window.AudioContext || window.webkitAudioContext) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
 
-        const getBGM = () => {
-            const audio = document.getElementById('bgm-audio');
-            if (audio && audio.volume !== 0.15) {
-                audio.volume = 0.15;
-            }
-            return audio;
-        };
-
-        const playBGM = () => { 
-            const a = getBGM(); 
-            if(a) a.play().catch(()=>{}); 
-        };
-
-        const pauseBGM = () => { 
-            const a = getBGM(); 
-            if(a) a.pause(); 
-        };
+        const getBGM = () => { const a = document.getElementById('bgm-audio'); if (a && a.volume !== 0.15) a.volume = 0.15; return a; };
+        const playBGM = () => { const a = getBGM(); if(a) a.play().catch(()=>{}); };
+        const pauseBGM = () => { const a = getBGM(); if(a) a.pause(); };
 
         document.addEventListener('visibilitychange', () => {
             const bgVideo = document.querySelector('#screen-intro video');
@@ -882,16 +790,12 @@
                 pauseBGM();
                 if (bgVideo && !introSeen) bgVideo.pause();
             } else {
-                const inGame = !document.getElementById('screen-question').classList.contains('hidden') || 
-                               !document.getElementById('screen-question-results').classList.contains('hidden');
-                if (!inGame && isSoundOn && introSeen) {
-                    playBGM();
-                }
+                const inGame = !document.getElementById('screen-question').classList.contains('hidden') || !document.getElementById('screen-question-results').classList.contains('hidden');
+                if (!inGame && isSoundOn && introSeen) playBGM();
                 if (bgVideo && !introSeen) bgVideo.play().catch(()=>{});
             }
         });
 
-        // LOS 13 MUNDOS EXACTOS
         const CATS = {
             'aleatorio': { id: 'aleatorio', name: 'Aleatorio', icon: 'fa-dice', color: 'bg-pink-500', border: 'border-pink-400' },
             'deportes': { id: 'deportes', name: 'Deportes', icon: 'fa-futbol', color: 'bg-orange-500', border: 'border-orange-400' },
@@ -933,61 +837,37 @@
             osc.connect(gain); gain.connect(audioCtx.destination);
             
             if (type === 'click') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(800, t);
-                osc.frequency.exponentialRampToValueAtTime(100, t + 0.05);
-                gain.gain.setValueAtTime(0.3, t);
-                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, t); osc.frequency.exponentialRampToValueAtTime(100, t + 0.05);
+                gain.gain.setValueAtTime(0.3, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
                 osc.start(t); osc.stop(t + 0.05);
             } else if (type === 'correct') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(440, t);
-                osc.frequency.setValueAtTime(554.37, t + 0.1);
-                osc.frequency.setValueAtTime(659.25, t + 0.2);
-                osc.frequency.setValueAtTime(880, t + 0.3);
-                gain.gain.setValueAtTime(0.3, t);
-                gain.gain.linearRampToValueAtTime(0, t + 0.5);
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(440, t); osc.frequency.setValueAtTime(554.37, t + 0.1);
+                osc.frequency.setValueAtTime(659.25, t + 0.2); osc.frequency.setValueAtTime(880, t + 0.3);
+                gain.gain.setValueAtTime(0.3, t); gain.gain.linearRampToValueAtTime(0, t + 0.5);
                 osc.start(t); osc.stop(t + 0.5);
             } else if (type === 'wrong') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, t);
-                osc.frequency.exponentialRampToValueAtTime(50, t + 0.4);
-                gain.gain.setValueAtTime(0.3, t);
-                gain.gain.linearRampToValueAtTime(0, t + 0.4);
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, t); osc.frequency.exponentialRampToValueAtTime(50, t + 0.4);
+                gain.gain.setValueAtTime(0.3, t); gain.gain.linearRampToValueAtTime(0, t + 0.4);
                 osc.start(t); osc.stop(t + 0.4);
             } else if (type === 'notification') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, t); 
-                osc.frequency.setValueAtTime(783.99, t + 0.15); 
-                
-                gain.gain.setValueAtTime(0, t);
-                gain.gain.linearRampToValueAtTime(0.4, t + 0.05);
-                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
-                gain.gain.linearRampToValueAtTime(0.4, t + 0.17);
-                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
-                
+                osc.type = 'sine'; osc.frequency.setValueAtTime(587.33, t); osc.frequency.setValueAtTime(783.99, t + 0.15); 
+                gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.4, t + 0.05); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+                gain.gain.linearRampToValueAtTime(0.4, t + 0.17); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
                 osc.start(t); osc.stop(t + 0.4);
             }
         }
 
         function playBeep(freq = 440, type = 'sine', duration = 0.1) {
             if(!isSoundOn || !audioCtx || audioCtx.state === 'suspended') return;
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
+            const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
             osc.type = type; osc.frequency.value = freq;
             osc.connect(gainNode); gainNode.connect(audioCtx.destination);
-            osc.start();
-            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
-            osc.stop(audioCtx.currentTime + duration);
+            osc.start(); gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration); osc.stop(audioCtx.currentTime + duration);
         }
 
         document.addEventListener('click', (e) => {
             const btn = e.target.closest('button');
-            if (btn && isSoundOn) {
-                if (!btn.closest('#options-container') && btn.id !== 'toggle-sound-btn') {
-                    playSoundFX('click');
-                }
-            }
+            if (btn && isSoundOn) if (!btn.closest('#options-container') && btn.id !== 'toggle-sound-btn') playSoundFX('click');
         });
 
         window.showScreen = (id) => {
@@ -1000,7 +880,6 @@
             if(targetEl) targetEl.classList.remove('hidden');
             
             const inGame = id === 'screen-question' || id === 'screen-question-results';
-            
             const gameHeader = document.getElementById('game-header');
             if (gameHeader) gameHeader.classList.toggle('hidden', !inGame);
             
@@ -1018,59 +897,37 @@
                 if(comboContainer) comboContainer.classList.remove('hidden');
             }
 
-            if (inGame) {
-                pauseBGM();
-            } else {
-                if (isSoundOn && introSeen) {
-                    playBGM();
-                }
-            }
+            if (inGame) pauseBGM(); else if (isSoundOn && introSeen) playBGM();
 
             const appC = document.getElementById('app-container');
             if (appC) {
-                if(id === 'screen-login' || id === 'screen-loading' || id === 'screen-intro') {
-                    appC.classList.replace('bg-menu', 'bg-start');
-                } else {
-                    appC.classList.replace('bg-start', 'bg-menu');
-                }
+                if(id === 'screen-login' || id === 'screen-loading' || id === 'screen-intro') appC.classList.replace('bg-menu', 'bg-start');
+                else appC.classList.replace('bg-start', 'bg-menu');
             }
         };
 
         function manageFriendListeners() {
             if (!userData || !Array.isArray(userData.friends)) return;
             const currentUids = userData.friends.map(f => f.uid);
-            
             Object.keys(friendUnsubs).forEach(uid => {
-                if (!currentUids.includes(uid)) {
-                    friendUnsubs[uid]();
-                    delete friendUnsubs[uid];
-                    delete friendsOnlineStatus[uid];
-                }
+                if (!currentUids.includes(uid)) { friendUnsubs[uid](); delete friendUnsubs[uid]; delete friendsOnlineStatus[uid]; }
             });
-
             userData.friends.forEach(f => {
                 if (!friendUnsubs[f.uid]) {
                     friendUnsubs[f.uid] = onSnapshot(doc(db, 'users', f.uid), (docS) => {
                         if (docS.exists()) {
                             const isOnline = docS.data().isOnline === true;
                             friendsOnlineStatus[f.uid] = isOnline;
-                            
                             const dot1 = document.getElementById(`status-dot-${f.uid}`);
-                            if (dot1) {
-                                dot1.className = `w-2.5 h-2.5 rounded-full transition-colors shrink-0 ${isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-slate-600'}`;
-                            }
-                            
+                            if (dot1) dot1.className = `w-2.5 h-2.5 rounded-full transition-colors shrink-0 ${isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-slate-600'}`;
                             const dot2 = document.getElementById(`invite-status-dot-${f.uid}`);
-                            if (dot2) {
-                                dot2.className = `w-2 h-2 rounded-full transition-colors shrink-0 ${isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-slate-600'}`;
-                            }
+                            if (dot2) dot2.className = `w-2 h-2 rounded-full transition-colors shrink-0 ${isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-slate-600'}`;
                         }
                     });
                 }
             });
         }
 
-        // --- AUTH ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
@@ -1078,30 +935,11 @@
                     const docSnap = await getDoc(doc(db, 'users', user.uid));
                     if(docSnap.exists()) {
                         userData = docSnap.data();
-                        
-                        let needsUpdate = false;
-                        let updates = { isOnline: true };
-
-                        if (!userData.avatar) {
-                            userData.avatar = AVATARS[0];
-                            updates.avatar = AVATARS[0];
-                            needsUpdate = true;
-                        }
-                        
-                        if (!userData.spProgress) {
-                            userData.spProgress = {};
-                            updates.spProgress = {};
-                            needsUpdate = true;
-                        }
-                        if (userData.spLives === undefined) {
-                            userData.spLives = 3;
-                            updates.spLives = 3;
-                            needsUpdate = true;
-                        }
-
-                        if(needsUpdate || true) {
-                            updateDoc(doc(db, 'users', user.uid), updates).catch(()=>{});
-                        }
+                        let needsUpdate = false; let updates = { isOnline: true };
+                        if (!userData.avatar) { userData.avatar = AVATARS[0]; updates.avatar = AVATARS[0]; needsUpdate = true; }
+                        if (!userData.spProgress) { userData.spProgress = {}; updates.spProgress = {}; needsUpdate = true; }
+                        if (userData.spLives === undefined) { userData.spLives = 3; updates.spLives = 3; needsUpdate = true; }
+                        if(needsUpdate || true) updateDoc(doc(db, 'users', user.uid), updates).catch(()=>{});
                         
                         document.getElementById('menu-player-name').innerText = userData?.name || currentUser.displayName || 'Jugador';
                         document.getElementById('my-player-id').innerText = userData?.playerId || '---';
@@ -1109,277 +947,235 @@
                         
                         listenToMyData();
                         nextScreenAfterIntro = 'screen-main-menu';
-                    } else {
-                        nextScreenAfterIntro = 'screen-login';
-                    }
-                } catch(e){
-                    nextScreenAfterIntro = 'screen-login';
-                }
+                    } else { nextScreenAfterIntro = 'screen-login'; }
+                } catch(e){ nextScreenAfterIntro = 'screen-login'; }
             } else {
-                currentUser = null; 
-                userData = null;
-                nextScreenAfterIntro = 'screen-login';
+                currentUser = null; userData = null; nextScreenAfterIntro = 'screen-login';
             }
-
             authReady = true;
-
-            if(introSeen) {
-                window.showScreen(nextScreenAfterIntro);
-            }
+            if(introSeen) window.showScreen(nextScreenAfterIntro);
         });
 
         window.startFromIntro = () => {
             introSeen = true;
-            
             const bgVideo = document.querySelector('#screen-intro video');
-            if(bgVideo) {
-                bgVideo.pause();
-                bgVideo.removeAttribute('src');
-                bgVideo.innerHTML = '';
-                bgVideo.load();
-            }
-            
+            if(bgVideo) { bgVideo.pause(); bgVideo.removeAttribute('src'); bgVideo.innerHTML = ''; bgVideo.load(); }
             if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-            if(isSoundOn) {
-                playBGM();
-            }
-
-            if (authReady) {
-                window.showScreen(nextScreenAfterIntro);
-            } else {
-                window.showScreen('screen-loading');
-            }
+            if(isSoundOn) playBGM();
+            if (authReady) window.showScreen(nextScreenAfterIntro); else window.showScreen('screen-loading');
         };
 
         window.setAuthMode = (mode) => {
-            authMode = mode;
-            const btnLogin = document.getElementById('btn-tab-login');
-            const btnReg = document.getElementById('btn-tab-register');
-            const userField = document.getElementById('auth-username');
-            const title = document.getElementById('auth-title');
-            const submitBtn = document.getElementById('auth-submit-btn');
-            const resetBtn = document.getElementById('auth-reset-btn');
-
+            const btnLogin = document.getElementById('btn-tab-login'); const btnReg = document.getElementById('btn-tab-register');
+            const userField = document.getElementById('auth-username'); const title = document.getElementById('auth-title');
+            const submitBtn = document.getElementById('auth-submit-btn'); const resetBtn = document.getElementById('auth-reset-btn');
             if (mode === 'login') {
                 btnLogin.className = "flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white text-sm transition-all shadow-md";
                 btnReg.className = "flex-1 py-2 rounded-lg font-bold text-slate-400 text-sm hover:text-white transition-all";
-                userField.classList.add('hidden');
-                resetBtn.classList.remove('hidden');
-                title.innerText = "INICIAR SESIÓN";
-                submitBtn.innerText = "ENTRAR";
+                userField.classList.add('hidden'); resetBtn.classList.remove('hidden');
+                title.innerText = "INICIAR SESIÓN"; submitBtn.innerText = "ENTRAR";
             } else {
                 btnReg.className = "flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white text-sm transition-all shadow-md";
                 btnLogin.className = "flex-1 py-2 rounded-lg font-bold text-slate-400 text-sm hover:text-white transition-all";
-                userField.classList.remove('hidden');
-                resetBtn.classList.add('hidden');
-                title.innerText = "REGISTRARSE";
-                submitBtn.innerText = "CREAR CUENTA";
+                userField.classList.remove('hidden'); resetBtn.classList.add('hidden');
+                title.innerText = "REGISTRARSE"; submitBtn.innerText = "CREAR CUENTA";
             }
         };
 
         window.submitAuth = async () => {
-            const u = document.getElementById('auth-username').value.trim();
-            const e = document.getElementById('auth-email').value.trim();
-            const p = document.getElementById('auth-password').value.trim();
-            
-            if(!p) return showToast("Falta la contraseña", true);
-            if(!u && !e) return showToast("Escribe tu correo o usuario", true);
-
+            const u = document.getElementById('auth-username').value.trim(); const e = document.getElementById('auth-email').value.trim(); const p = document.getElementById('auth-password').value.trim();
+            if(!p) return showToast("Falta la contraseña", true); if(!u && !e) return showToast("Escribe tu correo o usuario", true);
             window.showScreen('screen-loading');
-
             let loginEmail = e;
-
             if (!e && u) {
                 try {
-                    const q = query(collection(db, "users"), where("name", "==", u));
-                    const snap = await getDocs(q);
-                    if (!snap.empty && snap.docs[0].data().email) {
-                        loginEmail = snap.docs[0].data().email;
-                    } else {
-                        window.showScreen('screen-login');
-                        return showToast("Usuario no encontrado o sin correo. Entra con correo o regístrate.", true);
-                    }
-                } catch (err) {
-                    console.error("Error buscando usuario:", err);
-                }
-            } 
-            else if (e && !e.includes('@')) {
+                    const q = query(collection(db, "users"), where("name", "==", u)); const snap = await getDocs(q);
+                    if (!snap.empty && snap.docs[0].data().email) loginEmail = snap.docs[0].data().email;
+                    else { window.showScreen('screen-login'); return showToast("Usuario no encontrado.", true); }
+                } catch (err) {}
+            } else if (e && !e.includes('@')) {
                 try {
-                    const q = query(collection(db, "users"), where("name", "==", e));
-                    const snap = await getDocs(q);
-                    if (!snap.empty && snap.docs[0].data().email) {
-                        loginEmail = snap.docs[0].data().email;
-                    } else {
-                        window.showScreen('screen-login');
-                        return showToast("Usuario no encontrado.", true);
-                    }
-                } catch (err) {
-                    console.error("Error buscando usuario:", err);
-                }
+                    const q = query(collection(db, "users"), where("name", "==", e)); const snap = await getDocs(q);
+                    if (!snap.empty && snap.docs[0].data().email) loginEmail = snap.docs[0].data().email;
+                    else { window.showScreen('screen-login'); return showToast("Usuario no encontrado.", true); }
+                } catch (err) {}
             }
 
             try {
-                const cred = await signInWithEmailAndPassword(auth, loginEmail, p);
-                currentUser = cred.user;
-                
+                const cred = await signInWithEmailAndPassword(auth, loginEmail, p); currentUser = cred.user;
                 const docSnap = await getDoc(doc(db, 'users', currentUser.uid));
                 if(docSnap.exists()) {
-                    userData = docSnap.data();
-                    let updates = { isOnline: true };
+                    userData = docSnap.data(); let updates = { isOnline: true };
                     if (!userData.email && loginEmail.includes('@')) updates.email = loginEmail;
-                    if (!userData.avatar) {
-                        userData.avatar = AVATARS[0];
-                        updates.avatar = AVATARS[0];
-                    }
-                    if (!userData.spProgress) {
-                        userData.spProgress = {};
-                        updates.spProgress = {};
-                    }
-                    if (userData.spLives === undefined) {
-                        userData.spLives = 3;
-                        updates.spLives = 3;
-                    }
-
+                    if (!userData.avatar) { userData.avatar = AVATARS[0]; updates.avatar = AVATARS[0]; }
+                    if (!userData.spProgress) { userData.spProgress = {}; updates.spProgress = {}; }
+                    if (userData.spLives === undefined) { userData.spLives = 3; updates.spLives = 3; }
                     await updateDoc(doc(db, 'users', currentUser.uid), updates).catch(()=>{});
                 }
-                
                 document.getElementById('menu-player-avatar').src = userData?.avatar || AVATARS[0];
-
-                showToast("¡Bienvenido de nuevo!");
-                listenToMyData();
-                window.showScreen('screen-main-menu');
+                showToast("¡Bienvenido de nuevo!"); listenToMyData(); window.showScreen('screen-main-menu');
             } catch (err) {
                 if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-email' || err.code === 'auth/missing-email') {
-                    
                     if (u && e && e.includes('@')) {
-                        if (u.length > 12) {
-                            window.showScreen('screen-login');
-                            return showToast("El usuario no puede tener más de 12 letras", true);
-                        }
-
+                        if (u.length > 12) { window.showScreen('screen-login'); return showToast("Usuario máx 12 letras", true); }
                         try {
-                            const qCheck = query(collection(db, "users"), where("name", "==", u));
-                            const snapCheck = await getDocs(qCheck);
-                            if (!snapCheck.empty) {
-                                window.showScreen('screen-login');
-                                return showToast("Ese nombre de usuario ya está cogido", true);
-                            }
-                        } catch (qErr) {
-                            console.error(qErr);
-                        }
-                        
+                            const qCheck = query(collection(db, "users"), where("name", "==", u)); const snapCheck = await getDocs(qCheck);
+                            if (!snapCheck.empty) { window.showScreen('screen-login'); return showToast("Ese nombre ya está cogido", true); }
+                        } catch (qErr) {}
                         try {
-                            const cred = await createUserWithEmailAndPassword(auth, e, p);
-                            currentUser = cred.user;
+                            const cred = await createUserWithEmailAndPassword(auth, e, p); currentUser = cred.user;
                             await updateProfile(currentUser, { displayName: u });
                             const playerId = u.replace(/\s+/g, '') + '#' + Math.floor(1000 + Math.random() * 9000);
                             const randomAvatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
-
-                            userData = { 
-                                uid: currentUser.uid, 
-                                name: u, 
-                                email: e, 
-                                playerId: playerId, 
-                                avatar: randomAvatar,
-                                friends: [], 
-                                inbox: [], 
-                                isOnline: true,
-                                highScore: 0,
-                                spProgress: {},
-                                spLives: 3
-                            };
+                            userData = { uid: currentUser.uid, name: u, email: e, playerId: playerId, avatar: randomAvatar, friends: [], inbox: [], isOnline: true, highScore: 0, spProgress: {}, spLives: 3 };
                             await setDoc(doc(db, 'users', currentUser.uid), userData);
-                            
                             document.getElementById('menu-player-avatar').src = userData.avatar;
-
-                            showToast("¡Cuenta creada con éxito!");
-                            listenToMyData();
-                            window.showScreen('screen-main-menu');
-                        } catch (createErr) {
-                            window.showScreen('screen-login');
-                            if (createErr.code === 'auth/email-already-in-use') showToast("Ese correo ya está en uso", true);
-                            else if (createErr.code === 'auth/weak-password') showToast("La contraseña es muy corta", true);
-                            else if (createErr.code === 'auth/invalid-email') showToast("Correo no válido", true);
-                            else showToast("Error al registrarse", true);
-                        }
-                    } else {
-                        window.showScreen('screen-login');
-                        showToast("Credenciales incorrectas o rellena los 3 datos para registrarte", true);
-                    }
-                } else {
-                    window.showScreen('screen-login');
-                    showToast("Error al entrar. Inténtalo de nuevo.", true);
-                }
+                            showToast("¡Cuenta creada con éxito!"); listenToMyData(); window.showScreen('screen-main-menu');
+                        } catch (createErr) { window.showScreen('screen-login'); showToast("Error al registrarse", true); }
+                    } else { window.showScreen('screen-login'); showToast("Credenciales incorrectas", true); }
+                } else { window.showScreen('screen-login'); showToast("Error al entrar. Inténtalo de nuevo.", true); }
             }
         };
 
         window.resetPassword = async () => {
             let e = document.getElementById('auth-email').value.trim();
             if(!e) return showToast("Escribe tu correo o usuario arriba primero", true);
-
             if(!e.includes('@')) {
                 try {
-                    const q = query(collection(db, "users"), where("name", "==", e));
-                    const snap = await getDocs(q);
-                    if (!snap.empty && snap.docs[0].data().email) {
-                        e = snap.docs[0].data().email;
-                    } else {
-                        return showToast("Escribe tu correo electrónico válido", true);
-                    }
+                    const q = query(collection(db, "users"), where("name", "==", e)); const snap = await getDocs(q);
+                    if (!snap.empty && snap.docs[0].data().email) e = snap.docs[0].data().email;
+                    else return showToast("Escribe tu correo electrónico válido", true);
                 } catch(err) {}
             }
-
-            try { await sendPasswordResetEmail(auth, e); showToast("¡Correo de recuperación enviado!"); } 
-            catch(err) { showToast("Error al enviar correo", true); }
+            try { await sendPasswordResetEmail(auth, e); showToast("¡Correo de recuperación enviado!"); } catch(err) { showToast("Error al enviar correo", true); }
         };
 
         window.logout = async () => {
-            if(currentUser) { 
-                await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
-            }
-            
+            if(currentUser) await updateDoc(doc(db, 'users', currentUser.uid), { isOnline: false }).catch(()=>{});
             await signOut(auth); 
             if(unsubMyData) unsubMyData(); 
             Object.values(friendUnsubs).forEach(unsub => unsub());
-            friendUnsubs = {};
-            friendsOnlineStatus = {};
-            isLocalMode = false; 
-            currentUser = null; 
-            userData = null;
-            
-            document.getElementById('auth-email').value = '';
-            document.getElementById('auth-password').value = '';
-            
+            friendUnsubs = {}; friendsOnlineStatus = {}; isLocalMode = false; currentUser = null; userData = null;
+            document.getElementById('auth-email').value = ''; document.getElementById('auth-password').value = '';
             window.showScreen('screen-login');
         };
 
+        // --- MULTIPLAYER SETUP ---
         window.enterLobby = (type) => {
             activeLobbyType = type;
             isMultiplayerSetup = true;
-            const badgeText = document.getElementById('lobby-type-badge');
-            const badgeCard = document.getElementById('lobby-type-card');
-            const btnCreate = document.getElementById('btn-create-room');
-            const iconCreate = document.getElementById('icon-create-room');
+            const badgeText = document.getElementById('lobby-type-badge'); const badgeCard = document.getElementById('lobby-type-card');
+            const btnCreate = document.getElementById('btn-create-room'); const iconCreate = document.getElementById('icon-create-room');
 
             if (badgeText && badgeCard && btnCreate && iconCreate) {
                 if (type === 'duel') {
-                    badgeText.innerText = 'MODO DUELO (1 VS 1)';
-                    badgeText.className = 'text-xl md:text-2xl font-black tracking-widest text-purple-400 drop-shadow-md';
+                    badgeText.innerText = 'MODO DUELO (1 VS 1)'; badgeText.className = 'text-xl md:text-2xl font-black tracking-widest text-purple-400 drop-shadow-md';
                     badgeCard.className = 'glass-panel px-6 py-3 rounded-2xl inline-block shadow-lg border-purple-500/30 bg-purple-900/40';
-                    
                     btnCreate.className = 'glass-panel bg-purple-600/20 border-purple-400/30 hover:bg-purple-600/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all shadow-2xl';
                     iconCreate.className = 'w-16 h-16 rounded-full bg-purple-500 flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.5)]';
                 } else {
-                    badgeText.innerText = 'MULTIJUGADOR';
-                    badgeText.className = 'text-xl md:text-2xl font-black tracking-widest text-emerald-400 drop-shadow-md';
+                    badgeText.innerText = 'MULTIJUGADOR'; badgeText.className = 'text-xl md:text-2xl font-black tracking-widest text-emerald-400 drop-shadow-md';
                     badgeCard.className = 'glass-panel px-6 py-3 rounded-2xl inline-block shadow-lg border-emerald-500/30 bg-emerald-900/40';
-                    
                     btnCreate.className = 'glass-panel bg-emerald-500/20 border-emerald-400/30 hover:bg-emerald-500/30 w-full py-10 rounded-[2rem] flex flex-col items-center justify-center gap-4 active:scale-95 transition-all shadow-2xl';
                     iconCreate.className = 'w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.5)]';
                 }
             }
-
             window.showScreen('screen-lobby');
+        };
+
+        window.goToSetup = async (isMulti) => {
+            isMultiplayerSetup = isMulti;
+            if(isMulti) { window.selectMPMode('classic'); window.showScreen('screen-setup-mode'); } 
+            else { window.showScreen('screen-setup'); }
+        };
+
+        window.selectMPMode = (mode) => {
+            mpGameMode = mode;
+            const btnC = document.getElementById('btn-mode-classic'); const btnA = document.getElementById('btn-mode-attacks');
+            if(mode === 'classic') {
+                btnC.className = "glass-panel bg-blue-600/30 border-blue-400 hover:bg-blue-600/40 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all shadow-xl";
+                btnA.className = "glass-panel bg-black/40 border-white/10 hover:bg-white/5 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group";
+            } else {
+                btnA.className = "glass-panel bg-red-600/30 border-red-400 hover:bg-red-600/40 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all shadow-xl";
+                btnC.className = "glass-panel bg-black/40 border-white/10 hover:bg-white/5 w-full p-4 rounded-[1.5rem] flex items-center text-left gap-4 active:scale-95 transition-all group";
+            }
+        };
+
+        window.goToCategories = async () => {
+            const grid = document.getElementById('categories-grid'); grid.innerHTML = '';
+            Object.values(CATS).forEach(c => {
+                grid.innerHTML += `
+                    <button id="cat-btn-${c.id}" onclick="window.toggleCat('${c.id}')" class="py-5 glass-panel rounded-2xl flex flex-col items-center gap-3 border-2 border-white/5 transition-all active:scale-95 shadow-md">
+                        <div class="w-12 h-12 rounded-full ${c.color} flex items-center justify-center shadow-inner text-white"><i class="fas ${c.icon} text-xl"></i></div>
+                        <span class="font-black text-white text-xs tracking-wider">${c.name}</span>
+                    </button>`;
+            });
+            selectedCategories = []; document.getElementById('setup-btn-text').innerText = 'GUARDAR Y EMPEZAR'; window.showScreen('screen-setup');
+            const countEl = document.getElementById('db-question-count');
+            if(countEl) {
+                countEl.innerText = "CARGANDO DB...";
+                try {
+                    const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle");
+                    const snapshot = await getCountFromServer(qRef);
+                    countEl.innerText = `${snapshot.data().count} PREGUNTAS`;
+                } catch(e) { countEl.innerText = "ERROR DB"; }
+            }
+        };
+
+        window.backFromSetup = () => { if(isMultiplayerSetup) window.showScreen('screen-setup-mode'); else window.showScreen('screen-main-menu'); };
+        window.backFromModeSelection = () => { window.showScreen('screen-room'); };
+        
+        window.toggleCat = (id) => {
+            const btn = document.getElementById(`cat-btn-${id}`); const col = CATS[id].border;
+            if(selectedCategories.includes(id)) { selectedCategories = selectedCategories.filter(c => c !== id); btn.classList.replace(col, 'border-white/5'); btn.classList.replace('bg-white/10', 'glass-panel'); } 
+            else { selectedCategories.push(id); btn.classList.replace('border-white/5', col); btn.classList.replace('glass-panel', 'bg-white/10'); }
+        };
+
+        window.confirmSetup = async () => {
+            if(selectedCategories.length === 0) return showToast("Elige al menos 1 categoría", true);
+            window.showScreen('screen-loading');
+            
+            const limitNum = 15;
+            try {
+                const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle");
+                const snap = await getDocs(qRef);
+                let fetchedQ = []; 
+                
+                snap.forEach(doc => {
+                    let rawData = doc.data(); let rawCat = rawData["Categoria"] || ""; let normalizedCat = normalizarCategoria(rawCat);
+                    if (selectedCategories.includes(normalizedCat) || selectedCategories.includes('aleatorio')) {
+                        let formattedQ = { cat: normalizedCat, text: rawData["Pregunta"], options: [ rawData["Opcion 1"], rawData["Opcion 2"], rawData["Opcion 3"], rawData["Opcion 4"] ] };
+                        let correctVal = rawData["Respuesta Correcta"];
+                        if (typeof correctVal === 'string') correctVal = parseInt(correctVal, 10);
+                        formattedQ.correct = correctVal - 1; 
+                        if (rawData["Imagen"]) { formattedQ.img = rawData["Imagen"]; }
+                        if (formattedQ.text && formattedQ.options[0] && formattedQ.options[3] && !isNaN(formattedQ.correct)) { fetchedQ.push(formattedQ); }
+                    }
+                });
+
+                if(fetchedQ.length === 0) throw new Error("No se encontraron preguntas.");
+                let freshQuestions = fetchedQ.filter(q => !askedQuestionsHistory.has(q.text));
+                if(freshQuestions.length < limitNum) { askedQuestionsHistory.clear(); freshQuestions = fetchedQ; }
+                shuffleArray(freshQuestions); activeQuestions = freshQuestions.slice(0, limitNum);
+                activeQuestions.forEach(q => askedQuestionsHistory.add(q.text));
+                
+                if(activeQuestions.length < limitNum) {
+                     let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio')); shuffleArray(fall);
+                     let extras = fall.slice(0, limitNum - activeQuestions.length); activeQuestions = [...activeQuestions, ...extras];
+                }
+            } catch(e) {
+                console.error("Error cargando de Firebase:", e);
+                let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio'));
+                let pool = fall.length > 0 ? [...fall] : [...backupQuestions];
+                let freshQuestions = pool.filter(q => !askedQuestionsHistory.has(q.text));
+                if(freshQuestions.length < limitNum) { askedQuestionsHistory.clear(); freshQuestions = pool; }
+                shuffleArray(freshQuestions); activeQuestions = freshQuestions.slice(0, limitNum);
+                activeQuestions.forEach(q => askedQuestionsHistory.add(q.text)); showToast("Modo Offline / Respaldo", true);
+            }
+
+            if(isMultiplayerSetup && currentRoomRef) {
+                await updateDoc(currentRoomRef, { questions: activeQuestions, status: 'syncing', currentQ: 0, answers: {}, mode: mpGameMode, activeAttack: null, loadedPlayers: {} });
+            }
         };
 
         // --- RANKINGS GLOBAL ---
@@ -1387,30 +1183,19 @@
             const m = document.getElementById('rankings-modal');
             const p = document.getElementById('rankings-panel');
             const list = document.getElementById('rankings-list');
-            
             list.innerHTML = '<div class="text-center text-slate-400 py-4"><i class="fas fa-spinner fa-spin text-2xl"></i></div>';
-            
-            m.classList.remove('hidden');
-            setTimeout(() => { m.classList.remove('opacity-0'); p.classList.remove('scale-95'); }, 10);
+            m.classList.remove('hidden'); setTimeout(() => { m.classList.remove('opacity-0'); p.classList.remove('scale-95'); }, 10);
             
             try {
-                const snap = await getDocs(collection(db, "users"));
-                let users = [];
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    if(d.highScore > 0) users.push(d);
-                });
-                
-                users.sort((a, b) => b.highScore - a.highScore);
-                const top5 = users.slice(0, 5);
+                const snap = await getDocs(collection(db, "users")); let users = [];
+                snap.forEach(doc => { const d = doc.data(); if(d.highScore > 0) users.push(d); });
+                users.sort((a, b) => b.highScore - a.highScore); const top5 = users.slice(0, 5);
                 
                 list.innerHTML = '';
-                if(top5.length === 0) {
-                    list.innerHTML = '<p class="text-xs text-slate-500 text-center font-bold">Nadie ha puntuado aún.</p>';
-                } else {
+                if(top5.length === 0) list.innerHTML = '<p class="text-xs text-slate-500 text-center font-bold">Nadie ha puntuado aún.</p>';
+                else {
                     top5.forEach((u, i) => {
-                        const av = u.avatar || AVATARS[0];
-                        const isMe = u.uid === currentUser.uid;
+                        const av = u.avatar || AVATARS[0]; const isMe = u.uid === currentUser.uid;
                         list.innerHTML += `
                             <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/80 border ${isMe ? 'border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.3)]' : 'border-slate-700/50'} shadow-sm mb-2">
                                 <div class="flex items-center gap-3">
@@ -1419,35 +1204,24 @@
                                     <span class="font-bold text-sm text-white">${u.name}</span>
                                 </div>
                                 <span class="font-black text-yellow-400 drop-shadow-md text-lg">${u.highScore}</span>
-                            </div>
-                        `;
+                            </div>`;
                     });
                 }
-            } catch(e) {
-                list.innerHTML = '<p class="text-xs text-red-500 text-center font-bold">Error al cargar ranking.</p>';
-            }
+            } catch(e) { list.innerHTML = '<p class="text-xs text-red-500 text-center font-bold">Error al cargar ranking.</p>'; }
         };
 
         window.closeRankings = () => {
-            const m = document.getElementById('rankings-modal');
-            const p = document.getElementById('rankings-panel');
-            m.classList.add('opacity-0'); p.classList.add('scale-95'); 
-            setTimeout(() => { m.classList.add('hidden'); }, 300);
+            const m = document.getElementById('rankings-modal'); const p = document.getElementById('rankings-panel');
+            m.classList.add('opacity-0'); p.classList.add('scale-95'); setTimeout(() => { m.classList.add('hidden'); }, 300);
         };
 
         // --- SETTINGS Y AVATARES ---
         window.renderAvatarList = () => {
-            const list = document.getElementById('settings-avatar-list');
-            if(!list) return;
-            list.innerHTML = '';
+            const list = document.getElementById('settings-avatar-list'); if(!list) return; list.innerHTML = '';
             const myAvatar = (userData && userData.avatar) ? userData.avatar : AVATARS[0];
-            
             AVATARS.forEach((av) => {
                 const isSelected = av === myAvatar;
-                list.innerHTML += `
-                    <img src="${av}" onclick="window.changeAvatar('${av}')" 
-                         class="w-12 h-12 rounded-full cursor-pointer shrink-0 border-2 transition-all ${isSelected ? 'border-emerald-500 scale-110 shadow-[0_0_10px_rgba(16,185,129,0.8)]' : 'border-transparent opacity-60 hover:opacity-100'} bg-slate-800 object-cover">
-                `;
+                list.innerHTML += `<img src="${av}" onclick="window.changeAvatar('${av}')" class="w-12 h-12 rounded-full cursor-pointer shrink-0 border-2 transition-all ${isSelected ? 'border-emerald-500 scale-110 shadow-[0_0_10px_rgba(16,185,129,0.8)]' : 'border-transparent opacity-60 hover:opacity-100'} bg-slate-800 object-cover">`;
             });
         };
 
@@ -1455,22 +1229,14 @@
             if(!currentUser) return;
             try {
                 await updateDoc(doc(db, 'users', currentUser.uid), { avatar: avatarUrl });
-                userData.avatar = avatarUrl;
-                document.getElementById('menu-player-avatar').src = avatarUrl;
-                window.renderAvatarList();
-                showToast("¡Avatar actualizado!");
-            } catch(e) {
-                showToast("Error al guardar avatar", true);
-            }
+                userData.avatar = avatarUrl; document.getElementById('menu-player-avatar').src = avatarUrl;
+                window.renderAvatarList(); showToast("¡Avatar actualizado!");
+            } catch(e) { showToast("Error al guardar avatar", true); }
         };
 
         window.toggleSettingsModal = () => {
             const m = document.getElementById('settings-modal'); const p = document.getElementById('settings-panel');
-            if(m.classList.contains('hidden')){ 
-                window.renderAvatarList(); 
-                m.classList.remove('hidden'); 
-                setTimeout(() => { m.classList.remove('opacity-0'); p.classList.remove('scale-95'); }, 10); 
-            }
+            if(m.classList.contains('hidden')){ window.renderAvatarList(); m.classList.remove('hidden'); setTimeout(() => { m.classList.remove('opacity-0'); p.classList.remove('scale-95'); }, 10); }
         };
         window.closeSettingsModal = () => {
             const m = document.getElementById('settings-modal'); const p = document.getElementById('settings-panel');
@@ -1488,79 +1254,49 @@
             if(!currentUser) return;
             if(unsubMyData) unsubMyData();
             unsubMyData = onSnapshot(doc(db, 'users', currentUser.uid), (docS) => {
-                if(docS.exists()) { 
-                    userData = docS.data(); 
-                    manageFriendListeners();
-                    updateFriendsUI(); 
-                    checkInvites(); 
-                }
+                if(docS.exists()) { userData = docS.data(); manageFriendListeners(); updateFriendsUI(); checkInvites(); }
             });
         }
         window.openFriends = (tab) => {
-            const m = document.getElementById('friends-modal');
-            const p = document.getElementById('friends-panel');
-            const list = document.getElementById('friends-list-container'); 
-            const inbox = document.getElementById('inbox-container'); 
-            const title = document.getElementById('friends-modal-title');
-            const decorMsg = document.getElementById('messages-bg-decor');
-            const decorFr = document.getElementById('friends-bg-decor');
+            const m = document.getElementById('friends-modal'); const p = document.getElementById('friends-panel');
+            const list = document.getElementById('friends-list-container'); const inbox = document.getElementById('inbox-container'); 
+            const title = document.getElementById('friends-modal-title'); const decorMsg = document.getElementById('messages-bg-decor'); const decorFr = document.getElementById('friends-bg-decor');
             
             p.classList.remove('h-[94dvh]', 'max-h-[850px]', 'h-[70dvh]', 'max-h-[600px]', 'theme-messages', 'theme-friends', 'border-slate-600');
-            
             if (tab === 'inbox') { 
-                list.classList.add('hidden'); 
-                inbox.classList.remove('hidden'); 
-                title.innerHTML = '<i class="fas fa-envelope-open-text mr-2 text-pink-300"></i>MENSAJES'; 
-                p.classList.add('h-[70dvh]', 'max-h-[600px]', 'theme-messages');
-                decorMsg.classList.remove('hidden');
-                if(decorFr) decorFr.classList.add('hidden');
+                list.classList.add('hidden'); inbox.classList.remove('hidden'); title.innerHTML = '<i class="fas fa-envelope-open-text mr-2 text-pink-300"></i>MENSAJES'; 
+                p.classList.add('h-[70dvh]', 'max-h-[600px]', 'theme-messages'); decorMsg.classList.remove('hidden'); if(decorFr) decorFr.classList.add('hidden');
             } else { 
-                list.classList.remove('hidden'); 
-                inbox.classList.add('hidden'); 
-                title.innerHTML = '<i class="fas fa-user-friends mr-2 text-white"></i>AMIGOS'; 
-                p.classList.add('h-[94dvh]', 'max-h-[850px]', 'theme-friends');
-                decorMsg.classList.add('hidden');
-                if(decorFr) decorFr.classList.remove('hidden');
+                list.classList.remove('hidden'); inbox.classList.add('hidden'); title.innerHTML = '<i class="fas fa-user-friends mr-2 text-white"></i>AMIGOS'; 
+                p.classList.add('h-[94dvh]', 'max-h-[850px]', 'theme-friends'); decorMsg.classList.add('hidden'); if(decorFr) decorFr.classList.remove('hidden');
             }
-            
-            m.classList.remove('hidden');
-            setTimeout(() => { m.classList.remove('opacity-0'); p.classList.remove('scale-95'); }, 10);
+            m.classList.remove('hidden'); setTimeout(() => { m.classList.remove('opacity-0'); p.classList.remove('scale-95'); }, 10);
         };
         
         window.closeFriendsModal = () => {
-            const m = document.getElementById('friends-modal');
-            const p = document.getElementById('friends-panel');
-            m.classList.add('opacity-0'); 
-            p.classList.add('scale-95'); 
-            setTimeout(() => { m.classList.add('hidden'); }, 300);
+            const m = document.getElementById('friends-modal'); const p = document.getElementById('friends-panel');
+            m.classList.add('opacity-0'); p.classList.add('scale-95'); setTimeout(() => { m.classList.add('hidden'); }, 300);
         };
 
         function updateFriendsUI() {
             if(!userData) return;
-            const lobbyBadge = document.getElementById('lobby-inbox-badge');
-            const mainBadge = document.getElementById('main-inbox-badge');
-            
+            const lobbyBadge = document.getElementById('lobby-inbox-badge'); const mainBadge = document.getElementById('main-inbox-badge');
             const currentInboxCount = (userData.inbox && Array.isArray(userData.inbox)) ? userData.inbox.length : 0;
-            if (currentInboxCount > lastInboxCount) {
-                playSoundFX('notification');
-            }
+            if (currentInboxCount > lastInboxCount) playSoundFX('notification');
             lastInboxCount = currentInboxCount;
 
             if(currentInboxCount > 0) { 
                 if(lobbyBadge) { lobbyBadge.classList.remove('hidden'); lobbyBadge.innerText = currentInboxCount; } 
                 if(mainBadge) { mainBadge.classList.remove('hidden'); mainBadge.innerText = currentInboxCount; } 
-            } 
-            else { 
-                if(lobbyBadge) lobbyBadge.classList.add('hidden'); 
-                if(mainBadge) mainBadge.classList.add('hidden'); 
+            } else { 
+                if(lobbyBadge) lobbyBadge.classList.add('hidden'); if(mainBadge) mainBadge.classList.add('hidden'); 
             }
 
             const fList = document.getElementById('friends-list'); fList.innerHTML = '';
             if(!userData.friends || !Array.isArray(userData.friends) || userData.friends.length === 0) { fList.innerHTML = '<p class="text-xs text-white/50 text-center mt-4 font-bold drop-shadow-md">Lista vacía.</p>'; } 
             else {
                 userData.friends.forEach((f, i) => {
-                    const isOnline = friendsOnlineStatus[f.uid] === true;
-                    const dotClass = isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-slate-600';
+                    const isOnline = friendsOnlineStatus[f.uid] === true; const dotClass = isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-slate-600';
                     fList.innerHTML += `
                         <div class="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/10 shadow-sm">
                             <div class="flex items-center gap-3">
@@ -1646,82 +1382,44 @@
         
         window.openInviteModal = () => {
             if(!userData || !Array.isArray(userData.friends) || userData.friends.length === 0) return showToast("No tienes amigos agregados", true);
-            
-            selectedFriendsToInvite = []; 
-            const list = document.getElementById('invite-room-list'); 
-            list.innerHTML = '';
-            
+            selectedFriendsToInvite = []; const list = document.getElementById('invite-room-list'); list.innerHTML = '';
             userData.friends.forEach(f => {
-                const isOnline = friendsOnlineStatus[f.uid] === true;
-                const dotClass = isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-slate-600';
-                
-                const btn = document.createElement('button');
-                btn.id = `invite-friend-${f.uid}`;
+                const isOnline = friendsOnlineStatus[f.uid] === true; const dotClass = isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-slate-600';
+                const btn = document.createElement('button'); btn.id = `invite-friend-${f.uid}`;
                 btn.className = 'w-full flex items-center justify-between p-3 rounded-xl bg-slate-800/80 border border-slate-700/50 hover:bg-slate-700 transition-colors text-left';
                 btn.onclick = () => window.toggleFriendSelection(f.uid);
-                
-                btn.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div id="invite-status-dot-${f.uid}" class="${dotClass} w-2 h-2 rounded-full transition-colors shrink-0"></div>
-                        <span class="font-bold text-sm text-white">${f.name}</span>
-                    </div>
-                    <div class="w-6 h-6 rounded-full border-2 border-slate-500 flex items-center justify-center transition-colors pointer-events-none shrink-0" id="check-${f.uid}">
-                        <i class="fas fa-check text-white opacity-0 transition-opacity text-xs"></i>
-                    </div>
-                `;
+                btn.innerHTML = `<div class="flex items-center gap-3"><div id="invite-status-dot-${f.uid}" class="${dotClass} w-2 h-2 rounded-full transition-colors shrink-0"></div><span class="font-bold text-sm text-white">${f.name}</span></div><div class="w-6 h-6 rounded-full border-2 border-slate-500 flex items-center justify-center transition-colors pointer-events-none shrink-0" id="check-${f.uid}"><i class="fas fa-check text-white opacity-0 transition-opacity text-xs"></i></div>`;
                 list.appendChild(btn);
             });
             document.getElementById('invite-room-modal').classList.remove('hidden');
         };
         
         window.toggleFriendSelection = (uid) => {
-            const idx = selectedFriendsToInvite.indexOf(uid);
-            const checkContainer = document.getElementById(`check-${uid}`);
-            const checkIcon = checkContainer.querySelector('i');
-            const btn = document.getElementById(`invite-friend-${uid}`);
-
+            const idx = selectedFriendsToInvite.indexOf(uid); const checkContainer = document.getElementById(`check-${uid}`);
+            const checkIcon = checkContainer.querySelector('i'); const btn = document.getElementById(`invite-friend-${uid}`);
             if (idx > -1) {
-                selectedFriendsToInvite.splice(idx, 1);
-                checkContainer.classList.replace('border-emerald-500', 'border-slate-500');
-                checkContainer.classList.remove('bg-emerald-500');
-                checkIcon.classList.add('opacity-0');
-                btn.classList.replace('border-emerald-500/50', 'border-slate-700/50');
+                selectedFriendsToInvite.splice(idx, 1); checkContainer.classList.replace('border-emerald-500', 'border-slate-500');
+                checkContainer.classList.remove('bg-emerald-500'); checkIcon.classList.add('opacity-0'); btn.classList.replace('border-emerald-500/50', 'border-slate-700/50');
             } else {
-                selectedFriendsToInvite.push(uid);
-                checkContainer.classList.replace('border-slate-500', 'border-emerald-500');
-                checkContainer.classList.add('bg-emerald-500');
-                checkIcon.classList.remove('opacity-0');
-                btn.classList.replace('border-slate-700/50', 'border-emerald-500/50');
+                selectedFriendsToInvite.push(uid); checkContainer.classList.replace('border-slate-500', 'border-emerald-500');
+                checkContainer.classList.add('bg-emerald-500'); checkIcon.classList.remove('opacity-0'); btn.classList.replace('border-slate-700/50', 'border-emerald-500/50');
             }
         };
 
         window.sendBulkRoomInvites = async () => {
             if (selectedFriendsToInvite.length === 0) return showToast("Selecciona al menos a un amigo", true);
-            
-            const code = document.getElementById('room-pin-display').innerText;
-            window.closeInviteModal(); 
-            
-            let sentCount = 0;
+            const code = document.getElementById('room-pin-display').innerText; window.closeInviteModal(); let sentCount = 0;
             for (let targetUid of selectedFriendsToInvite) {
                 try {
                     const tSnap = await getDoc(doc(db, 'users', targetUid));
                     if(tSnap.exists()) {
-                        const tData = tSnap.data(); 
-                        const newReq = { type: 'room_invite', roomCode: code, fromName: userData.name };
+                        const tData = tSnap.data(); const newReq = { type: 'room_invite', roomCode: code, fromName: userData.name };
                         const updatedInbox = tData.inbox && Array.isArray(tData.inbox) ? [...tData.inbox, newReq] : [newReq];
-                        await updateDoc(doc(db, 'users', targetUid), { inbox: updatedInbox }); 
-                        sentCount++;
+                        await updateDoc(doc(db, 'users', targetUid), { inbox: updatedInbox }); sentCount++;
                     }
-                } catch(e) {
-                    console.error("Error al invitar a " + targetUid, e);
-                }
+                } catch(e) {}
             }
-            
-            if (sentCount > 0) {
-                showToast(`¡Invitación enviada a ${sentCount} amigo(s)!`);
-            } else {
-                showToast("No se pudieron enviar las invitaciones", true);
-            }
+            if (sentCount > 0) showToast(`¡Invitación enviada a ${sentCount} amigo(s)!`); else showToast("No se pudieron enviar las invitaciones", true);
         };
 
         window.closeInviteModal = () => document.getElementById('invite-room-modal').classList.add('hidden');
@@ -1730,9 +1428,8 @@
             if(!userData || !Array.isArray(userData.inbox)) return;
             const roomInvite = userData.inbox.find(req => req.type === 'room_invite');
             if(roomInvite && pendingInviteCode !== roomInvite.roomCode && document.getElementById('screen-room').classList.contains('hidden')) {
-                pendingInviteCode = roomInvite.roomCode;
-                document.getElementById('invite-popup-text').innerText = `${roomInvite.fromName} te invita a su sala`;
-                const popup = document.getElementById('invite-popup'); popup.classList.remove('hidden');
+                pendingInviteCode = roomInvite.roomCode; document.getElementById('invite-popup-text').innerText = `${roomInvite.fromName} te invita a su sala`;
+                document.getElementById('invite-popup').classList.remove('hidden');
             }
         }
         window.acceptInvitePopup = () => {
@@ -1757,53 +1454,23 @@
 
         // --- SALAS MULTIJUGADOR ---
         window.createRoom = async () => {
-            if (!currentUser || !userData) {
-                return showToast("Cargando perfil... inténtalo de nuevo", true);
-            }
-            currentQIndex = -1; 
-            window.hasSavedScoreThisGame = false;
-            const code = Math.random().toString(36).substring(2, 6).toUpperCase(); 
-            currentRoomRef = doc(db, 'rooms', code);
-            const initialData = { 
-                type: activeLobbyType, 
-                status: 'waiting', 
-                hostId: currentUser.uid, 
-                players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false, avatar: userData.avatar || AVATARS[0] } }, 
-                questions: [], 
-                currentQ: 0, 
-                answers: {}, 
-                activeAttack: null, 
-                createdAt: Date.now() 
-            };
-            try { 
-                await setDoc(currentRoomRef, initialData); 
-                document.getElementById('room-pin-display').innerText = code; 
-                setupRoomListener(); 
-                document.getElementById('btn-invite-inroom').classList.remove('hidden'); 
-                window.showScreen('screen-room'); 
-            } 
-            catch(e) { 
-                console.error("Error en createRoom:", e); 
-                showToast("Error al crear sala", true); 
-            }
+            if (!currentUser || !userData) return showToast("Cargando perfil... inténtalo de nuevo", true);
+            currentQIndex = -1; window.hasSavedScoreThisGame = false;
+            const code = Math.random().toString(36).substring(2, 6).toUpperCase(); currentRoomRef = doc(db, 'rooms', code);
+            const initialData = { type: activeLobbyType, status: 'waiting', hostId: currentUser.uid, players: { [currentUser.uid]: { name: userData.name, score: 0, isDone: false, avatar: userData.avatar || AVATARS[0] } }, questions: [], currentQ: 0, answers: {}, activeAttack: null, createdAt: Date.now() };
+            try { await setDoc(currentRoomRef, initialData); document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.remove('hidden'); window.showScreen('screen-room'); } catch(e) { showToast("Error al crear sala", true); }
         };
         
         window.joinRoomBtn = async () => {
-            if (!currentUser || !userData) {
-                return showToast("Cargando perfil... inténtalo de nuevo", true);
-            }
-            currentQIndex = -1; 
-            window.hasSavedScoreThisGame = false;
+            if (!currentUser || !userData) return showToast("Cargando perfil... inténtalo de nuevo", true);
+            currentQIndex = -1; window.hasSavedScoreThisGame = false;
             const code = document.getElementById('room-code-input').value.trim().toUpperCase();
             if(code.length !== 4) return showToast("Código de 4 caracteres", true);
             currentRoomRef = doc(db, 'rooms', code);
             try {
                 const snap = await getDoc(currentRoomRef);
                 if(!snap.exists() || snap.data().status !== 'waiting') return showToast("Sala no disponible", true);
-                
-                const roomType = snap.data().type;
-                const maxPlayers = roomType === 'duel' ? 2 : 8;
-                
+                const roomType = snap.data().type; const maxPlayers = roomType === 'duel' ? 2 : 8;
                 if(Object.keys(snap.data().players).length >= maxPlayers) return showToast(`Sala llena (${maxPlayers}/${maxPlayers})`, true);
                 await updateDoc(currentRoomRef, { [`players.${currentUser.uid}`]: { name: userData.name, score: 0, isDone: false, avatar: userData.avatar || AVATARS[0] } });
                 document.getElementById('room-pin-display').innerText = code; setupRoomListener(); document.getElementById('btn-invite-inroom').classList.add('hidden'); window.showScreen('screen-room');
@@ -1816,37 +1483,20 @@
                 if(!snap.exists()) return window.leaveRoom();
                 localRoomData = snap.data();
                 
-                if(localRoomData.status !== 'syncing' && window.syncTimeout) {
-                    clearTimeout(window.syncTimeout);
-                    window.syncTimeout = null;
-                }
-
+                if(localRoomData.status !== 'syncing' && window.syncTimeout) { clearTimeout(window.syncTimeout); window.syncTimeout = null; }
                 if(localRoomData.status === 'waiting') updateRoomWaitingUI(localRoomData);
 
                 if(localRoomData.status === 'syncing') {
-                    document.getElementById('screen-question-results').classList.add('hidden');
-                    window.showScreen('screen-question');
-                    
-                    const overlay = document.getElementById('mp-waiting-overlay');
-                    overlay.classList.remove('hidden');
-                    const h3 = overlay.querySelector('h3');
-                    if (h3) h3.innerText = "SINCRONIZANDO JUGADORES...";
+                    document.getElementById('screen-question-results').classList.add('hidden'); window.showScreen('screen-question');
+                    const overlay = document.getElementById('mp-waiting-overlay'); overlay.classList.remove('hidden');
+                    const h3 = overlay.querySelector('h3'); if (h3) h3.innerText = "SINCRONIZANDO JUGADORES...";
                     
                     if (!localRoomData.loadedPlayers || !localRoomData.loadedPlayers[currentUser.uid]) {
-                        const markReady = () => {
-                            updateDoc(currentRoomRef, { [`loadedPlayers.${currentUser.uid}`]: true }).catch(()=>{});
-                        };
-                        
-                        // Precarga de imagen antes de dar el OK
+                        const markReady = () => { updateDoc(currentRoomRef, { [`loadedPlayers.${currentUser.uid}`]: true }).catch(()=>{}); };
                         const nextQ = localRoomData.questions[localRoomData.currentQ];
                         if (nextQ && nextQ.img && nextQ.img.trim() !== '') {
-                            const preImg = new Image();
-                            preImg.onload = markReady;
-                            preImg.onerror = markReady; 
-                            preImg.src = nextQ.img.trim();
-                        } else {
-                            markReady();
-                        }
+                            const preImg = new Image(); preImg.onload = markReady; preImg.onerror = markReady; preImg.src = nextQ.img.trim();
+                        } else { markReady(); }
                     }
 
                     if (localRoomData.hostId === currentUser.uid) {
@@ -1856,40 +1506,24 @@
                             if (window.syncTimeout) { clearTimeout(window.syncTimeout); window.syncTimeout = null; }
                             updateDoc(currentRoomRef, { status: 'playing' }).catch(()=>{});
                         } else if (!window.syncTimeout) {
-                            window.syncTimeout = setTimeout(() => {
-                                window.syncTimeout = null;
-                                if (currentRoomRef) updateDoc(currentRoomRef, { status: 'playing' }).catch(()=>{});
-                            }, 10000); 
+                            window.syncTimeout = setTimeout(() => { window.syncTimeout = null; if (currentRoomRef) updateDoc(currentRoomRef, { status: 'playing' }).catch(()=>{}); }, 10000); 
                         }
                     }
                 }
                 
                 if(localRoomData.status === 'playing') {
-                    if(document.getElementById('screen-room').classList.contains('hidden') === false || document.getElementById('screen-loading').classList.contains('hidden') === false || document.getElementById('screen-setup').classList.contains('hidden') === false) {
-                        window.showScreen('screen-question');
-                    }
-                    if(currentQIndex !== localRoomData.currentQ || showingResults) {
-                        showingResults = false;
-                        currentQIndex = localRoomData.currentQ;
-                        loadMPQuestion();
-                    }
+                    if(document.getElementById('screen-room').classList.contains('hidden') === false || document.getElementById('screen-loading').classList.contains('hidden') === false || document.getElementById('screen-setup').classList.contains('hidden') === false) { window.showScreen('screen-question'); }
+                    if(currentQIndex !== localRoomData.currentQ || showingResults) { showingResults = false; currentQIndex = localRoomData.currentQ; loadMPQuestion(); }
                     checkHostAdvancement();
                 }
 
-                if(localRoomData.status === 'results' && !showingResults) {
-                    showMPResults();
-                }
-
+                if(localRoomData.status === 'results' && !showingResults) showMPResults();
                 if(localRoomData.status === 'finished') {
-                    window.showScreen('screen-gameover');
-                    updateLeaderboardUI(localRoomData.players);
-                    
+                    window.showScreen('screen-gameover'); updateLeaderboardUI(localRoomData.players);
                     const myFinalScore = localRoomData.players[currentUser.uid]?.score || 0;
                     if (!window.hasSavedScoreThisGame && userData && myFinalScore > (userData.highScore || 0)) {
-                        window.hasSavedScoreThisGame = true;
-                        updateDoc(doc(db, 'users', currentUser.uid), { highScore: myFinalScore });
-                        userData.highScore = myFinalScore;
-                        setTimeout(() => showToast("🏆 ¡NUEVO RÉCORD PERSONAL!", false), 500);
+                        window.hasSavedScoreThisGame = true; updateDoc(doc(db, 'users', currentUser.uid), { highScore: myFinalScore });
+                        userData.highScore = myFinalScore; setTimeout(() => showToast("🏆 ¡NUEVO RÉCORD PERSONAL!", false), 500);
                     }
                 }
             });
@@ -1898,34 +1532,22 @@
         function updateRoomWaitingUI(data) {
             const pList = document.getElementById('room-players-list'); pList.innerHTML = '';
             const pArr = Object.values(data.players); 
-            
             const maxPlayers = data.type === 'duel' ? 2 : 8;
-            document.getElementById('player-count').innerText = pArr.length;
-            document.getElementById('max-player-count').innerText = maxPlayers;
+            document.getElementById('player-count').innerText = pArr.length; document.getElementById('max-player-count').innerText = maxPlayers;
             
             if (data.type === 'duel' && pArr.length === 2) {
-                const uids = Object.keys(data.players).sort();
-                const duelId = uids.join('_');
-                
+                const uids = Object.keys(data.players).sort(); const duelId = uids.join('_');
                 getDoc(doc(db, 'duels', duelId)).then(snap => {
                     const statsContainer = document.getElementById('duel-stats-container');
                     if(statsContainer) {
                         statsContainer.classList.remove('hidden');
-                        document.getElementById('duel-p1-name').innerText = data.players[uids[0]].name;
-                        document.getElementById('duel-p2-name').innerText = data.players[uids[1]].name;
-                        
-                        if (snap.exists()) {
-                            const w1 = snap.data()[`wins_${uids[0]}`] || 0;
-                            const w2 = snap.data()[`wins_${uids[1]}`] || 0;
-                            document.getElementById('duel-score').innerText = `${w1} - ${w2}`;
-                        } else {
-                            document.getElementById('duel-score').innerText = `0 - 0`;
-                        }
+                        document.getElementById('duel-p1-name').innerText = data.players[uids[0]].name; document.getElementById('duel-p2-name').innerText = data.players[uids[1]].name;
+                        if (snap.exists()) { const w1 = snap.data()[`wins_${uids[0]}`] || 0; const w2 = snap.data()[`wins_${uids[1]}`] || 0; document.getElementById('duel-score').innerText = `${w1} - ${w2}`;
+                        } else { document.getElementById('duel-score').innerText = `0 - 0`; }
                     }
                 }).catch(()=>{});
             } else {
-                const statsContainer = document.getElementById('duel-stats-container');
-                if(statsContainer) statsContainer.classList.add('hidden');
+                const statsContainer = document.getElementById('duel-stats-container'); if(statsContainer) statsContainer.classList.add('hidden');
             }
 
             pArr.forEach(p => {
@@ -1937,8 +1559,7 @@
                     </div>`;
             });
             const isHost = data.hostId === currentUser.uid;
-            document.getElementById('room-host-controls').classList.toggle('hidden', !isHost);
-            document.getElementById('room-guest-controls').classList.toggle('hidden', isHost);
+            document.getElementById('room-host-controls').classList.toggle('hidden', !isHost); document.getElementById('room-guest-controls').classList.toggle('hidden', isHost);
         }
 
         window.leaveRoom = () => { if(unsubscribeRoom) unsubscribeRoom(); currentRoomRef = null; localRoomData = null; window.showScreen(isLocalMode ? 'screen-main-menu' : 'screen-lobby'); };
@@ -1947,75 +1568,48 @@
         let currentOpponents = []; 
 
         window.showAttackModal = (opponents) => {
-            selectedAttackPower = null;
-            currentOpponents = opponents;
-            
+            selectedAttackPower = null; currentOpponents = opponents;
             document.getElementById('attack-powers-container').classList.remove('hidden');
-            const targetContainer = document.getElementById('attack-targets-container');
-            targetContainer.classList.add('hidden');
-            targetContainer.classList.remove('flex');
+            const targetContainer = document.getElementById('attack-targets-container'); targetContainer.classList.add('hidden'); targetContainer.classList.remove('flex');
             document.getElementById('attack-modal-desc').innerText = "Vas último, elige un poder para fastidiar a un rival.";
-            
             document.getElementById('attack-modal').classList.remove('hidden');
         };
 
         window.selectAttackPower = (power) => {
             selectedAttackPower = power;
-            
             document.getElementById('attack-powers-container').classList.add('hidden');
-            const targetContainer = document.getElementById('attack-targets-container');
-            targetContainer.classList.remove('hidden');
-            targetContainer.classList.add('flex');
-            
+            const targetContainer = document.getElementById('attack-targets-container'); targetContainer.classList.remove('hidden'); targetContainer.classList.add('flex');
             document.getElementById('attack-modal-desc').innerText = "Selecciona a quién quieres lanzar el ataque.";
-            
             targetContainer.innerHTML = '';
             currentOpponents.forEach(opp => {
                 const btn = document.createElement('button');
                 btn.className = 'w-full py-4 glass-panel bg-slate-800/80 hover:bg-slate-700 active:bg-slate-600 rounded-xl font-black text-white transition-all shadow-md active:scale-95 text-lg flex items-center justify-center gap-3 border border-slate-600';
-                
                 const oppAvatar = getAvatarExpression(localRoomData.players[opp.uid].avatar || AVATARS[0], 'round');
                 btn.innerHTML = `<img src="${oppAvatar}" class="w-8 h-8 rounded-full border border-blue-500 bg-slate-900 object-cover"> <span>${localRoomData.players[opp.uid].name}</span>`;
-                btn.onclick = () => window.launchAttack(opp.uid);
-                targetContainer.appendChild(btn);
+                btn.onclick = () => window.launchAttack(opp.uid); targetContainer.appendChild(btn);
             });
-            
             const backBtn = document.createElement('button');
             backBtn.className = 'mt-4 px-6 py-2 rounded-full glass-panel text-slate-400 hover:text-white text-xs font-bold active:scale-95 transition-all border border-white/5';
-            backBtn.innerHTML = '<i class="fas fa-arrow-left mr-2"></i> Cambiar poder';
-            backBtn.onclick = () => window.showAttackModal(currentOpponents);
+            backBtn.innerHTML = '<i class="fas fa-arrow-left mr-2"></i> Cambiar poder'; backBtn.onclick = () => window.showAttackModal(currentOpponents);
             targetContainer.appendChild(backBtn);
         };
 
         window.launchAttack = async (targetId) => {
             if(!selectedAttackPower || !targetId) return;
-            
             document.getElementById('attack-modal').classList.add('hidden');
-            
-            await updateDoc(currentRoomRef, {
-                activeAttack: {
-                    power: selectedAttackPower,
-                    targetId: targetId,
-                    fromId: currentUser.uid,
-                    forQuestion: localRoomData.currentQ + 1
-                }
-            });
+            await updateDoc(currentRoomRef, { activeAttack: { power: selectedAttackPower, targetId: targetId, fromId: currentUser.uid, forQuestion: localRoomData.currentQ + 1 } });
             showToast("¡Ataque lanzado!", false);
         };
 
         // --- SISTEMA DE CAMPAÑA 1 JUGADOR (MUNDOS Y NIVELES) ---
         window.openWorlds = () => {
-            isLocalMode = true;
-            isMultiplayerSetup = false;
-            const grid = document.getElementById('worlds-grid');
-            grid.innerHTML = '';
+            isLocalMode = true; isMultiplayerSetup = false;
+            const grid = document.getElementById('worlds-grid'); grid.innerHTML = '';
             
             Object.values(CATS).forEach((c, index) => {
                 let maxLvl = (userData && userData.spProgress && userData.spProgress[c.id] && userData.spProgress[c.id].maxLevel) ? userData.spProgress[c.id].maxLevel : 1;
                 let percent = Math.min(100, Math.floor((maxLvl - 1) / 10 * 100)); 
-
-                let isCompleted = maxLvl > 10;
-                if(isCompleted) percent = 100;
+                let isCompleted = maxLvl > 10; if(isCompleted) percent = 100;
                 
                 grid.innerHTML += `
                     <button onclick="window.openLevels('${c.id}')" class="relative overflow-hidden glass-panel rounded-2xl flex flex-col items-center justify-center p-4 border border-white/10 active:scale-95 transition-all shadow-md group ${isCompleted ? 'border-yellow-400/50' : ''}">
@@ -2023,40 +1617,24 @@
                         ${isCompleted ? '<div class="absolute top-2 right-2 text-yellow-400 z-10"><i class="fas fa-crown"></i></div>' : ''}
                         <div class="relative z-10 w-14 h-14 rounded-full ${c.color} flex items-center justify-center shadow-inner text-white mb-2 group-hover:scale-110 transition-transform"><i class="fas ${c.icon} text-2xl"></i></div>
                         <span class="relative z-10 font-black text-white text-xs tracking-widest text-center drop-shadow-md">${c.name}</span>
-                        <div class="relative z-10 w-full bg-black/60 h-2 rounded-full mt-3 overflow-hidden shadow-inner">
-                            <div class="h-full ${isCompleted ? 'bg-yellow-400' : 'bg-blue-400'} transition-all" style="width: ${percent}%"></div>
-                        </div>
+                        <div class="relative z-10 w-full bg-black/60 h-2 rounded-full mt-3 overflow-hidden shadow-inner"><div class="h-full ${isCompleted ? 'bg-yellow-400' : 'bg-blue-400'} transition-all" style="width: ${percent}%"></div></div>
                         <span class="relative z-10 text-[9px] text-white mt-1 font-bold drop-shadow-md">${isCompleted ? 'COMPLETADO' : `Nivel ${maxLvl}/10`}</span>
                     </button>`;
             });
-            
             window.showScreen('screen-worlds');
         };
 
         window.openLevels = (worldId) => {
-            currentWorldId = worldId;
-            const worldInfo = CATS[worldId];
+            currentWorldId = worldId; const worldInfo = CATS[worldId];
             document.getElementById('level-world-title').innerHTML = `<i class="fas ${worldInfo.icon} mr-2"></i>${worldInfo.name}`;
-            
-            const grid = document.getElementById('levels-grid');
-            grid.innerHTML = '';
-            
+            const grid = document.getElementById('levels-grid'); grid.innerHTML = '';
             let maxLvl = (userData && userData.spProgress && userData.spProgress[worldId] && userData.spProgress[worldId].maxLevel) ? userData.spProgress[worldId].maxLevel : 1;
             
             for(let i = 1; i <= 10; i++) {
-                let isLocked = i > maxLvl;
-                let isCompleted = i < maxLvl;
-                
-                // Colores base extremadamente oscuros (casi negros) y sumamos +0.4 a la opacidad global para garantizar legibilidad
-                let bgColorStyle = isCompleted 
-                    ? 'background: rgba(2, 44, 34, calc(var(--glass-opacity) + 0.4));' 
-                    : (!isLocked ? 'background: rgba(23, 37, 84, calc(var(--glass-opacity) + 0.4));' : 'background: rgba(2, 6, 23, calc(var(--glass-opacity) + 0.4));');
-                
-                // Aumentamos ligeramente la opacidad del candado de 70% a 85% para que no se pierda tanto
+                let isLocked = i > maxLvl; let isCompleted = i < maxLvl;
+                let bgColorStyle = isCompleted ? 'background: rgba(2, 44, 34, calc(var(--glass-opacity) + 0.4));' : (!isLocked ? 'background: rgba(23, 37, 84, calc(var(--glass-opacity) + 0.4));' : 'background: rgba(2, 6, 23, calc(var(--glass-opacity) + 0.4));');
                 let btnClass = `glass-panel rounded-2xl p-4 flex flex-col items-center justify-center gap-2 border transition-all ${isLocked ? 'opacity-85 grayscale border-slate-700/50 cursor-not-allowed' : 'active:scale-95 cursor-pointer shadow-lg hover:brightness-110'} ${isCompleted ? 'border-emerald-500/50' : (!isLocked ? 'border-blue-500/50 animate-pulse' : '')}`;
-                
                 let iconClass = isLocked ? 'fa-lock text-slate-400' : (isCompleted ? 'fa-star text-emerald-400' : 'fa-play text-blue-400');
-
                 let totalQuestions = i * 5;
 
                 grid.innerHTML += `
@@ -2066,121 +1644,57 @@
                         <span class="text-[10px] text-slate-200 font-bold drop-shadow-md">${totalQuestions} Preguntas</span>
                     </button>`;
             }
-            
             window.showScreen('screen-levels');
         };
 
         window.startSPLevel = async (levelNum) => {
-            currentLevelNum = levelNum;
-            window.showScreen('screen-loading');
-            
-            const limitNum = levelNum * 5;
-            let fetchedQ = [];
+            currentLevelNum = levelNum; window.showScreen('screen-loading');
+            const limitNum = levelNum * 5; let fetchedQ = [];
 
             try {
-                const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle");
-                const snap = await getDocs(qRef);
-                
+                const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle"); const snap = await getDocs(qRef);
                 snap.forEach(doc => {
-                    let rawData = doc.data();
-                    let rawCat = rawData["Categoria"] || "";
-                    let normalizedCat = normalizarCategoria(rawCat);
-
+                    let rawData = doc.data(); let rawCat = rawData["Categoria"] || ""; let normalizedCat = normalizarCategoria(rawCat);
                     if (currentWorldId === normalizedCat || currentWorldId === 'aleatorio') {
-                        let formattedQ = {
-                            cat: normalizedCat,
-                            text: rawData["Pregunta"],
-                            options: [
-                                rawData["Opcion 1"],
-                                rawData["Opcion 2"],
-                                rawData["Opcion 3"],
-                                rawData["Opcion 4"]
-                            ]
-                        };
-
-                        let correctVal = rawData["Respuesta Correcta"];
-                        if (typeof correctVal === 'string') correctVal = parseInt(correctVal, 10);
-                        formattedQ.correct = correctVal - 1; 
-                        if (rawData["Imagen"]) { formattedQ.img = rawData["Imagen"]; }
-
-                        if (formattedQ.text && formattedQ.options[0] && formattedQ.options[3] && !isNaN(formattedQ.correct)) {
-                            fetchedQ.push(formattedQ);
-                        }
+                        let formattedQ = { cat: normalizedCat, text: rawData["Pregunta"], options: [ rawData["Opcion 1"], rawData["Opcion 2"], rawData["Opcion 3"], rawData["Opcion 4"] ] };
+                        let correctVal = rawData["Respuesta Correcta"]; if (typeof correctVal === 'string') correctVal = parseInt(correctVal, 10);
+                        formattedQ.correct = correctVal - 1; if (rawData["Imagen"]) { formattedQ.img = rawData["Imagen"]; }
+                        if (formattedQ.text && formattedQ.options[0] && formattedQ.options[3] && !isNaN(formattedQ.correct)) { fetchedQ.push(formattedQ); }
                     }
                 });
 
                 if(fetchedQ.length === 0) throw new Error("No hay preguntas para este mundo.");
-                
-                shuffleArray(fetchedQ);
-                
-                activeQuestions = [];
-                let i = 0;
-                while (activeQuestions.length < limitNum) {
-                    activeQuestions.push(fetchedQ[i % fetchedQ.length]);
-                    i++;
-                }
-
+                shuffleArray(fetchedQ); activeQuestions = []; let i = 0;
+                while (activeQuestions.length < limitNum) { activeQuestions.push(fetchedQ[i % fetchedQ.length]); i++; }
             } catch(e) {
                 console.error("Error cargando DB:", e);
                 let fall = backupQuestions.filter(q => currentWorldId === q.cat || currentWorldId === 'aleatorio');
-                let pool = fall.length > 0 ? [...fall] : [...backupQuestions];
-                shuffleArray(pool);
-                
-                activeQuestions = [];
-                let i = 0;
-                while (activeQuestions.length < limitNum) {
-                    activeQuestions.push(pool[i % pool.length]);
-                    i++;
-                }
+                let pool = fall.length > 0 ? [...fall] : [...backupQuestions]; shuffleArray(pool); activeQuestions = []; let i = 0;
+                while (activeQuestions.length < limitNum) { activeQuestions.push(pool[i % pool.length]); i++; }
                 showToast("Modo Respaldo. Conexión débil.", true);
             }
 
             localRoomData = { questions: activeQuestions }; 
-            
-            if(userData && userData.spLives !== undefined && userData.spLives > 0) {
-                spLives = userData.spLives;
-            } else {
-                spLives = 3;
-            }
-
+            if(userData && userData.spLives !== undefined && userData.spLives > 0) spLives = userData.spLives; else spLives = 3;
             startLocalGameLoop();
         };
 
         function startLocalGameLoop() {
-            score = 0; 
-            combo = 1; 
-            currentQIndex = 0; 
-            correctAnswersCount = 0; 
-            spConsecutiveCorrect = 0;
-            spQuestionsPlayed = 0;
-            window.hasSavedScoreThisGame = false;
-            
-            updateSPHUD(); 
-            window.showScreen('screen-question'); 
-            loadSPQuestion();
+            score = 0; combo = 1; currentQIndex = 0; correctAnswersCount = 0; spConsecutiveCorrect = 0; spQuestionsPlayed = 0; window.hasSavedScoreThisGame = false;
+            updateSPHUD(); window.showScreen('screen-question'); loadSPQuestion();
         }
 
         function updateSPHUD() {
-            document.getElementById('score-display').innerText = score;
-            document.getElementById('combo-display').innerText = `x${combo}`;
-            
-            const livesDisplay = document.getElementById('lives-display');
-            livesDisplay.innerHTML = `<i class="fas fa-heart text-red-500 mt-1"></i> <span class="text-white font-black ml-1">${spLives}</span>`;
-            livesDisplay.classList.remove('hidden');
-            document.getElementById('combo-container').classList.remove('hidden');
+            document.getElementById('score-display').innerText = score; document.getElementById('combo-display').innerText = `x${combo}`;
+            const livesDisplay = document.getElementById('lives-display'); livesDisplay.innerHTML = `<i class="fas fa-heart text-red-500 mt-1"></i> <span class="text-white font-black ml-1">${spLives}</span>`;
+            livesDisplay.classList.remove('hidden'); document.getElementById('combo-container').classList.remove('hidden');
         }
 
         function loadSPQuestion() {
             if(currentQIndex >= localRoomData.questions.length) return finishLocalGame();
-            
             const headerAv = document.getElementById('header-player-avatar');
-            if (headerAv && userData) {
-                headerAv.src = getAvatarExpression(userData.avatar || AVATARS[0], 'round');
-                headerAv.classList.remove('scale-125', 'shake');
-            }
-
-            const q = localRoomData.questions[currentQIndex];
-            renderQuestionUI(q, currentQIndex, localRoomData.questions.length, (idx, btn) => handleSPAnswer(idx, btn, q.correct));
+            if (headerAv && userData) { headerAv.src = getAvatarExpression(userData.avatar || AVATARS[0], 'round'); headerAv.classList.remove('scale-125', 'shake'); }
+            const q = localRoomData.questions[currentQIndex]; renderQuestionUI(q, currentQIndex, localRoomData.questions.length, (idx, btn) => handleSPAnswer(idx, btn, q.correct));
             startSPTimer();
         }
 
@@ -2197,370 +1711,188 @@
 
         function handleSPAnswer(selIdx, btnEl, correctIdx) {
             clearInterval(timerInterval); disableOptions();
-            const btns = document.getElementById('options-container').querySelectorAll('button');
-            const headerAv = document.getElementById('header-player-avatar');
-            const baseAv = userData?.avatar || AVATARS[0];
-            
+            const btns = document.getElementById('options-container').querySelectorAll('button'); const headerAv = document.getElementById('header-player-avatar'); const baseAv = userData?.avatar || AVATARS[0];
             spQuestionsPlayed++;
 
             if(selIdx === correctIdx) {
-                if(btnEl) {
-                    btnEl.classList.remove('bg-slate-800/80', 'glass-panel');
-                    btnEl.classList.add('bg-emerald-500', 'border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.8)]', 'text-white', 'scale-105');
-                }
-                if(headerAv) {
-                    headerAv.src = getAvatarExpression(baseAv, 'happy');
-                    headerAv.classList.add('scale-125');
-                }
-                score += (100 * combo); 
-                combo++; 
-                correctAnswersCount++; 
-                spConsecutiveCorrect++;
-
+                if(btnEl) { btnEl.classList.remove('bg-slate-800/80', 'glass-panel'); btnEl.classList.add('bg-emerald-500', 'border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.8)]', 'text-white', 'scale-105'); }
+                if(headerAv) { headerAv.src = getAvatarExpression(baseAv, 'happy'); headerAv.classList.add('scale-125'); }
+                score += (100 * combo); combo++; correctAnswersCount++; spConsecutiveCorrect++;
                 if(isSoundOn) playSoundFX('correct'); 
                 
-                if (spConsecutiveCorrect === 3) {
-                    spLives++;
-                    spConsecutiveCorrect = 0; 
-                    showToast("❤️ ¡+1 VIDA POR RACHA IMPARABLE!");
-                    if(isSoundOn) setTimeout(() => playBeep(900, 'square', 0.2), 200);
-                }
-                if (spQuestionsPlayed % 6 === 0) {
-                    spLives++;
-                    showToast("❤️ ¡+1 VIDA POR PROGRESO!");
-                    if(isSoundOn) setTimeout(() => playBeep(700, 'square', 0.2), 400);
-                }
+                if (spConsecutiveCorrect === 3) { spLives++; spConsecutiveCorrect = 0; showToast("❤️ ¡+1 VIDA POR RACHA IMPARABLE!"); if(isSoundOn) setTimeout(() => playBeep(900, 'square', 0.2), 200); }
+                if (spQuestionsPlayed % 6 === 0) { spLives++; showToast("❤️ ¡+1 VIDA POR PROGRESO!"); if(isSoundOn) setTimeout(() => playBeep(700, 'square', 0.2), 400); }
                 
-                updateSPHUD();
-                setTimeout(() => { currentQIndex++; loadSPQuestion(); }, 1500);
-
+                updateSPHUD(); setTimeout(() => { currentQIndex++; loadSPQuestion(); }, 1500);
             } else {
-                if(btnEl) {
-                    btnEl.classList.remove('bg-slate-800/80', 'glass-panel');
-                    btnEl.classList.add('bg-red-500', 'border-red-400', 'shake', 'text-white');
-                }
-                if(headerAv) {
-                    headerAv.src = getAvatarExpression(baseAv, 'dizzy');
-                    headerAv.classList.add('shake');
-                }
-                btns[correctIdx].classList.remove('bg-slate-800/80', 'glass-panel');
-                btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
-                
+                if(btnEl) { btnEl.classList.remove('bg-slate-800/80', 'glass-panel'); btnEl.classList.add('bg-red-500', 'border-red-400', 'shake', 'text-white'); }
+                if(headerAv) { headerAv.src = getAvatarExpression(baseAv, 'dizzy'); headerAv.classList.add('shake'); }
+                btns[correctIdx].classList.remove('bg-slate-800/80', 'glass-panel'); btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
                 if(selIdx === -1) document.getElementById('screen-question').classList.add('shake');
                 
-                combo = 1; 
-                spConsecutiveCorrect = 0;
-                spLives--;
+                combo = 1; spConsecutiveCorrect = 0; spLives--;
+                if (spQuestionsPlayed % 6 === 0) { spLives++; showToast("❤️ ¡+1 VIDA POR PROGRESO!"); }
                 
-                if (spQuestionsPlayed % 6 === 0) {
-                    spLives++;
-                    showToast("❤️ ¡+1 VIDA POR PROGRESO!");
-                }
-                
-                if(isSoundOn) playSoundFX('wrong'); 
-                updateSPHUD();
-                
+                if(isSoundOn) playSoundFX('wrong'); updateSPHUD();
                 setTimeout(() => { 
                     document.getElementById('screen-question').classList.remove('shake');
-                    if (spLives <= 0) {
-                        failSPLevel();
-                    } else {
-                        currentQIndex++; 
-                        loadSPQuestion(); 
-                    }
+                    if (spLives <= 0) failSPLevel(); else { currentQIndex++; loadSPQuestion(); }
                 }, 1500);
             }
         }
 
         async function failSPLevel() {
-            if (currentUser && userData) {
-                userData.spLives = 3;
-                await updateDoc(doc(db, 'users', currentUser.uid), { spLives: 3 }).catch(()=>{});
-            }
+            if (currentUser && userData) { userData.spLives = 3; await updateDoc(doc(db, 'users', currentUser.uid), { spLives: 3 }).catch(()=>{}); }
             window.showScreen('screen-sp-fail');
         }
 
-        window.retrySPLevel = () => {
-            spLives = 3;
-            startLocalGameLoop();
-        };
+        window.retrySPLevel = () => { spLives = 3; startLocalGameLoop(); };
 
         window.nextSPLevel = () => {
-            if (currentLevelNum < 10) {
-                window.startSPLevel(currentLevelNum + 1);
-            } else {
-                showToast("¡Has completado el mundo entero!");
-                window.openWorlds();
-            }
+            if (currentLevelNum < 10) window.startSPLevel(currentLevelNum + 1);
+            else { showToast("¡Has completado el mundo entero!"); window.openWorlds(); }
         };
 
         async function finishLocalGame() {
             document.getElementById('sp-win-stats').innerHTML = `Has mantenido <span class="text-white">❤️ ${spLives} vidas</span> y logrado <span class="text-white">${score} PTS</span>.`;
-            
             let btnNext = document.getElementById('btn-next-splevel');
-            if (currentLevelNum >= 10) {
-                btnNext.innerHTML = '<i class="fas fa-crown mr-2"></i>MUNDO COMPLETADO';
-                btnNext.onclick = window.openWorlds;
-            } else {
-                btnNext.innerHTML = '<i class="fas fa-forward mr-2"></i>SIGUIENTE NIVEL';
-                btnNext.onclick = window.nextSPLevel;
-            }
-
+            if (currentLevelNum >= 10) { btnNext.innerHTML = '<i class="fas fa-crown mr-2"></i>MUNDO COMPLETADO'; btnNext.onclick = window.openWorlds; } 
+            else { btnNext.innerHTML = '<i class="fas fa-forward mr-2"></i>SIGUIENTE NIVEL'; btnNext.onclick = window.nextSPLevel; }
             window.showScreen('screen-sp-win');
             
             if (currentUser && userData) {
                 let maxLvl = 1;
-                if (userData.spProgress && userData.spProgress[currentWorldId] && userData.spProgress[currentWorldId].maxLevel) {
-                    maxLvl = userData.spProgress[currentWorldId].maxLevel;
-                }
-                
+                if (userData.spProgress && userData.spProgress[currentWorldId] && userData.spProgress[currentWorldId].maxLevel) maxLvl = userData.spProgress[currentWorldId].maxLevel;
                 let newMax = Math.max(maxLvl, currentLevelNum + 1);
                 
                 if (!userData.spProgress) userData.spProgress = {};
                 if (!userData.spProgress[currentWorldId]) userData.spProgress[currentWorldId] = {};
                 
-                userData.spProgress[currentWorldId].maxLevel = newMax;
-                userData.spLives = spLives;
-                
-                let updates = {
-                    [`spProgress.${currentWorldId}.maxLevel`]: newMax,
-                    spLives: spLives
-                };
+                userData.spProgress[currentWorldId].maxLevel = newMax; userData.spLives = spLives;
+                let updates = { [`spProgress.${currentWorldId}.maxLevel`]: newMax, spLives: spLives };
                 
                 if (score > (userData.highScore || 0)) {
-                    updates.highScore = score;
-                    userData.highScore = score;
+                    updates.highScore = score; userData.highScore = score;
                     setTimeout(() => showToast("🏆 ¡NUEVO RÉCORD GLOBAL!", false), 800);
                 }
-
                 await updateDoc(doc(db, 'users', currentUser.uid), updates).catch(()=>{});
             }
         }
 
-
         // --- MULTIPLAYER SÍNCRONO LOGIC ---
         function loadMPQuestion() {
-            document.getElementById('screen-question-results').classList.add('hidden');
-            window.showScreen('screen-question');
-            document.getElementById('mp-waiting-overlay').classList.add('hidden');
-            
-            const headerAv = document.getElementById('header-player-avatar');
-            if (headerAv && userData) {
-                headerAv.src = getAvatarExpression(userData.avatar || AVATARS[0], 'round');
-                headerAv.classList.remove('scale-125', 'shake');
-            }
-
-            const q = localRoomData.questions[currentQIndex];
-            renderQuestionUI(q, currentQIndex, localRoomData.questions.length, (idx) => handleMPAnswer(idx, q.correct));
-            
+            document.getElementById('screen-question-results').classList.add('hidden'); window.showScreen('screen-question'); document.getElementById('mp-waiting-overlay').classList.add('hidden');
+            const headerAv = document.getElementById('header-player-avatar'); if (headerAv && userData) { headerAv.src = getAvatarExpression(userData.avatar || AVATARS[0], 'round'); headerAv.classList.remove('scale-125', 'shake'); }
+            const q = localRoomData.questions[currentQIndex]; renderQuestionUI(q, currentQIndex, localRoomData.questions.length, (idx) => handleMPAnswer(idx, q.correct));
             startMPTimer();
         }
 
         function startMPTimer() {
-            questionStartTime = Date.now();
-            timeRemaining = 20; 
-            const bar = document.getElementById('timer-bar');
+            questionStartTime = Date.now(); timeRemaining = 20; const bar = document.getElementById('timer-bar');
             bar.style.width = '100%'; bar.className = 'h-full bg-yellow-400 w-full transition-all duration-100 linear rounded-full shadow-[0_0_10px_rgba(59,130,246,0.6)]';
-            
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
-                timeRemaining = 20 - ((Date.now() - questionStartTime) / 1000);
-                if(timeRemaining < 0) timeRemaining = 0;
+                timeRemaining = 20 - ((Date.now() - questionStartTime) / 1000); if(timeRemaining < 0) timeRemaining = 0;
                 bar.style.width = `${(timeRemaining/20)*100}%`;
                 if(timeRemaining <= 5) bar.classList.replace('bg-yellow-400', 'bg-red-500');
-                if(timeRemaining <= 0) {
-                    clearInterval(timerInterval);
-                    handleMPAnswer(-1, localRoomData.questions[currentQIndex].correct);
-                }
+                if(timeRemaining <= 0) { clearInterval(timerInterval); handleMPAnswer(-1, localRoomData.questions[currentQIndex].correct); }
             }, 100);
         }
 
         function handleMPAnswer(selIdx, correctIdx) {
             clearInterval(timerInterval); disableOptions();
-            const btns = document.getElementById('options-container').querySelectorAll('button');
-            const headerAv = document.getElementById('header-player-avatar');
-            const baseAv = userData?.avatar || AVATARS[0];
-            
-            let timeTaken = (Date.now() - questionStartTime) / 1000;
-            if (timeTaken > 20) timeTaken = 20;
-            
-            let isCorrect = (selIdx === correctIdx);
-            let pts = isCorrect ? Math.round(1000 * ((20 - timeTaken) / 20)) : 0;
+            const btns = document.getElementById('options-container').querySelectorAll('button'); const headerAv = document.getElementById('header-player-avatar'); const baseAv = userData?.avatar || AVATARS[0];
+            let timeTaken = (Date.now() - questionStartTime) / 1000; if (timeTaken > 20) timeTaken = 20;
+            let isCorrect = (selIdx === correctIdx); let pts = isCorrect ? Math.round(1000 * ((20 - timeTaken) / 20)) : 0;
             
             if(isCorrect) {
-                if(selIdx > -1) {
-                    btns[selIdx].classList.remove('bg-slate-800/80', 'glass-panel');
-                    btns[selIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.8)]', 'text-white', 'scale-105');
-                }
-                if(headerAv) {
-                    headerAv.src = getAvatarExpression(baseAv, 'happy');
-                    headerAv.classList.add('scale-125');
-                }
+                if(selIdx > -1) { btns[selIdx].classList.remove('bg-slate-800/80', 'glass-panel'); btns[selIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.8)]', 'text-white', 'scale-105'); }
+                if(headerAv) { headerAv.src = getAvatarExpression(baseAv, 'happy'); headerAv.classList.add('scale-125'); }
                 if(isSoundOn) playSoundFX('correct'); 
             } else {
-                if(selIdx > -1) {
-                    btns[selIdx].classList.remove('bg-slate-800/80', 'glass-panel');
-                    btns[selIdx].classList.add('bg-red-500', 'border-red-400', 'text-white');
-                }
-                btns[correctIdx].classList.remove('bg-slate-800/80', 'glass-panel');
-                btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
-                
-                if(headerAv) {
-                    headerAv.src = getAvatarExpression(baseAv, 'dizzy');
-                    headerAv.classList.add('shake');
-                }
+                if(selIdx > -1) { btns[selIdx].classList.remove('bg-slate-800/80', 'glass-panel'); btns[selIdx].classList.add('bg-red-500', 'border-red-400', 'text-white'); }
+                btns[correctIdx].classList.remove('bg-slate-800/80', 'glass-panel'); btns[correctIdx].classList.add('bg-emerald-500', 'border-emerald-400', 'text-white');
+                if(headerAv) { headerAv.src = getAvatarExpression(baseAv, 'dizzy'); headerAv.classList.add('shake'); }
                 if(isSoundOn) playSoundFX('wrong'); 
             }
 
             document.getElementById('mp-waiting-overlay').classList.remove('hidden');
-
             const currentScore = localRoomData.players[currentUser.uid].score || 0;
-            updateDoc(currentRoomRef, { 
-                [`answers.${currentUser.uid}`]: { time: timeTaken, correct: isCorrect, points: pts },
-                [`players.${currentUser.uid}.score`]: currentScore + pts
-            }).catch(()=>{});
+            updateDoc(currentRoomRef, { [`answers.${currentUser.uid}`]: { time: timeTaken, correct: isCorrect, points: pts }, [`players.${currentUser.uid}.score`]: currentScore + pts }).catch(()=>{});
         }
 
         function checkHostAdvancement() {
             if(localRoomData.hostId === currentUser.uid && localRoomData.status === 'playing') {
-                const ansCount = Object.keys(localRoomData.answers || {}).length;
-                const pCount = Object.keys(localRoomData.players || {}).length;
-                if(ansCount >= pCount && ansCount > 0) {
-                    updateDoc(currentRoomRef, { status: 'results' });
-                }
+                const ansCount = Object.keys(localRoomData.answers || {}).length; const pCount = Object.keys(localRoomData.players || {}).length;
+                if(ansCount >= pCount && ansCount > 0) updateDoc(currentRoomRef, { status: 'results' });
             }
         }
 
         function showMPResults() {
-            showingResults = true;
-            document.getElementById('screen-question').classList.add('hidden');
-            document.getElementById('screen-question-results').classList.remove('hidden');
+            showingResults = true; document.getElementById('screen-question').classList.add('hidden'); document.getElementById('screen-question-results').classList.remove('hidden');
+            document.getElementById('mp-results-title').innerText = "RESULTADOS"; document.getElementById('mp-round-view').classList.remove('hidden'); document.getElementById('mp-total-view').classList.add('hidden');
 
-            document.getElementById('mp-results-title').innerText = "RESULTADOS";
-            document.getElementById('mp-round-view').classList.remove('hidden');
-            document.getElementById('mp-total-view').classList.add('hidden');
-
-            const q = localRoomData.questions[localRoomData.currentQ];
-            document.getElementById('correct-answer-text').innerText = q.options[q.correct];
-
+            const q = localRoomData.questions[localRoomData.currentQ]; document.getElementById('correct-answer-text').innerText = q.options[q.correct];
             const list = document.getElementById('mp-results-list'); list.innerHTML = '';
             
-            let results = [];
-            const players = localRoomData.players || {};
-            const answers = localRoomData.answers || {};
-
+            let results = []; const players = localRoomData.players || {}; const answers = localRoomData.answers || {};
             Object.keys(players).forEach(uid => {
                 const p = players[uid]; const ans = answers[uid];
                 if(ans) results.push({ uid: uid, name: p.name, avatar: p.avatar, score: p.score, ...ans });
                 else results.push({ uid: uid, name: p.name, avatar: p.avatar, score: p.score, time: 20, correct: false, points: 0 });
             });
 
-            let playersByScore = [...results].sort((a, b) => a.score - b.score);
-            let lastPlaceUid = playersByScore[0].uid;
+            let playersByScore = [...results].sort((a, b) => a.score - b.score); let lastPlaceUid = playersByScore[0].uid;
 
-            const totalList = document.getElementById('mp-total-view');
-            totalList.innerHTML = '';
-            let totalSorted = [...playersByScore].reverse(); 
+            const totalList = document.getElementById('mp-total-view'); totalList.innerHTML = ''; let totalSorted = [...playersByScore].reverse(); 
             totalSorted.forEach((p, i) => {
-                const isMe = p.uid === currentUser.uid;
-                const av = getAvatarExpression(p.avatar || AVATARS[0], 'round');
+                const isMe = p.uid === currentUser.uid; const av = getAvatarExpression(p.avatar || AVATARS[0], 'round');
                 totalList.innerHTML += `
                     <div class="flex items-center justify-between p-4 mb-3 rounded-2xl glass-panel ${isMe ? 'bg-blue-600/20 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-slate-800/80 border-white/5'} shadow-md">
                         <div class="flex items-center gap-4">
-                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white text-sm md:text-lg shadow-inner shrink-0 overflow-hidden relative">
-                                <span class="absolute z-10 text-white/80 drop-shadow-md">#${i+1}</span>
-                                <img src="${av}" class="absolute inset-0 w-full h-full object-cover opacity-30">
-                            </div>
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white text-sm md:text-lg shadow-inner shrink-0 overflow-hidden relative"><span class="absolute z-10 text-white/80 drop-shadow-md">#${i+1}</span><img src="${av}" class="absolute inset-0 w-full h-full object-cover opacity-30"></div>
                             <img src="${av}" class="w-10 h-10 rounded-full border-2 border-slate-500 bg-slate-900 object-cover shadow-inner shrink-0 hidden md:block">
                             <span class="font-black text-white text-lg md:text-xl tracking-wide truncate max-w-[120px] md:max-w-[200px]">${p.name}</span>
                         </div>
-                        <div class="text-right shrink-0">
-                            <span class="text-2xl md:text-3xl font-black text-blue-400 drop-shadow-md">${p.score}</span>
-                            <span class="text-[10px] text-slate-400 block -mt-1 font-bold tracking-widest">PTS</span>
-                        </div>
+                        <div class="text-right shrink-0"><span class="text-2xl md:text-3xl font-black text-blue-400 drop-shadow-md">${p.score}</span><span class="text-[10px] text-slate-400 block -mt-1 font-bold tracking-widest">PTS</span></div>
                     </div>`;
             });
 
-            results.sort((a, b) => {
-                if(b.points !== a.points) return b.points - a.points;
-                return a.time - b.time;
-            });
-
+            results.sort((a, b) => { if(b.points !== a.points) return b.points - a.points; return a.time - b.time; });
             results.forEach((r, i) => {
                 const icon = r.correct ? '<i class="fas fa-check-circle text-emerald-400 text-lg drop-shadow-md"></i>' : '<i class="fas fa-times-circle text-red-500 text-lg"></i>';
                 const ptsColor = r.correct ? 'text-emerald-400' : 'text-slate-500';
                 
                 let attackIconHTML = '';
                 if (localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === (localRoomData.currentQ + 1) && localRoomData.activeAttack.targetId === r.uid) {
-                    const pwrIcons = {
-                        'ice': '<i class="fas fa-snowflake text-cyan-400 ml-2 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] animate-pulse"></i>',
-                        'swap': '<i class="fas fa-random text-purple-400 ml-2 drop-shadow-[0_0_8px_rgba(192,132,252,0.8)] animate-pulse"></i>',
-                        'slime': '<i class="fas fa-fill-drip text-green-400 ml-2 drop-shadow-[0_0_8px_rgba(74,222,128,0.8)] animate-pulse"></i>',
-                        'block': '<i class="fas fa-lock text-red-400 ml-2 drop-shadow-[0_0_8px_rgba(248,113,113,0.8)] animate-pulse"></i>'
-                    };
+                    const pwrIcons = { 'ice': '<i class="fas fa-snowflake text-cyan-400 ml-2 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] animate-pulse"></i>', 'swap': '<i class="fas fa-random text-purple-400 ml-2 drop-shadow-[0_0_8px_rgba(192,132,252,0.8)] animate-pulse"></i>', 'slime': '<i class="fas fa-fill-drip text-green-400 ml-2 drop-shadow-[0_0_8px_rgba(74,222,128,0.8)] animate-pulse"></i>', 'block': '<i class="fas fa-lock text-red-400 ml-2 drop-shadow-[0_0_8px_rgba(248,113,113,0.8)] animate-pulse"></i>' };
                     attackIconHTML = pwrIcons[localRoomData.activeAttack.power] || '';
                 }
 
-                const baseAv = r.avatar || AVATARS[0];
-                const expr = r.correct ? 'happy' : 'dizzy';
-                const finalAvatar = getAvatarExpression(baseAv, expr);
+                const baseAv = r.avatar || AVATARS[0]; const expr = r.correct ? 'happy' : 'dizzy'; const finalAvatar = getAvatarExpression(baseAv, expr);
 
                 list.innerHTML += `
                     <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-800/80 border border-white/5 shadow-md">
                         <div class="flex items-center gap-3">
-                            <div class="relative w-8 h-8 rounded-full border border-slate-600 flex items-center justify-center text-xs font-black text-white shadow-inner shrink-0 overflow-hidden">
-                                <span class="absolute z-10 drop-shadow-md">#${i+1}</span>
-                                <img src="${finalAvatar}" class="absolute inset-0 w-full h-full object-cover opacity-40">
-                            </div>
+                            <div class="relative w-8 h-8 rounded-full border border-slate-600 flex items-center justify-center text-xs font-black text-white shadow-inner shrink-0 overflow-hidden"><span class="absolute z-10 drop-shadow-md">#${i+1}</span><img src="${finalAvatar}" class="absolute inset-0 w-full h-full object-cover opacity-40"></div>
                             <span class="font-black text-white tracking-wide truncate max-w-[90px] md:max-w-[150px]">${r.name}${attackIconHTML}</span>
                         </div>
-                        <div class="flex items-center gap-2 md:gap-4">
-                            <span class="text-[10px] md:text-xs font-bold text-slate-400 w-8 md:w-10 text-right">${r.time.toFixed(1)}s</span>
-                            ${icon}
-                            <span class="font-black ${ptsColor} w-12 md:w-16 text-right text-base md:text-lg">+${r.points}</span>
-                        </div>
+                        <div class="flex items-center gap-2 md:gap-4"><span class="text-[10px] md:text-xs font-bold text-slate-400 w-8 md:w-10 text-right">${r.time.toFixed(1)}s</span>${icon}<span class="font-black ${ptsColor} w-12 md:w-16 text-right text-base md:text-lg">+${r.points}</span></div>
                     </div>`;
             });
 
-            let isAttackRound = false;
-            let opponentsArr = [];
-            
-            if (localRoomData.mode === 'attacks' && (localRoomData.currentQ + 1) % 2 === 0 && localRoomData.currentQ < 14) {
-                isAttackRound = true;
-                opponentsArr = playersByScore.filter(p => p.uid !== lastPlaceUid);
-            }
-            
-            let attackLaunchedThisRound = false;
-            if (localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === (localRoomData.currentQ + 1)) {
-                attackLaunchedThisRound = true;
-            }
-            
-            if (isAttackRound && currentUser.uid === lastPlaceUid && !attackLaunchedThisRound) {
-                window.showAttackModal(opponentsArr);
-            } else {
-                document.getElementById('attack-modal').classList.add('hidden');
-            }
+            let isAttackRound = false; let opponentsArr = [];
+            if (localRoomData.mode === 'attacks' && (localRoomData.currentQ + 1) % 2 === 0 && localRoomData.currentQ < 14) { isAttackRound = true; opponentsArr = playersByScore.filter(p => p.uid !== lastPlaceUid); }
+            let attackLaunchedThisRound = false; if (localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === (localRoomData.currentQ + 1)) attackLaunchedThisRound = true;
+            if (isAttackRound && currentUser.uid === lastPlaceUid && !attackLaunchedThisRound) window.showAttackModal(opponentsArr); else document.getElementById('attack-modal').classList.add('hidden');
 
-            let count = (isAttackRound && !attackLaunchedThisRound) ? 15 : 8; 
-            document.getElementById('mp-countdown-sec').innerText = count;
-            
+            let count = (isAttackRound && !attackLaunchedThisRound) ? 15 : 8; document.getElementById('mp-countdown-sec').innerText = count;
             clearInterval(mpResultsInterval);
             mpResultsInterval = setInterval(() => {
-                
                 let currentAttackLaunched = localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === (localRoomData.currentQ + 1);
-                
-                if (isAttackRound && currentAttackLaunched && count > 4) {
-                    count = 4;
-                }
-                
-                if (count <= 4) {
-                    document.getElementById('mp-round-view').classList.add('hidden');
-                    document.getElementById('mp-total-view').classList.remove('hidden');
-                    document.getElementById('mp-results-title').innerText = "RANKING TOTAL";
-                }
-                
-                count--; 
-                document.getElementById('mp-countdown-sec').innerText = count;
+                if (isAttackRound && currentAttackLaunched && count > 4) count = 4;
+                if (count <= 4) { document.getElementById('mp-round-view').classList.add('hidden'); document.getElementById('mp-total-view').classList.remove('hidden'); document.getElementById('mp-results-title').innerText = "RANKING TOTAL"; }
+                count--; document.getElementById('mp-countdown-sec').innerText = count;
                 
                 if(count <= 0) {
                     clearInterval(mpResultsInterval);
@@ -2571,28 +1903,13 @@
                             if (localRoomData.type === 'duel') {
                                 const uids = Object.keys(localRoomData.players);
                                 if (uids.length === 2) {
-                                    const p1 = uids[0];
-                                    const p2 = uids[1];
-                                    const s1 = localRoomData.players[p1].score || 0;
-                                    const s2 = localRoomData.players[p2].score || 0;
-                                    
+                                    const p1 = uids[0]; const p2 = uids[1]; const s1 = localRoomData.players[p1].score || 0; const s2 = localRoomData.players[p2].score || 0;
                                     if (s1 !== s2) {
-                                        const winnerUid = s1 > s2 ? p1 : p2;
-                                        const sortedUids = [...uids].sort();
-                                        const duelId = sortedUids.join('_');
-                                        
+                                        const winnerUid = s1 > s2 ? p1 : p2; const sortedUids = [...uids].sort(); const duelId = sortedUids.join('_');
                                         const duelRef = doc(db, 'duels', duelId);
                                         getDoc(duelRef).then(snap => {
-                                            if (snap.exists()) {
-                                                updateDoc(duelRef, {
-                                                    [`wins_${winnerUid}`]: increment(1)
-                                                });
-                                            } else {
-                                                setDoc(duelRef, {
-                                                    [`wins_${winnerUid}`]: 1,
-                                                    playerNames: { [p1]: localRoomData.players[p1].name, [p2]: localRoomData.players[p2].name }
-                                                });
-                                            }
+                                            if (snap.exists()) updateDoc(duelRef, { [`wins_${winnerUid}`]: increment(1) });
+                                            else setDoc(duelRef, { [`wins_${winnerUid}`]: 1, playerNames: { [p1]: localRoomData.players[p1].name, [p2]: localRoomData.players[p2].name } });
                                         }).catch(()=>{});
                                     }
                                 }
@@ -2602,175 +1919,87 @@
                     }
                 }
             }, 1000);
-            
             document.getElementById('score-display').innerText = localRoomData.players[currentUser.uid].score;
         }
 
-        // --- UTILIDADES ---
         function renderQuestionUI(q, qIdx, qTotal, onClickCallback) {
-            activeAttackIntervals.forEach(clearInterval);
-            activeAttackIntervals = [];
-
-            const oldWarning = document.getElementById('swap-warning');
-            if(oldWarning) oldWarning.remove();
+            activeAttackIntervals.forEach(clearInterval); activeAttackIntervals = [];
+            const oldWarning = document.getElementById('swap-warning'); if(oldWarning) oldWarning.remove();
 
             const catConf = CATS[q.cat] || { name: q.cat, color: 'bg-blue-500' };
             document.getElementById('q-counter').innerText = `${qIdx + 1}/${qTotal}`;
-            const badge = document.getElementById('q-category-badge');
-            badge.innerText = catConf.name; badge.className = `px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-md ${catConf.color}`;
+            const badge = document.getElementById('q-category-badge'); badge.innerText = catConf.name; badge.className = `px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-md ${catConf.color}`;
             
-            const qTextEl = document.getElementById('question-text');
-            qTextEl.innerText = q.text;
-            qTextEl.className = "text-lg md:text-xl font-bold mb-3 text-white drop-shadow-md transition-all";
-            
-            const imgC = document.getElementById('q-image-container'); 
-            const imgEl = document.getElementById('q-image');
-            
-            imgEl.onerror = function() {
-                imgC.classList.add('hidden');
-            };
-            imgEl.removeAttribute('src');
+            const qTextEl = document.getElementById('question-text'); qTextEl.innerText = q.text; qTextEl.className = "text-lg md:text-xl font-bold mb-3 text-white drop-shadow-md transition-all";
+            const imgC = document.getElementById('q-image-container'); const imgEl = document.getElementById('q-image');
+            imgEl.onerror = function() { imgC.classList.add('hidden'); }; imgEl.removeAttribute('src');
             
             if(q.img && q.img.trim() !== '') { 
-                imgC.classList.remove('hidden'); 
-                imgEl.src = q.img.trim(); 
-                imgC.className = "h-20 md:h-32 w-full object-contain mx-auto rounded-lg border border-white/20 shadow-sm bg-black/30 p-1 mb-4 flex items-center justify-center shrink-0";
-                imgEl.className = "h-full w-auto max-w-full object-contain";
-            } else { 
-                imgC.classList.add('hidden'); 
-            }
+                imgC.classList.remove('hidden'); imgEl.src = q.img.trim(); 
+                imgC.className = "h-20 md:h-32 w-full object-contain mx-auto rounded-lg border border-white/20 shadow-sm bg-black/30 p-1 mb-4 flex items-center justify-center shrink-0"; imgEl.className = "h-full w-auto max-w-full object-contain";
+            } else { imgC.classList.add('hidden'); }
             
             const opts = document.getElementById('options-container'); opts.innerHTML = '';
             
             let activePower = null;
-            if(localRoomData && localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === qIdx && localRoomData.activeAttack.targetId === currentUser.uid) {
-                activePower = localRoomData.activeAttack.power;
-            }
+            if(localRoomData && localRoomData.activeAttack && localRoomData.activeAttack.forQuestion === qIdx && localRoomData.activeAttack.targetId === currentUser.uid) activePower = localRoomData.activeAttack.power;
 
-            let isFrozen = activePower === 'ice';
-            let iceTaps = isFrozen ? 5 : 0;
+            let isFrozen = activePower === 'ice'; let iceTaps = isFrozen ? 5 : 0;
             if(isFrozen) showToast("🥶 ¡ESTÁS CONGELADO! Pulsa los botones rápido para romper el hielo.", true);
 
-            let isBlocked = activePower === 'block';
-            let blockTimeLeft = 5;
+            let isBlocked = activePower === 'block'; let blockTimeLeft = 5;
             if(isBlocked) {
                 showToast("🔒 ¡BLOQUEADO! Tus respuestas están cerradas 5 segundos.", true);
                 let bInt = setInterval(() => {
-                    blockTimeLeft--;
-                    document.querySelectorAll('.block-timer').forEach(el => el.innerText = blockTimeLeft + 's');
-                    if(blockTimeLeft <= 0) {
-                        clearInterval(bInt);
-                        isBlocked = false;
-                        document.querySelectorAll('[id^="block-layer-"]').forEach(el => el.remove());
-                        if(isSoundOn) playSoundFX('click');
-                    }
+                    blockTimeLeft--; document.querySelectorAll('.block-timer').forEach(el => el.innerText = blockTimeLeft + 's');
+                    if(blockTimeLeft <= 0) { clearInterval(bInt); isBlocked = false; document.querySelectorAll('[id^="block-layer-"]').forEach(el => el.remove()); if(isSoundOn) playSoundFX('click'); }
                 }, 1000);
                 activeAttackIntervals.push(bInt);
             }
 
             if(activePower === 'swap') {
                 showToast("🔀 ¡INTERCAMBIO! Las respuestas cambian de lugar.", true);
-                const warningEl = document.createElement('div');
-                warningEl.className = 'w-full text-center text-purple-400 font-black text-sm mb-2 drop-shadow-md animate-pulse';
-                warningEl.id = 'swap-warning';
-                warningEl.innerHTML = '<i class="fas fa-random"></i> Cambian en: <span id="swap-timer">2</span>s';
+                const warningEl = document.createElement('div'); warningEl.className = 'w-full text-center text-purple-400 font-black text-sm mb-2 drop-shadow-md animate-pulse'; warningEl.id = 'swap-warning'; warningEl.innerHTML = '<i class="fas fa-random"></i> Cambian en: <span id="swap-timer">2</span>s';
                 opts.parentNode.insertBefore(warningEl, opts);
-
                 let swapTime = 2;
                 let sInt = setInterval(() => {
-                    swapTime--;
-                    let stEl = document.getElementById('swap-timer');
-                    if(stEl) stEl.innerText = swapTime;
-                    
-                    if(swapTime <= 0) {
-                        swapTime = 2;
-                        if(stEl) stEl.innerText = swapTime;
-                        const btns = Array.from(opts.querySelectorAll('button'));
-                        btns.forEach(btn => btn.style.order = Math.floor(Math.random() * 10));
-                        if(isSoundOn) playBeep(300, 'triangle', 0.1);
-                    }
+                    swapTime--; let stEl = document.getElementById('swap-timer'); if(stEl) stEl.innerText = swapTime;
+                    if(swapTime <= 0) { swapTime = 2; if(stEl) stEl.innerText = swapTime; const btns = Array.from(opts.querySelectorAll('button')); btns.forEach(btn => btn.style.order = Math.floor(Math.random() * 10)); if(isSoundOn) playBeep(300, 'triangle', 0.1); }
                 }, 1000);
                 activeAttackIntervals.push(sInt);
             }
 
             q.options.forEach((opt, idx) => {
-                const b = document.createElement('button');
-                b.style.order = idx;
+                const b = document.createElement('button'); b.style.order = idx;
                 b.className = 'relative w-full text-left py-2 px-3 md:p-3 glass-panel bg-slate-800/80 hover:bg-slate-700 rounded-xl font-semibold text-white transition-all border border-white/5 shadow-md active:scale-95 text-sm md:text-base overflow-hidden flex-shrink-0';
-                
-                const tSpan = document.createElement('span');
-                tSpan.innerText = opt;
-                tSpan.className = 'relative z-10 pointer-events-none';
-                b.appendChild(tSpan);
+                const tSpan = document.createElement('span'); tSpan.innerText = opt; tSpan.className = 'relative z-10 pointer-events-none'; b.appendChild(tSpan);
 
                 if(isFrozen) {
-                    const iceLayer = document.createElement('div');
-                    iceLayer.className = 'absolute inset-0 bg-cyan-300/40 backdrop-blur-md border-[3px] border-cyan-400 rounded-xl z-20 flex items-center justify-center transition-opacity pointer-events-none';
-                    iceLayer.id = `ice-layer-${idx}`;
-                    iceLayer.innerHTML = '<i class="fas fa-snowflake text-cyan-100 text-2xl animate-pulse"></i>';
-                    b.appendChild(iceLayer);
+                    const iceLayer = document.createElement('div'); iceLayer.className = 'absolute inset-0 bg-cyan-300/40 backdrop-blur-md border-[3px] border-cyan-400 rounded-xl z-20 flex items-center justify-center transition-opacity pointer-events-none'; iceLayer.id = `ice-layer-${idx}`; iceLayer.innerHTML = '<i class="fas fa-snowflake text-cyan-100 text-2xl animate-pulse"></i>'; b.appendChild(iceLayer);
                 }
 
                 if(isBlocked) {
-                    const blockLayer = document.createElement('div');
-                    blockLayer.className = 'absolute inset-0 bg-slate-900/80 backdrop-blur-sm border-[3px] border-red-500 rounded-xl z-20 flex items-center justify-center transition-opacity pointer-events-none';
-                    blockLayer.id = `block-layer-${idx}`;
-                    blockLayer.innerHTML = `<div class="text-center"><i class="fas fa-lock text-red-500 text-2xl mb-1"></i><div class="font-black text-white text-xs block-timer">5s</div></div>`;
-                    b.appendChild(blockLayer);
+                    const blockLayer = document.createElement('div'); blockLayer.className = 'absolute inset-0 bg-slate-900/80 backdrop-blur-sm border-[3px] border-red-500 rounded-xl z-20 flex items-center justify-center transition-opacity pointer-events-none'; blockLayer.id = `block-layer-${idx}`; blockLayer.innerHTML = `<div class="text-center"><i class="fas fa-lock text-red-500 text-2xl mb-1"></i><div class="font-black text-white text-xs block-timer">5s</div></div>`; b.appendChild(blockLayer);
                 }
 
-                let isSlime = activePower === 'slime';
-                let slimeRemoved = false;
+                let isSlime = activePower === 'slime'; let slimeRemoved = false;
                 if(isSlime) {
                     if(idx === 0) showToast("🤢 ¡LÍQUIDO VISCOSO! Desliza y frota para limpiarlo.", true);
-                    const slimeLayer = document.createElement('div');
-                    slimeLayer.className = 'absolute inset-0 bg-green-500/90 backdrop-blur-md border-[3px] border-green-600 rounded-xl z-30 flex items-center justify-center transition-opacity touch-none';
-                    slimeLayer.id = `slime-layer-${idx}`;
-                    slimeLayer.innerHTML = '<i class="fas fa-fill-drip text-green-200 text-2xl animate-pulse"></i>';
-                    b.appendChild(slimeLayer);
-
+                    const slimeLayer = document.createElement('div'); slimeLayer.className = 'absolute inset-0 bg-green-500/90 backdrop-blur-md border-[3px] border-green-600 rounded-xl z-30 flex items-center justify-center transition-opacity touch-none'; slimeLayer.id = `slime-layer-${idx}`; slimeLayer.innerHTML = '<i class="fas fa-fill-drip text-green-200 text-2xl animate-pulse"></i>'; b.appendChild(slimeLayer);
                     let swipeCount = 0;
-                    const handleSwipe = () => {
-                        if (slimeRemoved) return;
-                        swipeCount++;
-                        slimeLayer.style.opacity = 1 - (swipeCount / 10);
-                        if (swipeCount >= 10) {
-                            slimeRemoved = true;
-                            slimeLayer.remove();
-                            if(isSoundOn) playBeep(500, 'sawtooth', 0.1);
-                        }
-                    };
-                    slimeLayer.addEventListener('touchmove', handleSwipe, {passive: true});
-                    slimeLayer.addEventListener('mousemove', handleSwipe);
+                    const handleSwipe = () => { if (slimeRemoved) return; swipeCount++; slimeLayer.style.opacity = 1 - (swipeCount / 10); if (swipeCount >= 10) { slimeRemoved = true; slimeLayer.remove(); if(isSoundOn) playBeep(500, 'sawtooth', 0.1); } };
+                    slimeLayer.addEventListener('touchmove', handleSwipe, {passive: true}); slimeLayer.addEventListener('mousemove', handleSwipe);
                 }
 
                 b.onclick = () => {
-                    if(isBlocked) return;
-                    if(isSlime && !slimeRemoved) return;
-                    
+                    if(isBlocked) return; if(isSlime && !slimeRemoved) return;
                     if(isFrozen) {
-                        iceTaps--;
-                        const allBtns = opts.querySelectorAll('button');
-                        allBtns.forEach(btn => {
-                            btn.classList.add('shake');
-                            setTimeout(() => btn.classList.remove('shake'), 200);
-                        });
-                        
+                        iceTaps--; const allBtns = opts.querySelectorAll('button');
+                        allBtns.forEach(btn => { btn.classList.add('shake'); setTimeout(() => btn.classList.remove('shake'), 200); });
                         if(isSoundOn) playSoundFX('click');
-
-                        const iceElements = document.querySelectorAll('[id^="ice-layer-"]');
-                        iceElements.forEach(ice => {
-                            ice.style.opacity = iceTaps / 5;
-                        });
-
-                        if(iceTaps <= 0) {
-                            isFrozen = false;
-                            if(isSoundOn) playSoundFX('click');
-                            iceElements.forEach(ice => ice.remove());
-                        }
-                    } else {
-                        onClickCallback(idx, b);
-                    }
+                        const iceElements = document.querySelectorAll('[id^="ice-layer-"]'); iceElements.forEach(ice => { ice.style.opacity = iceTaps / 5; });
+                        if(iceTaps <= 0) { isFrozen = false; if(isSoundOn) playSoundFX('click'); iceElements.forEach(ice => ice.remove()); }
+                    } else { onClickCallback(idx, b); }
                 };
                 opts.appendChild(b);
             });
@@ -2778,10 +2007,7 @@
 
         function disableOptions() { 
             const btns = document.getElementById('options-container').querySelectorAll('button'); 
-            btns.forEach(b => { 
-                b.disabled = true; 
-                b.classList.remove('active:scale-95','active:bg-slate-700', 'hover:bg-slate-700', 'hover:bg-white/30'); 
-            }); 
+            btns.forEach(b => { b.disabled = true; b.classList.remove('active:scale-95','active:bg-slate-700', 'hover:bg-slate-700', 'hover:bg-white/30'); }); 
         }
 
         window.exitGameConfirm = () => { 
@@ -2793,8 +2019,7 @@
         };
         
         window.exitGameComplete = () => { 
-            if(isLocalMode || !currentRoomRef) {
-                window.showScreen('screen-main-menu'); 
+            if(isLocalMode || !currentRoomRef) { window.showScreen('screen-main-menu'); 
             } else {
                 if (localRoomData && localRoomData.hostId === currentUser.uid) {
                     let updates = { status: 'waiting', currentQ: 0, answers: {}, questions: [], activeAttack: null };
@@ -2806,30 +2031,19 @@
         };
 
         function updateLeaderboardUI(playersObj) {
-            const c = document.getElementById('leaderboard-container'); 
-            if(!c) return;
-            c.innerHTML = '';
+            const c = document.getElementById('leaderboard-container'); if(!c) return; c.innerHTML = '';
             const sorted = Object.values(playersObj).sort((a, b) => b.score - a.score);
             sorted.forEach((p, i) => {
                 const isMe = p.name === (userData ? userData.name : 'Tú') || p.name === 'Invitado';
-                const baseAv = p.avatar || AVATARS[0];
-                const expr = i === 0 ? 'happy' : 'dizzy'; // El primero feliz, el resto tristes
-                const finalAvatar = getAvatarExpression(baseAv, expr);
-
+                const baseAv = p.avatar || AVATARS[0]; const expr = i === 0 ? 'happy' : 'dizzy'; const finalAvatar = getAvatarExpression(baseAv, expr);
                 c.innerHTML += `
                     <div class="flex items-center justify-between p-4 mb-3 rounded-2xl glass-panel ${isMe ? 'bg-blue-600/20 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-slate-800/80 border-white/5'}">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white text-lg shadow-inner relative overflow-hidden shrink-0">
-                                <span class="absolute z-10 text-white/80 drop-shadow-md">#${i+1}</span>
-                                <img src="${finalAvatar}" class="absolute inset-0 w-full h-full object-cover opacity-30">
-                            </div>
+                            <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-600 flex items-center justify-center font-black text-white text-lg shadow-inner relative overflow-hidden shrink-0"><span class="absolute z-10 text-white/80 drop-shadow-md">#${i+1}</span><img src="${finalAvatar}" class="absolute inset-0 w-full h-full object-cover opacity-30"></div>
                             <img src="${finalAvatar}" class="w-10 h-10 rounded-full border border-slate-500 bg-slate-900 object-cover shadow-inner shrink-0 hidden md:block">
                             <span class="font-black text-white text-xl tracking-wide">${p.name}</span>
                         </div>
-                        <div class="text-right">
-                            <span class="text-3xl font-black text-blue-400 drop-shadow-md">${p.score}</span>
-                            <span class="text-[10px] text-slate-400 block -mt-1 font-bold tracking-widest">PTS</span>
-                        </div>
+                        <div class="text-right"><span class="text-3xl font-black text-blue-400 drop-shadow-md">${p.score}</span><span class="text-[10px] text-slate-400 block -mt-1 font-bold tracking-widest">PTS</span></div>
                     </div>`;
             });
         }
