@@ -1092,7 +1092,12 @@
 
         window.goToSetup = async (isMulti) => {
             isMultiplayerSetup = isMulti;
-            if(isMulti) { window.selectMPMode('classic'); window.showScreen('screen-setup-mode'); } 
+            if(isMulti) { 
+                if (localRoomData && Object.keys(localRoomData.players).length < 2) {
+                    return showToast("Se necesitan al menos 2 jugadores para empezar", true);
+                }
+                window.selectMPMode('classic'); window.showScreen('screen-setup-mode'); 
+            } 
             else { window.showScreen('screen-setup'); }
         };
 
@@ -1143,59 +1148,64 @@
             window.showScreen('screen-loading');
             
             const limitNum = 15;
-            try {
-                const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle");
-                const snap = await getDocs(qRef);
-                let fetchedQ = []; 
+            const poolKey = selectedCategories.slice().sort().join(',');
+
+            if (!window.mpQuestionPool || window.mpQuestionPool.key !== poolKey) {
+                try {
+                    const qRef = collection(db, "Preguntas Trivia Battle - Preguntas Trivia Battle");
+                    const snap = await getDocs(qRef);
+                    let fetchedQ = []; 
+                    
+                    snap.forEach(doc => {
+                        let rawData = doc.data(); let rawCat = rawData["Categoria"] || ""; let normalizedCat = normalizarCategoria(rawCat);
+                        if (selectedCategories.includes(normalizedCat) || selectedCategories.includes('aleatorio')) {
+                            let formattedQ = { cat: normalizedCat, text: rawData["Pregunta"], options: [ rawData["Opcion 1"], rawData["Opcion 2"], rawData["Opcion 3"], rawData["Opcion 4"] ] };
+                            let correctVal = rawData["Respuesta Correcta"];
+                            if (typeof correctVal === 'string') correctVal = parseInt(correctVal, 10);
+                            formattedQ.correct = correctVal - 1; 
+                            if (rawData["Imagen"]) { formattedQ.img = rawData["Imagen"]; }
+                            if (formattedQ.text && formattedQ.options[0] && formattedQ.options[3] && !isNaN(formattedQ.correct)) { fetchedQ.push(formattedQ); }
+                        }
+                    });
+
+                    if(fetchedQ.length === 0) throw new Error("No se encontraron preguntas.");
+                    window.mpQuestionPool = { key: poolKey, questions: fetchedQ, index: 0 };
+                    shuffleArray(window.mpQuestionPool.questions);
+                } catch(e) {
+                    console.error("Error cargando de Firebase:", e);
+                    let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio'));
+                    let pool = fall.length > 0 ? [...fall] : [...backupQuestions];
+                    window.mpQuestionPool = { key: poolKey, questions: pool, index: 0 };
+                    shuffleArray(window.mpQuestionPool.questions);
+                    showToast("Modo Offline / Respaldo", true);
+                }
+            }
+
+            activeQuestions = [];
+            let attempts = 0;
+            while (activeQuestions.length < limitNum && attempts < window.mpQuestionPool.questions.length * 2) {
+                if (window.mpQuestionPool.index >= window.mpQuestionPool.questions.length) {
+                    shuffleArray(window.mpQuestionPool.questions);
+                    window.mpQuestionPool.index = 0;
+                }
+                let candidate = window.mpQuestionPool.questions[window.mpQuestionPool.index];
+                window.mpQuestionPool.index++;
                 
-                snap.forEach(doc => {
-                    let rawData = doc.data(); let rawCat = rawData["Categoria"] || ""; let normalizedCat = normalizarCategoria(rawCat);
-                    if (selectedCategories.includes(normalizedCat) || selectedCategories.includes('aleatorio')) {
-                        let formattedQ = { cat: normalizedCat, text: rawData["Pregunta"], options: [ rawData["Opcion 1"], rawData["Opcion 2"], rawData["Opcion 3"], rawData["Opcion 4"] ] };
-                        let correctVal = rawData["Respuesta Correcta"];
-                        if (typeof correctVal === 'string') correctVal = parseInt(correctVal, 10);
-                        formattedQ.correct = correctVal - 1; 
-                        if (rawData["Imagen"]) { formattedQ.img = rawData["Imagen"]; }
-                        if (formattedQ.text && formattedQ.options[0] && formattedQ.options[3] && !isNaN(formattedQ.correct)) { fetchedQ.push(formattedQ); }
-                    }
+                let isValid = await new Promise(r => {
+                    if(!candidate.img) r(true);
+                    else { let img = new Image(); img.onload = () => r(true); img.onerror = () => r(false); img.src = candidate.img; }
                 });
 
-                if(fetchedQ.length === 0) throw new Error("No se encontraron preguntas.");
-                let freshQuestions = fetchedQ.filter(q => !askedQuestionsHistory.has(q.text));
-                if(freshQuestions.length < limitNum) { askedQuestionsHistory.clear(); freshQuestions = fetchedQ; }
-                shuffleArray(freshQuestions); 
-                
-                activeQuestions = [];
-                for (let candidate of freshQuestions) {
-                    if (activeQuestions.length >= limitNum) break;
-                    let isValid = await new Promise(r => {
-                        if(!candidate.img) r(true);
-                        else { let img = new Image(); img.onload = () => r(true); img.onerror = () => r(false); img.src = candidate.img; }
-                    });
-                    if (isValid) { activeQuestions.push(candidate); askedQuestionsHistory.add(candidate.text); }
-                }
-                
-                if(activeQuestions.length < limitNum) {
-                     let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio')); shuffleArray(fall);
-                     for(let candidate of fall) {
-                         if(activeQuestions.length >= limitNum) break;
-                         activeQuestions.push(candidate);
-                     }
-                }
-            } catch(e) {
-                console.error("Error cargando de Firebase:", e);
-                let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio'));
-                let pool = fall.length > 0 ? [...fall] : [...backupQuestions];
-                let freshQuestions = pool.filter(q => !askedQuestionsHistory.has(q.text));
-                if(freshQuestions.length < limitNum) { askedQuestionsHistory.clear(); freshQuestions = pool; }
-                shuffleArray(freshQuestions); 
-                
-                activeQuestions = [];
-                for (let candidate of freshQuestions) {
-                    if(activeQuestions.length >= limitNum) break;
-                    activeQuestions.push(candidate); askedQuestionsHistory.add(candidate.text);
-                }
-                showToast("Modo Offline / Respaldo", true);
+                if (isValid) activeQuestions.push(candidate);
+                attempts++;
+            }
+            
+            if(activeQuestions.length < limitNum) {
+                 let fall = backupQuestions.filter(q => selectedCategories.includes(q.cat) || selectedCategories.includes('aleatorio')); shuffleArray(fall);
+                 for(let candidate of fall) {
+                     if(activeQuestions.length >= limitNum) break;
+                     activeQuestions.push(candidate);
+                 }
             }
 
             if(isMultiplayerSetup && currentRoomRef) {
