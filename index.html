@@ -234,6 +234,8 @@
             </div>
         </div>
 
+        <!-- MODALES GLOBALES -->
+
         <!-- MODAL DE AJUSTES -->
         <div id="settings-modal" class="hidden absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-center items-center p-4 opacity-0 transition-opacity duration-300">
             <div id="settings-panel" class="w-full max-w-md glass-panel theme-settings border border-cyan-500/40 rounded-3xl p-6 shadow-[0_0_30px_rgba(6,182,212,0.15)] transform scale-95 transition-transform duration-300 flex flex-col gap-5 relative overflow-hidden">
@@ -991,7 +993,7 @@
                 try {
                     const q = query(collection(db, "users"), where("name", "==", u)); const snap = await getDocs(q);
                     if (!snap.empty && snap.docs[0].data().email) loginEmail = snap.docs[0].data().email;
-                    else { window.showScreen('screen-login'); return showToast("Usuario no encontrado.", true); }
+                    else { window.showScreen('screen-login'); return showToast("Usuario no encontrado o sin correo. Entra con correo o regístrate.", true); }
                 } catch (err) {}
             } else if (e && !e.includes('@')) {
                 try {
@@ -1204,7 +1206,8 @@
                                     <span class="font-bold text-sm text-white">${u.name}</span>
                                 </div>
                                 <span class="font-black text-yellow-400 drop-shadow-md text-lg">${u.highScore}</span>
-                            </div>`;
+                            </div>
+                        `;
                     });
                 }
             } catch(e) { list.innerHTML = '<p class="text-xs text-red-500 text-center font-bold">Error al cargar ranking.</p>'; }
@@ -1361,6 +1364,28 @@
                 document.getElementById('add-friend-input').value = '';
             } catch(e) { showToast("Error al buscar", true); }
         };
+
+        window.addFriendFromRoom = async (targetUid) => {
+            if(targetUid === currentUser.uid) return showToast("Ese eres tú", true);
+            if(userData.friends && userData.friends.some(f => f.uid === targetUid)) return showToast("Ya sois amigos", true);
+            
+            showToast("Enviando solicitud...");
+            try {
+                const targetSnap = await getDoc(doc(db, 'users', targetUid));
+                if(!targetSnap.exists()) return showToast("Jugador no encontrado", true);
+                
+                const targetData = targetSnap.data();
+                if(targetData.inbox && targetData.inbox.some(req => req.type === 'friend' && req.fromUid === currentUser.uid)) {
+                    return showToast("Solicitud ya enviada", true);
+                }
+                
+                const newReq = { type: 'friend', fromUid: currentUser.uid, fromName: userData.name, fromId: userData.playerId };
+                const updatedInbox = targetData.inbox && Array.isArray(targetData.inbox) ? [...targetData.inbox, newReq] : [newReq];
+                await updateDoc(doc(db, 'users', targetUid), { inbox: updatedInbox });
+                showToast("¡Solicitud enviada!");
+            } catch(e) { showToast("Error al enviar", true); }
+        };
+
         window.acceptFriend = async (index) => {
             const req = userData.inbox[index]; const newFriend = { uid: req.fromUid, name: req.fromName, id: req.fromId };
             const updatedFriends = userData.friends && Array.isArray(userData.friends) ? [...userData.friends, newFriend] : [newFriend];
@@ -1531,18 +1556,18 @@
 
         function updateRoomWaitingUI(data) {
             const pList = document.getElementById('room-players-list'); pList.innerHTML = '';
-            const pArr = Object.values(data.players); 
+            const uids = Object.keys(data.players); 
             const maxPlayers = data.type === 'duel' ? 2 : 8;
-            document.getElementById('player-count').innerText = pArr.length; document.getElementById('max-player-count').innerText = maxPlayers;
+            document.getElementById('player-count').innerText = uids.length; document.getElementById('max-player-count').innerText = maxPlayers;
             
-            if (data.type === 'duel' && pArr.length === 2) {
-                const uids = Object.keys(data.players).sort(); const duelId = uids.join('_');
+            if (data.type === 'duel' && uids.length === 2) {
+                const sortedUids = [...uids].sort(); const duelId = sortedUids.join('_');
                 getDoc(doc(db, 'duels', duelId)).then(snap => {
                     const statsContainer = document.getElementById('duel-stats-container');
                     if(statsContainer) {
                         statsContainer.classList.remove('hidden');
-                        document.getElementById('duel-p1-name').innerText = data.players[uids[0]].name; document.getElementById('duel-p2-name').innerText = data.players[uids[1]].name;
-                        if (snap.exists()) { const w1 = snap.data()[`wins_${uids[0]}`] || 0; const w2 = snap.data()[`wins_${uids[1]}`] || 0; document.getElementById('duel-score').innerText = `${w1} - ${w2}`;
+                        document.getElementById('duel-p1-name').innerText = data.players[sortedUids[0]].name; document.getElementById('duel-p2-name').innerText = data.players[sortedUids[1]].name;
+                        if (snap.exists()) { const w1 = snap.data()[`wins_${sortedUids[0]}`] || 0; const w2 = snap.data()[`wins_${sortedUids[1]}`] || 0; document.getElementById('duel-score').innerText = `${w1} - ${w2}`;
                         } else { document.getElementById('duel-score').innerText = `0 - 0`; }
                     }
                 }).catch(()=>{});
@@ -1550,12 +1575,22 @@
                 const statsContainer = document.getElementById('duel-stats-container'); if(statsContainer) statsContainer.classList.add('hidden');
             }
 
-            pArr.forEach(p => {
+            uids.forEach(uid => {
+                const p = data.players[uid];
+                const isMe = uid === currentUser.uid;
+                const isHost = data.hostId === uid;
+                const isFriend = userData && userData.friends && userData.friends.some(f => f.uid === uid);
+                
+                let iconsHtml = `<div class="flex items-center gap-2 ml-auto shrink-0">`;
+                if (isHost) iconsHtml += `<i class="fas fa-crown text-xl text-yellow-400 drop-shadow-md"></i>`;
+                if (!isMe && !isFriend) iconsHtml += `<button onclick="window.addFriendFromRoom('${uid}')" class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all flex items-center justify-center shadow-sm active:scale-95" title="Añadir amigo"><i class="fas fa-user-plus text-xs"></i></button>`;
+                iconsHtml += `</div>`;
+
                 pList.innerHTML += `
-                    <div class="flex items-center gap-4 p-4 glass-panel rounded-2xl border border-white/10 shadow-md bg-slate-800/40">
-                        <img src="${getAvatarExpression(p.avatar || AVATARS[0], 'round')}" class="w-12 h-12 rounded-full bg-slate-900 border-2 border-blue-500 object-cover shadow-inner shrink-0">
-                        <span class="font-black text-lg text-white tracking-wide">${p.name}</span>
-                        ${data.hostId === p.uid ? '<i class="fas fa-crown text-2xl text-yellow-400 ml-auto drop-shadow-md"></i>' : ''}
+                    <div class="flex items-center p-3 glass-panel rounded-2xl border border-white/10 shadow-md bg-slate-800/40">
+                        <img src="${getAvatarExpression(p.avatar || AVATARS[0], 'round')}" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-900 border-2 border-blue-500 object-cover shadow-inner shrink-0 mr-3">
+                        <span class="font-black text-base md:text-lg text-white tracking-wide truncate max-w-[150px] md:max-w-[200px]">${p.name}</span>
+                        ${iconsHtml}
                     </div>`;
             });
             const isHost = data.hostId === currentUser.uid;
